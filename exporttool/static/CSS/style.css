@@ -1,0 +1,39 @@
+table {
+    width: 75%;
+    border-collapse: collapse;
+    border-spacing: 0;
+    margin-bottom: 20px; 
+}
+
+tr {
+    border-bottom: 1px solid #ddd;
+}
+
+th {
+    font-weight: bold;
+    text-align: left; 
+    padding: 10px; 
+    border-bottom: 2px solid #ccc; 
+}
+
+td {
+    padding: 8px;
+}
+
+tr:nth-child(even) {
+    background-color: #f2f2f2; 
+}
+
+button {
+  background-color: blue;
+  border: none;
+  color: white;
+  padding: 10px 20px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 4px 2px;
+  transition-duration: 0.4s;
+  cursor: pointer;
+}
