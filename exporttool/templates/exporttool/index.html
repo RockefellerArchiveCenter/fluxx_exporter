@@ -29,6 +29,11 @@
             <option value="3">CSV</option>
         </select>
     </div>
+
+    <div>
+        <label for="location">Export Location:</label>
+        <input type="text" id="location" name="location">
+    </div>
     
     <button onclick="exportData()">Export</button>
     <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
@@ -54,6 +59,10 @@
         var formatValue = document.getElementById('formatInput').value;
         console.log('Format:', formatValue);
 
+        // Retrieve export location value
+        var location = document.getElementById('location').value;
+        console.log('Export Location:', location);
+
         // Retrieve CSRF token from the DOM
         var csrfTokenElement = document.querySelector('[name=csrfmiddlewaretoken]');
         var csrfToken = csrfTokenElement ? csrfTokenElement.value : null;
@@ -78,7 +87,8 @@
         var postData = {
             checkedColumns: checkedColumns,
             filter: filterValue,
-            format: formatValue
+            format: formatValue,
+            location: location
         };
         xhr.send(JSON.stringify(postData));
         console.log(JSON.stringify(postData));
