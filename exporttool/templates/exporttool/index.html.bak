@@ -1,0 +1,88 @@
+{% extends 'exporttool/main.html' %}
+
+{% block content %}
+
+    <table>
+        <tr>
+            <th>Entity</th>
+        </tr>
+        {% for entity in entities %}
+        <tr>
+            <td><strong>{{ entity.name }}</strong></td>
+            {% for column in entity.column_set.all %}
+            <td>{{ column }}  <input type="checkbox" name="{{ entity.name }}|{{ column.name }}"></td>
+            {% endfor %}
+        </tr>
+        {% endfor %}
+    </table>
+    
+    <div>
+        <label for="filterInput">Filter:</label>
+        <input type="text" id="filterInput" name="filterInput">
+    </div>
+
+    <div>
+        <label for="formatInput">Format:</label>
+        <select id="formatInput" name="formatInput">
+            <option value="1">JSON</option>
+            <option value="2">XML</option>
+            <option value="3">CSV</option>
+        </select>
+    </div>
+    
+    <button onclick="exportData()">Export</button>
+    <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+    
+    <script>
+    function exportData() {
+        var checkedColumns = [];
+        {% for entity in entities %}
+            {% for column in entity.column_set.all %}
+                var checkbox = document.querySelector('input[name="{{ entity.name }}|{{ column.name }}"]');
+                if (checkbox && checkbox.checked) {
+                    checkedColumns.push('{{ entity.name }}|{{ column.name }}');
+                }
+            {% endfor %}
+        {% endfor %}
+        console.log(checkedColumns);
+
+        // Retrieve filter value
+        var filterValue = document.getElementById('filterInput').value;
+        console.log('Filter:', filterValue);
+
+        // Retrieve format value
+        var formatValue = document.getElementById('formatInput').value;
+        console.log('Format:', formatValue);
+
+        // Retrieve CSRF token from the DOM
+        var csrfTokenElement = document.querySelector('[name=csrfmiddlewaretoken]');
+        var csrfToken = csrfTokenElement ? csrfTokenElement.value : null;
+
+        // Send data to export_data view using AJAX
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", "{% url 'export_data' %}", true);
+        xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+        
+        if (csrfToken) {
+            xhr.setRequestHeader("X-CSRFToken", csrfToken);  // Include CSRF token if available
+        }
+        xhr.onload = function() {
+            if (xhr.status === 200) {
+                console.log('Data exported successfully.');
+            } else {
+                console.error('Failed to export data.');
+            }
+        };
+
+        // Send checked columns, filter value, and format value
+        var postData = {
+            checkedColumns: checkedColumns,
+            filter: filterValue,
+            format: formatValue
+        };
+        xhr.send(JSON.stringify(postData));
+        console.log(JSON.stringify(postData));
+    }
+    </script>
+
+{% endblock %}
