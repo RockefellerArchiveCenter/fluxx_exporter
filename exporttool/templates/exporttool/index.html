@@ -30,11 +30,16 @@
         </select>
     </div>
 
-    <div>
-        <label for="location">Export Location:</label>
-        <input type="text" id="location" name="location">
+    <!--<div>-->
+    <!--    <label for="location">Export Location:</label>-->
+    <!--    <input type="text" id="location" name="location">-->
+    <!--</div>-->
+
+       <div>
+        <label for="folderInput">Select Folder:</label>
+        <input type="file" id="folderInput" webkitdirectory>
     </div>
-    
+
     <button onclick="exportData()">Export</button>
     <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
     
@@ -59,9 +64,10 @@
         var formatValue = document.getElementById('formatInput').value;
         console.log('Format:', formatValue);
 
-        // Retrieve export location value
-        var location = document.getElementById('location').value;
-        console.log('Export Location:', location);
+        // Retrieve export location value(only relative, absolute path does not work here)
+            var folderInput = document.getElementById('folderInput');
+            var folderPath = folderInput.files[0]?.webkitRelativePath.split('/')[0]; // Extract folder name
+            console.log('Selected Folder:', folderPath);
 
         // Retrieve CSRF token from the DOM
         var csrfTokenElement = document.querySelector('[name=csrfmiddlewaretoken]');
@@ -88,7 +94,7 @@
             checkedColumns: checkedColumns,
             filter: filterValue,
             format: formatValue,
-            location: location
+            location: folderPath
         };
         xhr.send(JSON.stringify(postData));
         console.log(JSON.stringify(postData));
