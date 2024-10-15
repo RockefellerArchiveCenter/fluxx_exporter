@@ -1,18 +1,13 @@
-import django
-django.setup()
-
 import boto3
 from botocore.exceptions import NoCredentialsError
 import csv
 import json
 import os
 import paramiko
-# import pysftp
+import pysftp
 import requests
 import sys
 import xml.etree.ElementTree as ET
-
-from exporttool.models import Entity, Column
 
 from datetime import datetime
 from fetchConfigDetails import fetch_fluxx_configs, fetch_sftp_configs, fetch_s3_configs
@@ -22,31 +17,24 @@ def main():
     # Check if command-line arguments are passed
     if len(sys.argv) > 1:
         # Print the passed through data
-        print("Data received in exportScript.py:", sys.argv[1:])
+        #print("Data received in exportScript.py:", sys.argv[1:])
         
         inputs = sys.argv[1:]
-        # print(f"inputs: {inputs}")
         # Get last values from argv and set to format,filter values, respectively
-        related_entities = []
-        while inputs[-1] not in ["1", "2", "3"]:
-            related_entities.append(inputs.pop()if inputs else None) # inputs.pop() if inputs else ""
-
         format_value = inputs.pop() if inputs else ""
         filter_value = inputs.pop() if inputs else ""
-        print(f"inputs: {inputs}") 
         inputs = parse_data(inputs)
-        print(f"inputs: {inputs}") 
+        
         fluxx = Fluxx()
 
         for entity_data in inputs:
             entity = str(entity_data[0]).lower()
-            print(f"Entity: {entity}")
+            #print(f"Entity: {entity}")
             columns = entity_data[1:]
-            print(f"columns: {columns}")
+            #print(f"columns: {columns}")
             filter_value = parse_filter(filter_value)
-            print(f"filters: {filter_value}")
-            related_entity = parse_related_entity(related_entities, entity)
-            listEntityElements = fluxx.list_rows(entity, columns, filter=filter_value, related_entity=related_entity)
+            #print(f"filters: {filter_value}")
+            listEntityElements = fluxx.list_rows(entity, columns, filter=filter_value)
             #print(f"list elements: {listEntityElements.json()}")
             try: 
                 results = listEntityElements.json()['records']
@@ -86,27 +74,6 @@ def main():
 
     else:
         print("No data received.")
-
-
-def parse_related_entity(related_entity_list, entity):
-    # Loop through the related entity list
-    for related_entity in related_entity_list:
-        if len(related_entity) != 0:
-            # Split the entity and related entity by '|'
-            related_entity_parts = related_entity.split('|', 1)
-            print(f"related_entity_parts: {related_entity_parts}") 
-            # Ensure the split gives us exactly two parts (entity|relatedentity)
-            if len(related_entity_parts) == 2:
-                entity_part, related_entity_part = related_entity_parts
-                
-                # Check if the entity matches the first part
-                if entity_part == entity:
-                    print(f"Matching entity found, related entity: {related_entity_part}")
-                    return related_entity_part  # Return the related entity
-                
-    # If no match is found, return an empty string
-    return ""
-
 
 
 def parse_data(input_data):
@@ -359,8 +326,8 @@ class Fluxx(object):
         self.api_url = fluxx_url + 'api/rest/v2/'
         
 
-    def list_rows(self, entity, columns, page=1, per_page=100, filter=None, related_entity=None):
-        '''Function to return a list of some number of rows and pages relating to an entity (or table)
+    def list_rows(self, entity, columns, page=1, per_page=100, filter=None):
+        '''Function to return a list of some number of rows and pages relating to an entinty (or table)
         Filters can be applied following the format: <entity> <logic> <condition>
         Example: amount_requested eq 10000
         Filters can be tied together as follows: amount_requested eq 10000 and created_at today
@@ -369,39 +336,19 @@ class Fluxx(object):
 
         if page < 1:
             raise ValueError("Page integer must be greater than 0.")      
-        print(f"columns: {json.dumps(columns)}")
+
         list_params = {
             'cols': json.dumps(columns),
             'page': page,
             'per_page': per_page
-        }
+            }
 
         if filter: 
             list_params.update({
-                'filter': json.dumps(filter)
+                'filter':json.dumps(filter)
             })
-
-        if related_entity:
-            entity_id = Entity.objects.get(name=entity).id
-
-            related_entity_objects = Entity.objects.filter(related_entity=entity_id)
-
-            for related_entity in related_entity_objects:
-                related_entity_id = Entity.objects.get(name=related_entity).id
-                print(f"related_entity: {related_entity.name}")
-                re_columns = [column.name for column in Column.objects.filter(entity=related_entity_id)]
-                print(f"re_columns: {re_columns}") 
-                
-                # Directly assign the list to relation_params
-                relation_params = {related_entity.name: re_columns}
-                
-                list_params.update({
-                    'relation': json.dumps(relation_params), # Directly assign the list to relation_params
-                })
-
-        print(f"{list_params}")
-                
-        return self.session.get(self.api_url + entity, params=list_params)
+        
+        return self.session.get(self.api_url+entity, params=list_params)
 
 
     def download_document(self, document_id, sub_folder_path):
@@ -409,21 +356,18 @@ class Fluxx(object):
         download_params = {
             'cols': json.dumps(["document_file_name"])
         }
-        # Get the filename and type
+        #get the filename and type
         document_info = self.session.get(self.api_url + 'model_document/' + document_id, params=download_params)
         document_name = document_info.json()['model_document']['document_file_name']
         
-        # Get the file and save to respective folder
+        #get the file and save to respective folder
         document_download_url = self.api_url + 'model_document_download/' + document_id
         response = self.session.get(document_download_url, stream=True)
         
-        # Ensure the Documents directory exists
-        documents_path = os.path.join(sub_folder_path, 'Documents')
-        os.makedirs(documents_path, exist_ok=True)
-        
-        with open(os.path.join(documents_path, document_name), 'wb') as file:
+        with open(os.path.join(sub_folder_path, document_name), 'wb') as file:
             for chunk in response.iter_content(chunk_size=8192):
                 file.write(chunk)
+
 
 
 

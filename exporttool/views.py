@@ -29,14 +29,17 @@ def export_data(request):
         checked_columns = data.get('checkedColumns', [])
         filter_value = data.get('filter', '')
         format_value = data.get('format', '')
+        relatedEntity = data.get('relatedEntity', [])
 
         # Process the checked columns and filter value as needed
         print("Checked Columns:", checked_columns)
         print("Filter Value:", filter_value)
         print("Format value:", format_value)
+        print("Related Entity:", relatedEntity)
+        
 
         # Call the exportScript.py script with the data
-        run(["python", "exportScript.py", *checked_columns, filter_value, format_value])
+        run(["python", "exportScript.py", *checked_columns, filter_value, format_value, *relatedEntity])
 
         # Return a success JSON response
         return JsonResponse({'success': True})

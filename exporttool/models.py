@@ -12,9 +12,10 @@ class UserModel(models.Model):
 
 class Entity(models.Model):
     name = models.CharField(max_length=100)
+    related_entity = models.ForeignKey('self', null=True, blank=True, on_delete=models.SET_NULL, related_name='related_entities')
 
     def __str__(self):
-    	return self.name
+        return self.name
 
 class Column(models.Model):
     entity = models.ForeignKey(Entity, on_delete=models.CASCADE)

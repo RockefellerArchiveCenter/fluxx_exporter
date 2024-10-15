@@ -1,4 +1,3 @@
-
 {% extends 'exporttool/main.html' %}
 
 {% block content %}
@@ -10,7 +9,6 @@
         {% for entity in entities %}
         <tr>
             <td><strong>{{ entity.name }}</strong></td>
-            <!--<td><strong>{{ entity.related_entity }}</strong></td>-->
             {% for column in entity.column_set.all %}
             <td>{{ column }}  <input type="checkbox" name="{{ entity.name }}|{{ column.name }}"></td>
             {% endfor %}
@@ -32,21 +30,13 @@
         </select>
     </div>
     
-    <div>
-        <label for="fileInput">Browse:</label>
-        <input type="file" id="fileInput" name="fileInput">
-    </div>
-    
     <button onclick="exportData()">Export</button>
     <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
     
     <script>
     function exportData() {
         var checkedColumns = [];
-        var relatedEntity = [];
         {% for entity in entities %}
-        relatedEntity.push("{{ entity.name }}|{{ entity.related_entity.name|default_if_none:'Base'|escapejs }}");  // Ensure we handle None values
-         console.log('Related Entity for {{ entity.name }}:', relatedEntity); 
             {% for column in entity.column_set.all %}
                 var checkbox = document.querySelector('input[name="{{ entity.name }}|{{ column.name }}"]');
                 if (checkbox && checkbox.checked) {
@@ -55,7 +45,7 @@
             {% endfor %}
         {% endfor %}
         console.log(checkedColumns);
-        //console.log('Related Entity:', relatedEntity);
+
         // Retrieve filter value
         var filterValue = document.getElementById('filterInput').value;
         console.log('Filter:', filterValue);
@@ -63,13 +53,6 @@
         // Retrieve format value
         var formatValue = document.getElementById('formatInput').value;
         console.log('Format:', formatValue);
-
-        // Retrieve file input value
-        var fileInput = document.getElementById('fileInput');
-        var file = fileInput.files[0];
-        if (file) {
-            console.log('Selected file:', file.name);
-        }
 
         // Retrieve CSRF token from the DOM
         var csrfTokenElement = document.querySelector('[name=csrfmiddlewaretoken]');
@@ -95,8 +78,7 @@
         var postData = {
             checkedColumns: checkedColumns,
             filter: filterValue,
-            format: formatValue,
-            relatedEntity: relatedEntity
+            format: formatValue
         };
         xhr.send(JSON.stringify(postData));
         console.log(JSON.stringify(postData));
