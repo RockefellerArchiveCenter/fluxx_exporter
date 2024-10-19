@@ -1,5 +1,37 @@
 {% extends 'exporttool/main.html' %}
 
 {% block content %}
-	<h3>This is the About section which I will definitely come back to at some point</h3>
+<div class="container">
+    <h1>About the Project</h1>
+
+    <h2>Fluxx Exporter</h2>
+    <p>
+        The Fluxx Exporter is a Django-based application designed to streamline the process of exporting data from the Fluxx Labs API. 
+        This project serves as a versatile tool for users needing to access and manipulate data across various entities within the Fluxx environment.
+    </p>
+
+    <h3>Key Features</h3>
+    <ul>
+        <li><strong>Dynamic API Interaction:</strong> The application leverages the Fluxx Labs API to facilitate real-time data retrieval and manipulation, allowing users to apply various filters based on their needs.</li>
+        <li><strong>User-Friendly Interface:</strong> With a Django-powered admin interface, users can easily manage their Fluxx instances, including configuring SFTP and Amazon S3 integrations, as well as defining and associating entities and columns.</li>
+        <li><strong>Superuser Access:</strong> The project includes a superuser feature for secure access to the administration dashboard, enabling users to customize their configurations and ensure data integrity.</li>
+    </ul>
+
+    <h3>Installation and Setup</h3>
+    <p>
+        Fluxx Exporter is designed with a straightforward installation process. Users can clone the repository, set up a virtual environment, 
+        install dependencies, and configure their API settings with minimal effort. Detailed instructions are provided in the 
+        <a href="https://github.com/RockefellerArchiveCenter/fluxx_exporter?tab=readme-ov-file#installation-and-configuration-steps" target="_blank">Installation and Configuration Steps</a> section of the README.
+    </p>
+
+        <p>
+        <br>
+        <br>
+        <br>
+        <br>
+        This project is built using Python and Django, ensuring a robust and scalable framework that can grow with user needs. 
+        The Fluxx Exporter aims to provide a reliable and efficient solution for managing data within the Fluxx ecosystem.
+    </p>
+</div>
 {% endblock %}
+
