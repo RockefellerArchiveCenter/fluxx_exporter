@@ -1,23 +1,25 @@
 
 {% extends 'exporttool/main.html' %}
 
-{% block content %}
+    {% block content %}
 
     <table>
         <tr>
             <th>Entity</th>
         </tr>
         {% for entity in entities %}
-        <tr>
-            <td><strong>{{ entity.name }}</strong></td>
-            <!--<td><strong>{{ entity.related_entity }}</strong></td>-->
-            {% for column in entity.column_set.all %}
-            <td>{{ column }}  <input type="checkbox" name="{{ entity.name }}|{{ column.name }}"></td>
-            {% endfor %}
-        </tr>
+            {% if not entity.related_entity %}
+            <tr>
+                <td><strong>{{ entity.name }}</strong></td>
+                <!--<td><strong>{{ entity.related_entity }}</strong></td>-->
+                {% for column in entity.column_set.all %}
+                <td>{{ column }}  <input type="checkbox" name="{{ entity.name }}|{{ column.name }}"></td>
+                {% endfor %}
+            </tr>
+            {% endif %}
         {% endfor %}
     </table>
-    
+
     <div>
         <label for="filterInput">Filter:</label>
         <input type="text" id="filterInput" name="filterInput">
