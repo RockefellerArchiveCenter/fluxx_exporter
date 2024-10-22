@@ -1,12 +1,14 @@
 # fetch_config.py
 import os
+
 import django
 
+from exporter.models import FluxxConfig, s3Config, sftpConfig
+
 # Configure Django settings
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'exporttool.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'exporter.settings')
 django.setup()
 
-from exporttool.models import FluxxConfig, sftpConfig, s3Config
 
 def fetch_fluxx_configs(fluxx_config_name):
     try:
@@ -15,12 +17,14 @@ def fetch_fluxx_configs(fluxx_config_name):
     except FluxxConfig.DoesNotExist:
         raise ValueError(f"Config '{fluxx_config_name}' not found")
 
+
 def fetch_sftp_configs(sftp_config_name):
     try:
         sftp_config = sftpConfig.objects.get(name=sftp_config_name)
         return sftp_config.host, sftp_config.username, sftp_config.password, sftp_config.directory
     except sftpConfig.DoesNotExist:
         raise ValueError(f"Config '{sftp_config_name}' not found")
+
 
 def fetch_s3_configs(s3_config_name):
     try:

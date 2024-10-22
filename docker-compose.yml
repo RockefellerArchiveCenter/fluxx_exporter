@@ -1,0 +1,10 @@
+services:
+  web:
+    build: .
+    entrypoint: /code/entrypoint.sh
+    environment:
+      - APPLICATION_PORT=${APPLICATION_PORT:-8000}
+    volumes:
+      - .:/code
+    ports:
+      - "${APPLICATION_PORT:-8003}:${APPLICATION_PORT:-8000}"
