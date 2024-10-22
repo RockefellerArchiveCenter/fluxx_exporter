@@ -41,9 +41,6 @@ jobs:
       - name: Start Docker containers
         run: docker compose up -d
 
-      - name: Wait for services to be ready
-        run: ./wait-for-it.sh $CONTAINER:$APPLICATION_PORT -- echo "$CONTAINER is ready"
-
       - name: Install pre-commit
         run: |
           pip install "pre-commit===2.13.0"
