@@ -3,10 +3,10 @@ import os
 
 import django
 
-from exporttool.models import FluxxConfig, s3Config, sftpConfig
+from exporter.models import FluxxConfig, s3Config, sftpConfig
 
 # Configure Django settings
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'exporttool.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'exporter.settings')
 django.setup()
 
 

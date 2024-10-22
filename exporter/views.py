@@ -14,16 +14,16 @@ from .models import Column, Entity
 def index(request):
     entities = Entity.objects.all()
     columns = Column.objects.all()
-    return render(request, 'exporttool/index.html',
+    return render(request, 'exporter/index.html',
                   {'entities': entities, 'columns': columns})
 
 
 def about(request):
-    return render(request, 'exporttool/about.html')
+    return render(request, 'exporter/about.html')
 
 
 def filterhelp(request):
-    return render(request, 'exporttool/filterhelp.html')
+    return render(request, 'exporter/filterhelp.html')
 
 
 @csrf_exempt

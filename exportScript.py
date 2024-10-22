@@ -11,7 +11,7 @@ import paramiko
 import requests
 from botocore.exceptions import NoCredentialsError
 
-from exporttool.models import Column, Entity
+from exporter.models import Column, Entity
 from fetchConfigDetails import (fetch_fluxx_configs, fetch_s3_configs,
                                 fetch_sftp_configs)
 
