@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import UserModel, Entity, Column, FluxxConfig, sftpConfig, s3Config
+from .models import User, Entity, Column, FluxxConfig, sftpConfig, s3Config
 
 # Register your models here.
 
@@ -12,7 +12,7 @@ class EntityAdmin(admin.ModelAdmin):
 
 admin.site.register(Entity, EntityAdmin)
 admin.site.register(Column)
-admin.site.register(UserModel)
+admin.site.register(User)
 admin.site.register(FluxxConfig)
 admin.site.register(sftpConfig)
 admin.site.register(s3Config)
