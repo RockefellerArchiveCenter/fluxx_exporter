@@ -1,4 +1,8 @@
-table {
+.content {
+    grid-column: 3 / span 8;
+}
+
+/* table {
     width: 75%;
     border-collapse: collapse;
     border-spacing: 0;
@@ -36,4 +40,4 @@ button {
   margin: 4px 2px;
   transition-duration: 0.4s;
   cursor: pointer;
-}
+} */
