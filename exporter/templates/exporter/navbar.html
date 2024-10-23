@@ -1,13 +1,69 @@
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-  <a class="navbar-brand" href="#">Fluxx Export Tool</a>
-  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
-    <span class="navbar-toggler-icon"></span>
-  </button>
-  <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-    <div class="navbar-nav">
-      <a class="nav-item nav-link active" href="/">Export Tool</a>
-      <a class="nav-item nav-link active" href="{% url 'about' %}">About</a>
-      <a class="nav-item nav-link active" href="{% url 'filterhelp' %}">Filter Help</a>
+<header class="header header--blue">
+  <div class="wrapper">
+    <div class="container flex">
+      <div class="header__brand header__brand--text">
+        <a href="/" class="header__brand-title">Fluxx Exporter</a>
+      </div>
+
+      <nav class="nav-right" aria-label="Main">
+        <ul class="nav__list show-on-lg-up">
+          <li class="nav__item btn--navy">
+            <a
+              class="nav__link"
+              href="{% url 'about' %}"
+              id="raccess"
+            >
+              About
+              <span class="material-icon" aria-hidden="true">
+                arrow_right_alt
+              </span>
+            </a>
+          </li>
+          <li class="nav__item btn--navy">
+            <a class="nav__link" href="{% url 'filterhelp' %}" id="list">
+              Filter Help
+              <span class="material-icon" aria-hidden="true">
+                arrow_right_alt
+              </span>
+            </a>
+          </li>
+        </ul>
+
+        <div class="dropdown hide-on-lg-up">
+          <button
+            id="nav-toggle"
+            class="btn btn--navy nav__btn--mobile closed"
+            aria-expanded="false"
+          >
+            <span class="material-icon">menu</span>
+          </button>
+          <ul
+            id="nav-toggle-menu"
+            class="dropdown__list dropdown__list--mobile list--unstyled dropdown__list--navy dropdown__list--slide-left closed"
+          >
+            <li>
+              <a
+                class="btn btn--navy dropdown__btn dropdown__btn--mobile"
+                href="{% url 'about' %}"
+                tabindex="-1"
+              >
+                About
+                <span class="material-icon">east</span>
+              </a>
+            </li>
+            <li>
+              <a
+                class="btn btn--navy dropdown__btn dropdown__btn--mobile"
+                href="{% url 'filterhelp' %}"
+                tabindex="-1"
+              >
+                Filter Help
+                <span class="material-icon">east</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+      </nav>
     </div>
   </div>
-</nav>
+</header>
