@@ -1,0 +1,23 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Fluxx Export Tool</title>
+	<link rel="icon" type="image/x-icon" href="https://assets.rockarch.org/assets/img/favicon.ico">
+	<link rel="stylesheet" type="text/css" href="https://assets.rockarch.org/v0.12.0/main.min.css">
+	<link rel="stylesheet" type="text/css" href="{% static 'css/styles.css' %}">
+</head>
+<body>
+
+	{% include 'exporter/navbar.html' %}
+	
+	<div class="grid">
+		<main class="content mb-20">
+		{% block content %}{% endblock content %}
+		</main>
+	</div>
+	
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+
+</body>
+</html>
