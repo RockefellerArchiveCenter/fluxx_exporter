@@ -1,0 +1,122 @@
+import json
+from pathlib import Path
+
+import requests
+
+from exporter.models import Column, Entity
+
+# TODO replace prints with logging
+# TODO clarify purpose of unused variables
+
+
+class FluxxClient(object):
+    """Client for working with the Fluxx API"""
+
+    def __init__(self, config):
+        # version = config.version
+        # Optional style parameter, generally best kept as 'Full'
+        # style = 'full'
+        base_url = config.base_url
+        self.session = self.authenticate(
+            base_url,
+            config.application_id,
+            config.secret)
+        self.api_url = f"{base_url.rstrip('/')}/api/rest/v2/"
+
+    def authenticate(self, base_url, application_id, secret):
+        """Authenticates the client against the Fluxx API"""
+        # oauth parameters to retrieve token
+        token_url = f"{base_url.rstrip('/')}/oauth/token"
+        oauth_params = {
+            'grant_type': 'client_credentials',
+            'client_id': application_id,
+            'client_secret': secret
+        }
+
+        self.session = requests.Session()
+
+        # obtain oauth token
+        try:
+            response = self.session.post(token_url, data=oauth_params)
+        except Exception as e:
+            raise Exception("Could not authenticate with the supplied credentials") from e
+
+        # Set Session request headers to persist connection
+        try:
+            self.token = response.json()['access_token']
+            self.session.headers.update({
+                'Authorization': f'Bearer {self.token}'
+            })
+        except BaseException:
+            print("Could not find access token")
+
+    def list_rows(self, entity, columns, page=1, per_page=100,
+                  filter=None, related_entity=None):
+        """Function to return a list of some number of rows and pages relating to an entity (or table)
+        Filters can be applied following the format: <entity> <logic> <condition>
+        Example: amount_requested eq 10000
+        Filters can be tied together as follows: amount_requested eq 10000 and created_at today
+        Filter logic will be requested and further documented at a later date
+        """
+
+        if page < 1:
+            raise ValueError("Page integer must be greater than 0.")
+        print(f"columns: {json.dumps(columns)}")
+        list_params = {
+            'cols': json.dumps(columns),
+            'page': page,
+            'per_page': per_page
+        }
+
+        if filter:
+            list_params.update({
+                'filter': json.dumps(filter)
+            })
+
+        if related_entity:
+            entity_id = Entity.objects.get(name=entity).id
+
+            related_entity_objects = Entity.objects.filter(
+                related_entity=entity_id)
+
+            for related_entity in related_entity_objects:
+                related_entity_id = Entity.objects.get(name=related_entity).id
+                print(f"related_entity: {related_entity.name}")
+                re_columns = [
+                    column.name for column in Column.objects.filter(
+                        entity=related_entity_id)]
+                print(f"re_columns: {re_columns}")
+
+                # Directly assign the list to relation_params
+                relation_params = {related_entity.name: re_columns}
+
+                list_params.update({
+                    # Directly assign the list to relation_params
+                    'relation': json.dumps(relation_params),
+                })
+
+        print(list_params)
+
+        return self.session.get(self.api_url + entity, params=list_params)
+
+    def download_document(self, document_id, sub_folder_path):
+        document_id = str(document_id)
+        download_params = {'cols': json.dumps(["document_file_name"])}
+
+        # Get the filename and type
+        document_info = self.session.get(
+            f"{self.api_url}model_document/{document_id}",
+            params=download_params)
+        document_name = document_info.json()['model_document']['document_file_name']
+
+        # Get the file and save to respective folder
+        document_download_url = f"{self.api_url}model_document_download/{document_id}"
+        response = self.session.get(document_download_url, stream=True)
+
+        # Ensure the Documents directory exists
+        documents_path = Path(sub_folder_path, 'Documents')
+        documents_path.mkdir(exist_ok=True)
+
+        with open(Path(documents_path / document_name), 'wb') as file:
+            for chunk in response.iter_content(chunk_size=8192):
+                file.write(chunk)
