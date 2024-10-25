@@ -5,12 +5,9 @@ import sys
 import xml.etree.ElementTree as ET
 from datetime import datetime
 
-import boto3
 import django
-from botocore.exceptions import NoCredentialsError
 
-from exporter.clients import FluxxClient, SFTPClient
-from fetchConfigDetails import fetch_s3_configs
+from exporter.clients import FluxxClient, S3Client, SFTPClient
 
 django.setup()
 
@@ -60,6 +57,7 @@ def main():
                     f"Except while retrieving list of records. Entity: {entity} containing columns: {columns} did not return a response from the API")
                 pass
 
+            # TODO these should actually be conditionals based on export job
             # send over sftp
             try:
                 sftp_client = SFTPClient()
@@ -71,14 +69,8 @@ def main():
 
             # send to S3 bucket
             try:
-                fetch_s3_configs('S3 Config')
-                if (fetch_s3_configs('S3 Config')):
-                    bucket, access_key, secret_key = fetch_s3_configs(
-                        'S3 Config')
-                    print(
-                        f"cwd: {local_dir}, bucket: {bucket}, accesKey: {access_key}, secretKey: {secret_key}")
-                    upload_directory_to_s3(
-                        local_dir, bucket, access_key, secret_key)
+                s3_client = S3Client()
+                s3_client.upload_directory(local_dir)
             except Exception as e:
                 print(
                     f"Exception while retrieving Amazon S3 Bucket configuration: {e}")
@@ -225,44 +217,6 @@ def localDataExport(entity, json_data, fluxx, format):
     except Exception as e:
         print(f"Error creating folders and files for entity '{entity}': {e}")
         return False
-
-
-def upload_directory_to_s3(directory, bucket, access_key, secret_key):
-    print(f"directory: {directory}")
-    """Upload all files in the specified directory to an S3 bucket
-
-    :param directory: Directory containing files to upload
-    :param bucket: Bucket to upload to
-    :param access_key: AWS Access Key ID
-    :param secret_key: AWS Secret Access Key
-    :return: None
-    """
-    # Get the current date in mmddyyyy format
-    current_date = datetime.now().strftime('%m%d%Y')
-
-    # Create an S3 client
-    s3_client = boto3.client(
-        's3',
-        aws_access_key_id=access_key,
-        aws_secret_access_key=secret_key
-    )
-
-    # List all files in the directory
-    for root, dirs, files in os.walk(directory):
-        for file_name in files:
-            file_path = os.path.join(root, file_name)
-            # Create the object key with the date folder and subdirectory
-            # structure
-            relative_path = os.path.relpath(file_path, directory)
-            object_name = f"{current_date}/{relative_path}".replace("\\", "/")
-            try:
-                # Upload the file
-                s3_client.upload_file(file_path, bucket, object_name)
-                print(f"{file_name} has been uploaded to {bucket}/{object_name}")
-            except NoCredentialsError:
-                print("Credentials not available")
-            except Exception as e:
-                print(f"Failed to upload {file_name} to {bucket}: {e}")
 
 
 if __name__ == "__main__":

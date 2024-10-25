@@ -2,6 +2,7 @@ import json
 import os
 from pathlib import Path
 
+import boto3
 import paramiko
 import requests
 
@@ -182,3 +183,39 @@ class SFTPClient(object):
     def close(self):
         self.sftp.close()
         self.ssh.close()
+
+
+class S3Client(object):
+
+    def __init__(self, config):
+        self.s3_client = boto3.client(
+            's3',
+            aws_access_key_id=config.access_key,
+            aws_secret_access_key=config.secret_key,
+            aws_region=config.region
+        )
+        self.bucket = config.bucket
+
+    def upload_directory(self, directory):
+        """Upload all files in the specified directory to an S3 bucket
+
+        :param directory: Directory containing files to upload
+        :param bucket: Bucket to upload to
+        :param access_key: AWS Access Key ID
+        :param secret_key: AWS Secret Access Key
+        :return: None
+        """
+        # List all files in the directory
+        for root, dirs, files in os.walk(directory):
+            for file_name in files:
+                file_path = os.path.join(root, file_name)
+                # Create the object key with the date folder and subdirectory
+                # structure
+                relative_path = os.path.relpath(file_path, directory)
+                object_name = f"{relative_path}".replace("\\", "/")
+                try:
+                    # Upload the file
+                    self.s3_client.upload_file(file_path, self.bucket, object_name)
+                    print(f"{file_name} has been uploaded to {self.bucket}/{object_name}")
+                except Exception as e:
+                    print(f"Failed to upload {file_name} to {self.bucket}: {e}")
