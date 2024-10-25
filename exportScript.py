@@ -7,11 +7,10 @@ from datetime import datetime
 
 import boto3
 import django
-import paramiko
 from botocore.exceptions import NoCredentialsError
 
-from exporter.clients import FluxxClient
-from fetchConfigDetails import fetch_s3_configs, fetch_sftp_configs
+from exporter.clients import FluxxClient, SFTPClient
+from fetchConfigDetails import fetch_s3_configs
 
 django.setup()
 
@@ -41,6 +40,7 @@ def main():
         fluxx = FluxxClient()
 
         for entity_data in inputs:
+            local_dir = os.path.join(os.getcwd(), datetime.now().strftime("%m%d%Y"))  # TODO fix this
             entity = str(entity_data[0]).lower()
             print(f"Entity: {entity}")
             columns = entity_data[1:]
@@ -62,18 +62,9 @@ def main():
 
             # send over sftp
             try:
-                fetch_sftp_configs('SFTP Test')
-
-                if (fetch_sftp_configs('SFTP Test')):
-                    host, username, password, remotedir = fetch_sftp_configs(
-                        'SFTP Config')
-                    # print(f"host, username, password: {host}, {username}, {password}")
-                    local_dir = os.path.join(
-                        os.getcwd(), datetime.now().strftime("%m%d%Y"))
-                    remote_dir = remotedir
-
-                    send_directory_over_sftp(
-                        host, username, password, local_dir, remote_dir)
+                sftp_client = SFTPClient()
+                sftp_client.put_directory(local_dir)
+                sftp_client.close()
             except Exception as e:
                 print(f"Exception while retrieving SFTP configuration: {e}")
                 pass
@@ -84,8 +75,6 @@ def main():
                 if (fetch_s3_configs('S3 Config')):
                     bucket, access_key, secret_key = fetch_s3_configs(
                         'S3 Config')
-                    local_dir = os.path.join(
-                        os.getcwd(), datetime.now().strftime("%m%d%Y"))
                     print(
                         f"cwd: {local_dir}, bucket: {bucket}, accesKey: {access_key}, secretKey: {secret_key}")
                     upload_directory_to_s3(
@@ -236,66 +225,6 @@ def localDataExport(entity, json_data, fluxx, format):
     except Exception as e:
         print(f"Error creating folders and files for entity '{entity}': {e}")
         return False
-
-
-def sftp_put_dir(sftp, local_dir, remote_dir):
-    # Normalize the local directory path
-    local_dir = os.path.normpath(local_dir)
-
-    # Create remote directory if it does not exist
-    try:
-        sftp.mkdir(remote_dir)
-    except IOError:
-        pass  # Assume directory already exists
-
-    # Recursively upload files and directories
-    for root, dirs, files in os.walk(local_dir):
-
-        # Calculate the relative path from the local directory
-        rel_path = os.path.relpath(root, local_dir)
-        remote_path = os.path.join(remote_dir, rel_path).replace('\\', '/')
-
-        for dir_name in dirs:
-            remote_subdir = os.path.join(
-                remote_path, dir_name).replace(
-                '\\', '/')
-            try:
-                sftp.mkdir(remote_subdir)
-            except IOError:
-                pass
-
-        for file_name in files:
-            local_file = os.path.join(root, file_name)
-            remote_file = os.path.join(
-                remote_path, file_name).replace(
-                '\\', '/')
-            sftp.put(local_file, remote_file)
-            print(f"Uploaded {local_file} to {remote_file}")
-
-
-def send_directory_over_sftp(
-        hostname, username, password, local_dir, remote_dir):
-    try:
-        # Create an SSH client
-        ssh = paramiko.SSHClient()
-        ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-
-        # Connect to the server on port 22 (SFTP)
-        ssh.connect(hostname, port=22, username=username, password=password)
-
-        # Create an SFTP session from the SSH connection
-        sftp = ssh.open_sftp()
-
-        # Upload the directory recursively
-        sftp_put_dir(sftp, local_dir, remote_dir)
-
-        # Close the SFTP session and SSH connection
-        sftp.close()
-        ssh.close()
-
-        print(f"Directory {local_dir} successfully uploaded to {remote_dir}")
-    except Exception as e:
-        print(f"Error occurred: {e}")
 
 
 def upload_directory_to_s3(directory, bucket, access_key, secret_key):

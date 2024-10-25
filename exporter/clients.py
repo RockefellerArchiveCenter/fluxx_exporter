@@ -1,12 +1,15 @@
 import json
+import os
 from pathlib import Path
 
+import paramiko
 import requests
 
 from exporter.models import Column, Entity
 
 # TODO replace prints with logging
 # TODO clarify purpose of unused variables
+# TODO replace os with path
 
 
 class FluxxClient(object):
@@ -120,3 +123,62 @@ class FluxxClient(object):
         with open(Path(documents_path / document_name), 'wb') as file:
             for chunk in response.iter_content(chunk_size=8192):
                 file.write(chunk)
+
+
+class SFTPClient(object):
+
+    def __init__(self, config):
+
+        self.remote_dir = config.remotedir
+
+        # Create an SSH client
+        self.ssh = paramiko.SSHClient()
+        self.ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+
+        # Connect to the server on port 22 (SFTP)
+        self.ssh.connect(
+            config.hostname,
+            port=config.port,
+            username=config.username,
+            password=config.password)
+
+        # Create an SFTP session from the SSH connection
+        self.sftp = self.ssh.open_sftp()
+
+    def put_directory(self, local_dir):
+        # Normalize the local directory path
+        local_dir = os.path.normpath(local_dir)
+
+        # Create remote directory if it does not exist
+        try:
+            self.sftp.mkdir(self.remote_dir)
+        except IOError:
+            pass  # Assume directory already exists
+
+        # Recursively upload files and directories
+        for root, dirs, files in os.walk(local_dir):
+
+            # Calculate the relative path from the local directory
+            rel_path = os.path.relpath(root, local_dir)
+            remote_path = os.path.join(self.remote_dir, rel_path).replace('\\', '/')
+
+            for dir_name in dirs:
+                remote_subdir = os.path.join(
+                    remote_path, dir_name).replace(
+                    '\\', '/')
+                try:
+                    self.sftp.mkdir(remote_subdir)
+                except IOError:
+                    pass
+
+            for file_name in files:
+                local_file = os.path.join(root, file_name)
+                remote_file = os.path.join(
+                    remote_path, file_name).replace(
+                    '\\', '/')
+                self.sftp.put(local_file, remote_file)
+                print(f"Uploaded {local_file} to {remote_file}")
+
+    def close(self):
+        self.sftp.close()
+        self.ssh.close()
