@@ -29,10 +29,31 @@ class FluxxClientTests(TestCase):
     def test_init(self):
         pass
 
+    def test_authenticate(self):
+        pass
+
     def test_list_rows(self):
         pass
 
     def test_download_document(self):
+        pass
+
+
+class SFTPClientTests(TestCase):
+
+    def test_init(self):
+        pass
+
+    def test_put_directory(self):
+        pass
+
+
+class S3ClientTests(TestCase):
+
+    def test_init(self):
+        pass
+
+    def test_upload_directory(self):
         pass
 
 
