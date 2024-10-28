@@ -4,5 +4,6 @@
 __pycache__
 db.sqlite3
 media
+/venv
 
 fluxx_exporter/config.py
