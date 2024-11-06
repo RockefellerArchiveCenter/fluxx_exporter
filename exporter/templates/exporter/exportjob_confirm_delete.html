@@ -1,0 +1,12 @@
+{% extends 'exporter/main.html' %}
+
+{% block content %}
+
+<form method="post">{% csrf_token %}
+    <p>Are you sure you want to delete "{{ object.name }}"?</p>
+    {{ form }}
+    <button class="btn btn--md btn--navy" type="submit">Confirm</button>
+    <a href="{% url 'exportjob_detail' pk=object.pk %}" class="btn btn--md btn--navy">Cancel</a>
+</form>
+
+{% endblock %}

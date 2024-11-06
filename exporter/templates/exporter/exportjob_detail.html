@@ -1,0 +1,62 @@
+{% extends 'exporter/main.html' %}
+
+{% block content %}
+
+<h1>{{object.name}}</h1>
+
+<dl class="summary-list">
+    <div class="summary-list__row">
+        <dt class="summary-list__key">Fluxx Configuration</dt>
+        <dd class="summary-list__value">{{ object.fluxx_config }}</dd>
+    </div>
+    <div class="summary-list__row">
+        <dt class="summary-list__key">Export Location</dt>
+        <dd class="summary-list__value">{{ object.export_location }}</dd>
+    </div>
+    <div class="summary-list__row">
+        <dt class="summary-list__key">Export Format</dt>
+        <dd class="summary-list__value">{{ object.export_format }}</dd>
+    </div>
+    <div class="summary-list__row">
+        <dt class="summary-list__key">Filter String</dt>
+        <dd class="summary-list__value">{{ object.filter_string }}</dd>
+    </div>
+    {% if object.s3_config %}
+    <div class="summary-list__row">
+        <dt class="summary-list__key">S3 Configuration</dt>
+        <dd class="summary-list__value">{{ object.s3_config }}</dd>
+    </div>
+    {% endif %}
+    {% if object.sftp_config %}
+    <div class="summary-list__row">
+        <dt class="summary-list__key">SFTP Configuration</dt>
+        <dd class="summary-list__value">{{ object.sftp_config }}</dd>
+    </div>
+    {% endif %}
+  </dl>
+
+  <h2>Entities and Columns</h2>
+  <ul>
+    {% for entity in object.entity_set.all %}
+        {% if entity.include_in_export %}
+            <li>{{ entity.name }}</li>
+            <ul>
+            {% for column in entity.column_set.all %}
+                {% if column.include_in_export %}
+                <li>{{ column.name }}</li>
+                {% endif %}
+            {% endfor %}
+            </ul>
+        {% endif %}
+    {% endfor %}
+  </ul>
+
+<div class="flex" style="justify-content: space-between;">
+    <div>
+        <a class="btn btn--md btn--light-blue" href="{% url 'exportjob_update' pk=object.pk %}">Edit</a>
+    <a class="btn btn--md btn--orange" href="{% url 'exportjob_delete' pk=object.pk %}">Delete</a>
+    </div>
+    <a class="btn btn--md btn--navy" href="#">Run</a>
+</div>
+
+{% endblock %}

@@ -1,53 +1,87 @@
-import json
-from subprocess import run
+from django.urls import reverse_lazy
+from django.views.generic import DetailView, TemplateView
+from django.views.generic.edit import CreateView, DeleteView, UpdateView
 
-from django.http import JsonResponse
-from django.shortcuts import render
-from django.views.decorators.csrf import csrf_exempt
-
-from .models import Column, Entity
-
-# Create your views here.
+from .forms import ExportJobForm, ExportJobWithEntities
+from .models import Column, Entity, ExportJob
 
 
-@csrf_exempt
-def index(request):
-    entities = Entity.objects.all()
-    columns = Column.objects.all()
-    return render(request, 'exporter/index.html',
-                  {'entities': entities, 'columns': columns})
+class IndexView(TemplateView):
+    template_name = 'exporter/index.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["export_jobs"] = ExportJob.objects.all()
+        return context
 
 
-def about(request):
-    return render(request, 'exporter/about.html')
+class AboutView(TemplateView):
+    template_name = 'exporter/about.html'
 
 
-def filterhelp(request):
-    return render(request, 'exporter/filterhelp.html')
+class FilterHelpView(TemplateView):
+    template_name = 'exporter/filterhelp.html'
 
 
-@csrf_exempt
-def export_data(request):
-    if request.method == 'POST':
-        # Parse JSON data from the request body
-        data = json.loads(request.body)
-        checked_columns = data.get('checkedColumns', [])
-        filter_value = data.get('filter', '')
-        format_value = data.get('format', '')
-        relatedEntity = data.get('relatedEntity', [])
+class ExportJobView(DetailView):
+    model = ExportJob
 
-        # Process the checked columns and filter value as needed
-        print("Checked Columns:", checked_columns)
-        print("Filter Value:", filter_value)
-        print("Format value:", format_value)
-        print("Related Entity:", relatedEntity)
 
-        # Call the exportScript.py script with the data
-        run(["python", "exportScript.py", *checked_columns,
-            filter_value, format_value, *relatedEntity])
+class CreateExportJobView(CreateView):
+    model = ExportJob
+    template_name = 'exporter/exportjob_form.html'
+    form_class = ExportJobForm
 
-        # Return a success JSON response
-        return JsonResponse({'success': True})
-    else:
-        # Return a 400 Bad Request response if the request method is not POST
-        return JsonResponse({'error': 'Invalid request'}, status=400)
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['formset'] = ExportJobWithEntities(**self.get_form_kwargs())
+        return context
+
+    def form_valid(self, form):
+        context = self.get_context_data(form=form)
+        entities_formset = context['formset']
+        if entities_formset.is_valid():
+            # TODO validation should check that Entity is include_in_export is checked if any of the associated Columns have include_in_export checked
+            # TODO validation shoul check that an entity with include_in_export checked has at least one associated Column with include_in_export checked
+            response = super().form_valid(form)
+            for form in entities_formset:
+                # TODO handle related_entity
+                new_entity = Entity.objects.create(
+                    name=form.instance.name,
+                    include_in_export=form.instance.include_in_export,
+                    export_job=self.object)
+                entity = Entity.objects.get(pk=form.instance.id)
+                entity_columns = entity.column_set.all()
+                for column in entity_columns:
+                    Column.objects.create(
+                        name=column.name,
+                        include_in_export=column.include_in_export,
+                        entity=new_entity)
+            return response
+        else:
+            return super().form_invalid(form)
+
+
+class UpdateExportJobView(UpdateView):
+    model = ExportJob
+    template_name = 'exporter/exportjob_form.html'
+    form_class = ExportJobForm
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['formset'] = ExportJobWithEntities(**self.get_form_kwargs())
+        return context
+
+    def form_valid(self, form):
+        context = self.get_context_data(form=form)
+        entities_formset = context['formset']
+        if entities_formset.is_valid():
+            entities_formset.save()
+            return super().form_valid(form)
+        else:
+            return super().form_invalid(form)
+
+
+class DeleteExportJobView(DeleteView):
+    model = ExportJob
+    success_url = reverse_lazy('index')
