@@ -2,27 +2,31 @@ from django.core.management.base import BaseCommand, CommandError
 from exporter.models import Column as Column
 from exporter.models import Entity as Entity
 import csv
+from pathlib import Path
     
 class Command(BaseCommand):
-	help = "This command imports a fluxx entity csv and creates columns and entities from the Fluxx glossary csv file. The syntax is python manage.py input_csv filename"
+	help = "This command imports a fluxx entity csv and creates columns and entities from the Fluxx glossary csv file. The syntax is python manage.py input_csv path/to/filename"
 	
 	#require filename to be passed as an argument
-	#todo - allow paths as well
 	def add_arguments(self, parser):
-		parser.add_argument('file', type=str)
+		parser.add_argument('file_path', type=Path)
 
-	def test_csv(self, file):
-		try:
-			#todo - put a real csv test/validation here
-			dialect = csv.Sniffer().sniff(csvfile.read(1024))
-		except:
-			print("File does not appear to be a csv.")
+	#test for the attribute of Fluxx glossary csv having Fluxx Glossary in A1
+	def test_csv(self, file_path):
+		with open(file_path, newline='') as csvfile:
+			csvreader = csv.reader(csvfile)	
+			for row in csvreader:
+				if row[0] == 'Fluxx Glossary':
+					return True
+				else:
+					return False
 
 	def handle(self, *args, **options):
 
-		with open(options['file'], newline='') as csvfile:
-			self.test_csv(options['file']
-				)
+		with open(options['file_path'], newline='') as csvfile:
+			if self.test_csv(options['file_path']) == False:
+				print("File does not appear to be a Fluxx glossary csv.")
+				exit()
 
 			csvreader = csv.reader(csvfile)
 		    
