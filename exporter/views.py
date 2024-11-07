@@ -88,7 +88,7 @@ class DeleteExportJobView(DeleteView):
     success_url = reverse_lazy('index')
 
 
-class ExportJobRunView(DetailView):
+class RunExportJobView(DetailView):
     model = ExportJob
 
     def get(self, request, *args, **kwargs):
