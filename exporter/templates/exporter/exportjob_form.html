@@ -14,7 +14,11 @@
   {{ form.management_form }}
   {{ form.non_form_errors }}
 
-  {{form}}
+  {% for field in form %}
+    <div class="input">
+      {{ field.as_field_group }}
+    </div>
+  {% endfor %}
 
   <h2>Entities</h2>
 
