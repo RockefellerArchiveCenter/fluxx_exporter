@@ -2,6 +2,7 @@ from django.urls import reverse_lazy
 from django.views.generic import DetailView, TemplateView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
 
+from .exporter import Exporter
 from .forms import ExportJobForm, ExportJobWithEntities
 from .models import Column, Entity, ExportJob
 
@@ -85,3 +86,12 @@ class UpdateExportJobView(UpdateView):
 class DeleteExportJobView(DeleteView):
     model = ExportJob
     success_url = reverse_lazy('index')
+
+
+class ExportJobRunView(DetailView):
+    model = ExportJob
+
+    def get(self, request, *args, **kwargs):
+        export_job_id = int(request.get_full_path().rstrip('/').split('/')[-2])
+        Exporter(export_job_id).fluxx_export()
+        return super().get(request, *args, **kwargs)

@@ -47,15 +47,16 @@ class Exporter(object):
             entity_path.mkdir(exist_ok=True)
 
             filter_value = self.parse_filter(self.filter_string)
-            related_entity = self.parse_related_entities(entity.related_entities)
+            related_entity = self.parse_related_entities(entity.related_entities.all())
             results = fluxx_client.list_rows(
                 entity.name,
                 entity.column_set.all(),
-                filter=filter_value,
+                filter_value=filter_value,
                 related_entity=related_entity)
 
             for record in results:
-                record_path = (entity_path / record['id'])
+                record_path = (entity_path / str(record['id']))
+                record_path.mkdir()
                 self.save_data(record, self.export_format, record_path)
                 for doc_id in record.get('model_documents', []):
                     file_name, file_obj = fluxx_client.download_document(doc_id)
@@ -101,11 +102,12 @@ class Exporter(object):
             filter_parts (list): parsed filter.
         """
         filter_parts = None
-        try:
-            filter_parts = filter.split(' ', 2)
-            assert len(filter_parts) == 3
-        except AssertionError:
-            raise Exception(f"Could not parse filter value {filter}")
+        if filter:
+            try:
+                filter_parts = filter.split(' ', 2)
+                assert len(filter_parts) == 3
+            except AssertionError:
+                raise Exception(f"Could not parse filter value {filter}")
 
         return filter_parts
 

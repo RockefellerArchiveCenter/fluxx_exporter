@@ -16,7 +16,7 @@ class FluxxClient(object):
         # style = 'full'
         version = 'v2'
         base_url = base_url
-        self.session = self.authenticate(
+        self.authenticate(
             base_url,
             client_id,
             client_secret)
@@ -49,7 +49,7 @@ class FluxxClient(object):
         except BaseException:
             print("Could not find access token")
 
-    def list_rows(self, entity, columns, params={}, page=1, per_page=100):
+    def list_rows(self, entity, columns, filter_value=None, related_entity=None, page=1, per_page=100):
         """Function to return a list of some number of rows and pages relating to an entity (or table)
         Filters can be applied following the format: <entity> <logic> <condition>
         Example: amount_requested eq 10000
@@ -57,24 +57,25 @@ class FluxxClient(object):
         Filter logic will be requested and further documented at a later date
         """
 
+        params = {}
         # TODO pagination
 
         if page < 1:
             raise ValueError("Page integer must be greater than 0.")
-        print(f"columns: {json.dumps(columns)}")
+        print(f"columns: {json.dumps([c.name for c in columns])}")
         params.update({
-            'cols': json.dumps(columns),
+            'cols': json.dumps([c.name for c in columns]),
             'page': page,
             'per_page': per_page
         })
 
-        if filter:
-            params.update({'filter': json.dumps(filter)})
+        if filter_value:
+            params.update({'filter': json.dumps(filter_value)})
 
         try:
             resp = self.session.get(f"{self.api_url}{entity}", params=params)
             resp.raise_for_status()
-            return resp.json()['results']
+            return resp.json()['records'][entity]
         except Exception as e:
             raise Exception(f"Error fetching data: {resp.text}") from e
 

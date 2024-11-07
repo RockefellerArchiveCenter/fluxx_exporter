@@ -56,7 +56,7 @@
         <a class="btn btn--md btn--light-blue" href="{% url 'exportjob_update' pk=object.pk %}">Edit</a>
     <a class="btn btn--md btn--orange" href="{% url 'exportjob_delete' pk=object.pk %}">Delete</a>
     </div>
-    <a class="btn btn--md btn--navy" href="#">Run</a>
+    <a class="btn btn--md btn--navy" href="{% url 'exportjob_run' pk=object.pk %}">Run</a>
 </div>
 
 {% endblock %}

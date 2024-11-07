@@ -109,7 +109,7 @@ class ExportTests(TestCase):
         mock_parse_related.assert_called_once()
 
         self.assertEqual(mock_list_rows.call_args[0][0], self.entity.name)
-        self.assertEqual(mock_list_rows.call_args[1]['filter'], mock_parse_filter.return_value)
+        self.assertEqual(mock_list_rows.call_args[1]['filter_value'], mock_parse_filter.return_value)
         self.assertEqual(mock_list_rows.call_args[1]['related_entity'], mock_parse_related.return_value)
         self.assertQuerySetEqual(mock_list_rows.call_args[0][1], self.entity.column_set.all())
         mock_list_rows.assert_called_once()
