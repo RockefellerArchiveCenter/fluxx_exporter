@@ -50,7 +50,7 @@ class Exporter(object):
             related_entity = self.parse_related_entities(entity.related_entities.all())
             results = fluxx_client.list_rows(
                 entity.name,
-                entity.column_set.all(),
+                [c.name for c in entity.column_set.all()],
                 filter_value=filter_value,
                 related_entity=related_entity)
 
