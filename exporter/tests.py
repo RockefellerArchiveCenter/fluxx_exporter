@@ -7,10 +7,12 @@ import requests
 import responses
 from django.core.management import call_command
 from django.test import SimpleTestCase, TestCase
+from django.urls import reverse
 from moto import mock_aws
 
 from .clients import FluxxClient, S3Client
 from .exporter import Exporter
+from .forms import ExportJobWithEntities
 from .models import (Column, Entity, ExportJob, FluxxConfig, S3Config,
                      SFTPConfig)
 
@@ -286,17 +288,49 @@ class FormTests(TestCase):
 
 class ViewTests(TestCase):
 
+    def setUp(self):
+        self.fluxx_config = FluxxConfig.objects.create(
+            name='Test Fluxx Config',
+            base_url='https://fluxx.io',
+            client_id="123456789",
+            client_secret="abcdefg"
+        )
+        self.export_job = ExportJob.objects.create(
+            name='Test Export',
+            fluxx_config=self.fluxx_config,
+            export_format='json',
+            export_location='/tmp/exports/',
+        )
+        self.entity = Entity.objects.create(
+            name='grant_request',
+            export_job=self.export_job
+        )
+        self.column = Column.objects.create(
+            name='organization_name',
+            entity=self.entity
+        )
+
     def test_create_export_job_view(self):
-        # Test custom behaviors in get_context_data and form_valid
-        pass
+        response = self.client.get(reverse('exportjob_create'))
+        self.assertTrue(isinstance(response.context['formset'], ExportJobWithEntities))
+
+        # TODO add test for post request
+        # self.client.post(url, data, content_type="application/x-www-form-urlencoded")
 
     def test_update_export_job_view(self):
-        # Test custom behaviors in get_context_data and form_valid
-        pass
+        response = self.client.get(reverse('exportjob_update', kwargs={'pk': self.export_job.pk}))
+        self.assertTrue(isinstance(response.context['formset'], ExportJobWithEntities))
 
-    def test_run_export_job_view(self):
-        # Test custom behavior in get
-        pass
+        # TODO add test for post request
+        # self.client.post(url, data, content_type="application/x-www-form-urlencoded")
+
+    @patch('exporter.exporter.Exporter.fluxx_export')
+    @patch('exporter.exporter.Exporter.__init__')
+    def test_run_export_job_view(self, mock_init, mock_export):
+        mock_init.return_value = None
+        self.client.get(reverse('exportjob_run', kwargs={'pk': self.export_job.pk}))
+        mock_init.assert_called_once_with(self.export_job.pk)
+        mock_export.assert_called_once_with()
 
 
 class ManagementCommandTests(SimpleTestCase):
