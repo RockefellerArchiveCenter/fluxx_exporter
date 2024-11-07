@@ -1,6 +1,7 @@
+import json
 from pathlib import Path
 from shutil import rmtree
-from unittest.mock import patch
+from unittest.mock import call, patch
 
 import botocore
 import requests
@@ -113,7 +114,7 @@ class ExportTests(TestCase):
         self.assertEqual(mock_list_rows.call_args[0][0], self.entity.name)
         self.assertEqual(mock_list_rows.call_args[1]['filter_value'], mock_parse_filter.return_value)
         self.assertEqual(mock_list_rows.call_args[1]['related_entity'], mock_parse_related.return_value)
-        self.assertQuerySetEqual(mock_list_rows.call_args[0][1], self.entity.column_set.all())
+        self.assertQuerySetEqual(mock_list_rows.call_args[0][1], [c.name for c in self.entity.column_set.all()])
         mock_list_rows.assert_called_once()
 
         mock_save_data.assert_called_once_with(
@@ -227,24 +228,79 @@ class ExportTests(TestCase):
 
 class FluxxClientTests(TestCase):
 
+    def setUp(self):
+        self.access_token = "123456789abcdefg"
+        self.base_url = "https://fluxx.io"
+        self.client_id = "123456789"
+        self.client_secret = "987654321"
+
     @patch('exporter.clients.FluxxClient.authenticate')
     def test_init(self, mock_authenticate):
-        base_url = "https://fluxx.io"
-        client_id = "123456789"
-        client_secret = "987654321"
-        client = FluxxClient(base_url, client_id, client_secret)
-        mock_authenticate.assert_called_once_with(base_url, client_id, client_secret)
-        self.assertTrue(client.api_url.startswith(base_url))
+        client = FluxxClient(self.base_url, self.client_id, self.client_secret)
+        mock_authenticate.assert_called_once_with(self.base_url, self.client_id, self.client_secret)
+        self.assertTrue(client.api_url.startswith(self.base_url))
 
-    def test_authenticate(self):
-        pass
+    @patch('requests.Session.post')
+    def test_authenticate(self, mock_post):
+        """Asserts authentication is called correctly."""
 
-    def test_list_rows(self):
-        # Test pagination
-        pass
+        mock_post.return_value.json.return_value = {"access_token": self.access_token}
+        client = FluxxClient(self.base_url, self.client_id, self.client_secret)
+        mock_post.assert_called_once_with(
+            f'{self.base_url}/oauth/token',
+            data={
+                'grant_type': 'client_credentials',
+                'client_id': self.client_id,
+                'client_secret': self.client_secret}
+        )
+        self.assertIsInstance(client.session, requests.Session)
+        self.assertEqual(client.session.headers['Authorization'], f'Bearer {self.access_token}')
 
-    def test_download_document(self):
-        pass
+    @patch('requests.Session.post')
+    @patch('requests.Session.get')
+    def test_list_rows(self, mock_get, mock_post):
+        """Asserts calls to Fluxx API and correct return value."""
+
+        mock_post.return_value.json.return_value = {"access_token": self.access_token}
+        client = FluxxClient(self.base_url, self.client_id, self.client_secret)
+
+        entity_name = 'grant_request'
+        column_names = ['id, model_documents', 'grant_id', 'grantee_owner_name']
+        mock_get.return_value.json.return_value = {
+            'records': {
+                entity_name: [
+                    {'id': 22617997, 'model_documents': [11218402, 11434734, 11434735], 'grant_id': 'R-2024-00003', 'grantee_owner_name': 'De Witt, Austin'},
+                    {'id': 22618119, 'grant_id': 'R-2024-00006'},
+                    {'id': 22674311, 'grant_id': 'G-2024-00008', 'grantee_owner_name': 'De Witt, Austin'}
+                ]
+            }, 'total_pages': 1, 'total_entries': 3, 'current_page': 1, 'per_page': 100}
+        result = client.list_rows(entity_name, column_names)
+        mock_get.assert_called_once_with(
+            f'{self.base_url}/api/rest/v2/grant_request', params={'cols': json.dumps(column_names), 'page': 1, 'per_page': 100}
+        )
+        self.assertIsInstance(result, list)
+        self.assertEqual(len(result), 3)
+
+    @patch('requests.Session.post')
+    @patch('requests.Session.get')
+    def test_download_document(self, mock_get, mock_post):
+        """Asserts calls to Fluxx API and correct return from function."""
+
+        mock_post.return_value.json.return_value = {"access_token": self.access_token}
+        client = FluxxClient(self.base_url, self.client_id, self.client_secret)
+
+        document_id = 11218402
+        file_name = 'TestLineItems.csv'
+        mock_get.return_value.json.return_value = {'model_document': {'id': document_id, 'document_file_name': file_name}}
+        doc = client.download_document(document_id)
+        mock_get.assert_has_calls([
+            call(f'{self.base_url}/api/rest/v2/model_document/{document_id}', params={'cols': '["document_file_name"]'}),
+            call().json(),
+            call(f'{self.base_url}/api/rest/v2/model_document_download/{document_id}', stream=True)]
+        )
+        self.assertIsInstance(doc, tuple)
+        self.assertEqual(len(doc), 2)
+        self.assertEqual(doc[0], file_name)
 
 
 class SFTPClientTests(TestCase):
@@ -262,7 +318,7 @@ class S3ClientTests(TestCase):
         """Assert attributes are set as expected."""
         client = S3Client("bucket", "access_key_id", "secret_key", "us-east-1")
         self.assertEqual(client.bucket, "bucket")
-        self.assertTrue(isinstance(client.s3_client, botocore.client.BaseClient))
+        self.assertIsInstance(client.s3_client, botocore.client.BaseClient)
 
     @mock_aws
     def test_upload_directory(self):
@@ -331,7 +387,7 @@ class ViewTests(TestCase):
     def test_create_export_job_view(self):
         """Assert custom behavior in get_context_data and is_valid."""
         response = self.client.get(reverse('exportjob_create'))
-        self.assertTrue(isinstance(response.context['formset'], ExportJobWithEntities))
+        self.assertIsInstance(response.context['formset'], ExportJobWithEntities)
 
         initial_entities = Entity.objects.all().count()
         initial_columns = Column.objects.all().count()
@@ -343,7 +399,7 @@ class ViewTests(TestCase):
         """Assert custom behavior in get_context_data."""
 
         response = self.client.get(reverse('exportjob_update', kwargs={'pk': self.export_job.pk}))
-        self.assertTrue(isinstance(response.context['formset'], ExportJobWithEntities))
+        self.assertIsInstance(response.context['formset'], ExportJobWithEntities)
 
         initial_entities = Entity.objects.all().count()
         initial_columns = Column.objects.all().count()
