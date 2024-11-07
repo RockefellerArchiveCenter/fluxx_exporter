@@ -11,7 +11,7 @@ from django.urls import reverse
 from moto import mock_aws
 
 from .clients import FluxxClient, S3Client
-from .exporter import Exporter
+from .exporters import Exporter
 from .forms import ExportJobWithEntities
 from .models import (Column, Entity, ExportJob, FluxxConfig, S3Config,
                      SFTPConfig)
@@ -77,10 +77,10 @@ class ExportTests(TestCase):
             Exporter(100)
         self.assertIn("100", str(e.exception))
 
-    @patch('exporter.exporter.Exporter.parse_filter')
-    @patch('exporter.exporter.Exporter.parse_related_entities')
-    @patch('exporter.exporter.Exporter.save_data')
-    @patch('exporter.exporter.Exporter.save_document')
+    @patch('exporter.exporters.Exporter.parse_filter')
+    @patch('exporter.exporters.Exporter.parse_related_entities')
+    @patch('exporter.exporters.Exporter.save_data')
+    @patch('exporter.exporters.Exporter.save_document')
     @patch('exporter.clients.FluxxClient.__init__')
     @patch('exporter.clients.FluxxClient.list_rows')
     @patch('exporter.clients.FluxxClient.download_document')
@@ -162,9 +162,9 @@ class ExportTests(TestCase):
             exporter.parse_filter("foo eq")
         self.assertIn("foo eq", str(e.exception))
 
-    @patch('exporter.exporter.Exporter.write_csv')
-    @patch('exporter.exporter.Exporter.write_json')
-    @patch('exporter.exporter.Exporter.write_xml')
+    @patch('exporter.exporters.Exporter.write_csv')
+    @patch('exporter.exporters.Exporter.write_json')
+    @patch('exporter.exporters.Exporter.write_xml')
     def test_save_data(self, mock_xml, mock_json, mock_csv):
         record = {}
         export_path = Path(self.export_job.export_location)
@@ -324,8 +324,8 @@ class ViewTests(TestCase):
         # TODO add test for post request
         # self.client.post(url, data, content_type="application/x-www-form-urlencoded")
 
-    @patch('exporter.exporter.Exporter.fluxx_export')
-    @patch('exporter.exporter.Exporter.__init__')
+    @patch('exporter.exporters.Exporter.fluxx_export')
+    @patch('exporter.exporters.Exporter.__init__')
     def test_run_export_job_view(self, mock_init, mock_export):
         mock_init.return_value = None
         self.client.get(reverse('exportjob_run', kwargs={'pk': self.export_job.pk}))
@@ -335,10 +335,10 @@ class ViewTests(TestCase):
 
 class ManagementCommandTests(SimpleTestCase):
 
-    @patch('exporter.exporter.Exporter.fluxx_export')
-    @patch('exporter.exporter.Exporter.__init__')
+    @patch('exporter.exporters.Exporter.fluxx_export')
+    @patch('exporter.exporters.Exporter.__init__')
     def test_fluxx_export_command(self, mock_init, mock_export):
-        """Assert ExportJob ID is passed to method and correc methods are called."""
+        """Assert ExportJob ID is passed to method and correct methods are called."""
         mock_init.return_value = None
         call_command("fluxx_export", 1)
         mock_init.assert_called_once_with(1)

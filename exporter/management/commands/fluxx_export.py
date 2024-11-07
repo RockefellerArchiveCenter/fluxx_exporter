@@ -1,6 +1,6 @@
 from django.core.management.base import BaseCommand
 
-from exporter.exporter import Exporter
+from exporter.exporters import Exporter
 
 
 class Command(BaseCommand):

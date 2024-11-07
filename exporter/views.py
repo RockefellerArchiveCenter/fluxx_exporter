@@ -2,7 +2,7 @@ from django.urls import reverse_lazy
 from django.views.generic import DetailView, TemplateView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
 
-from .exporter import Exporter
+from .exporters import Exporter
 from .forms import ExportJobForm, ExportJobWithEntities
 from .models import Column, Entity, ExportJob
 
