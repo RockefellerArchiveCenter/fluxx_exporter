@@ -1,3 +1,4 @@
+from django.forms import ValidationError
 from django.forms.models import (BaseInlineFormSet, ModelForm,
                                  inlineformset_factory)
 
@@ -28,10 +29,37 @@ class BaseEntitiesWithColumns(BaseInlineFormSet):
             data=form.data if form.is_bound else None,
             files=form.files if form.is_bound else None)
 
+    def clean(self):
+        """Custom validation to ensure correct export of columns and entities."""
+
+        super().clean()
+
+        for form in self.forms:
+            if form.instance.include_in_export:
+                if hasattr(form, "nested"):
+                    if not any([c.instance.include_in_export for c in form.nested]):
+                        raise ValidationError('You must add at least one field to this column.')
+
+            else:
+                if hasattr(form, "nested"):
+                    if any([c.instance.include_in_export for c in form.nested]):
+                        raise ValidationError('You cannot export fields without also exporting the parent column.')
+
+    def is_valid(self):
+        """Validate the nested formsets."""
+
+        result = super().is_valid()
+
+        if self.is_bound:
+            for form in self.forms:
+                if hasattr(form, "nested"):
+                    result = result and form.nested.is_valid()
+
+        return result
+
     def save(self, commit=True):
-        """
-        Also save the nested formsets.
-        """
+        """Save the nested formsets."""
+
         result = super().save(commit=commit)
 
         for form in self.forms:

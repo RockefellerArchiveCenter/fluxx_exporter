@@ -42,8 +42,6 @@ class CreateExportJobView(CreateView):
         context = self.get_context_data(form=form)
         entities_formset = context['formset']
         if entities_formset.is_valid():
-            # TODO validation should check that Entity is include_in_export is checked if any of the associated Columns have include_in_export checked
-            # TODO validation shoul check that an entity with include_in_export checked has at least one associated Column with include_in_export checked
             response = super().form_valid(form)
             for form in entities_formset:
                 # TODO handle related_entity
@@ -51,12 +49,10 @@ class CreateExportJobView(CreateView):
                     name=form.instance.name,
                     include_in_export=form.instance.include_in_export,
                     export_job=self.object)
-                entity = Entity.objects.get(pk=form.instance.id)
-                entity_columns = entity.column_set.all()
-                for column in entity_columns:
+                for column in form.nested:
                     Column.objects.create(
-                        name=column.name,
-                        include_in_export=column.include_in_export,
+                        name=column.instance.name,
+                        include_in_export=column.instance.include_in_export,
                         entity=new_entity)
             return response
         else:
