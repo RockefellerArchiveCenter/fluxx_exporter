@@ -309,24 +309,54 @@ class ViewTests(TestCase):
             name='organization_name',
             entity=self.entity
         )
+        self.form_data = {
+            'name': 'asdfa',
+            'fluxx_config': self.fluxx_config.id,
+            'export_location': 'asdf',
+            'export_format': 'json',
+            'entity_set-TOTAL_FORMS': '1',
+            'entity_set-INITIAL_FORMS': '1',
+            'entity_set-MIN_NUM_FORMS': '0',
+            'entity_set-MAX_NUM_FORMS': '1000',
+            'entity_set-0-id': self.entity.id,
+            'entity_set-0-include_in_export': 'on',
+            'column_set-TOTAL_FORMS': '1',
+            'column_set-INITIAL_FORMS': '1',
+            'column_set-MIN_NUM_FORMS': '0',
+            'column_set-MAX_NUM_FORMS': '1000',
+            'column_set-0-id': self.column.id,
+            'column_set-0-include_in_export': 'on',
+        }
 
     def test_create_export_job_view(self):
+        """Assert custom behavior in get_context_data and is_valid."""
         response = self.client.get(reverse('exportjob_create'))
         self.assertTrue(isinstance(response.context['formset'], ExportJobWithEntities))
 
-        # TODO add test for post request
-        # self.client.post(url, data, content_type="application/x-www-form-urlencoded")
+        initial_entities = Entity.objects.all().count()
+        initial_columns = Column.objects.all().count()
+        response = self.client.post(reverse('exportjob_create'), self.form_data)
+        self.assertEqual(Entity.objects.all().count(), initial_entities * 2)
+        self.assertEqual(Column.objects.all().count(), initial_columns * 2)
 
     def test_update_export_job_view(self):
+        """Assert custom behavior in get_context_data."""
+
         response = self.client.get(reverse('exportjob_update', kwargs={'pk': self.export_job.pk}))
         self.assertTrue(isinstance(response.context['formset'], ExportJobWithEntities))
 
-        # TODO add test for post request
-        # self.client.post(url, data, content_type="application/x-www-form-urlencoded")
+        initial_entities = Entity.objects.all().count()
+        initial_columns = Column.objects.all().count()
+        response = self.client.post(reverse('exportjob_update', kwargs={'pk': self.export_job.pk}), self.form_data)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(Entity.objects.all().count(), initial_entities)
+        self.assertEqual(Column.objects.all().count(), initial_columns)
 
     @patch('exporter.exporters.Exporter.fluxx_export')
     @patch('exporter.exporters.Exporter.__init__')
     def test_run_export_job_view(self, mock_init, mock_export):
+        """Assert view calls Exporter class and fluxx_export method with correct arguments."""
+
         mock_init.return_value = None
         self.client.get(reverse('exportjob_run', kwargs={'pk': self.export_job.pk}))
         mock_init.assert_called_once_with(self.export_job.pk)
@@ -339,6 +369,7 @@ class ManagementCommandTests(SimpleTestCase):
     @patch('exporter.exporters.Exporter.__init__')
     def test_fluxx_export_command(self, mock_init, mock_export):
         """Assert ExportJob ID is passed to method and correct methods are called."""
+
         mock_init.return_value = None
         call_command("fluxx_export", 1)
         mock_init.assert_called_once_with(1)

@@ -33,6 +33,10 @@ class CreateExportJobView(CreateView):
     template_name = 'exporter/exportjob_form.html'
     form_class = ExportJobForm
 
+    def post(self, request, *args, **kwargs):
+        # print(request.POST)
+        return super().post(request, *args, **kwargs)
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['formset'] = ExportJobWithEntities(**self.get_form_kwargs())
@@ -44,7 +48,6 @@ class CreateExportJobView(CreateView):
         if entities_formset.is_valid():
             response = super().form_valid(form)
             for form in entities_formset:
-                # TODO handle related_entity
                 new_entity = Entity.objects.create(
                     name=form.instance.name,
                     include_in_export=form.instance.include_in_export,
