@@ -6,6 +6,7 @@ from unittest.mock import call, patch
 import botocore
 import requests
 import responses
+from django.contrib.messages import ERROR, SUCCESS, get_messages
 from django.core.exceptions import ValidationError
 from django.core.management import call_command
 from django.test import SimpleTestCase, TestCase
@@ -15,8 +16,7 @@ from moto import mock_aws
 from .clients import FluxxClient, S3Client
 from .exporters import Exporter
 from .forms import EntityColumnFormset, ExportJobWithEntities
-from .models import (Column, Entity, ExportJob, FluxxConfig, S3Config,
-                     SFTPConfig)
+from .models import Column, Entity, ExportJob, FluxxConfig, S3Config
 
 
 class ExportTests(TestCase):
@@ -35,17 +35,11 @@ class ExportTests(TestCase):
             secret_key='987654321',
             region='us-east-1'
         )
-        self.sftp_config = SFTPConfig.objects.create(
-            host='localhost',
-            username='admin',
-            password='password'
-        )
         self.export_job = ExportJob.objects.create(
             name='Test Export',
             fluxx_config=self.fluxx_config,
             export_format='json',
             export_location='/tmp/exports/',
-            sftp_config=self.sftp_config,
             s3_config=self.s3_config,
         )
         self.entity = Entity.objects.create(
@@ -71,7 +65,6 @@ class ExportTests(TestCase):
         self.assertEqual(exporter.export_format, self.export_job.export_format)
         self.assertEqual(exporter.export_location, self.export_job.export_location)
         self.assertEqual(exporter.s3_config, self.export_job.s3_config)
-        self.assertEqual(exporter.sftp_config, self.export_job.sftp_config)
 
         """Missing export job throws a useful exception."""
         ExportJob.objects.all().delete()
@@ -88,18 +81,16 @@ class ExportTests(TestCase):
     @patch('exporter.clients.FluxxClient.download_document')
     @patch('exporter.clients.S3Client.__init__')
     @patch('exporter.clients.S3Client.upload_directory')
-    @patch('exporter.clients.SFTPClient.__init__')
-    @patch('exporter.clients.SFTPClient.upload_directory')
-    @patch('exporter.clients.SFTPClient.close')
-    def test_fluxx_export(self, mock_sftp_close, mock_sftp_upload, mock_sftp_init, mock_s3_upload, mock_s3_init, mock_download_doc, mock_list_rows, mock_fluxx, mock_save_document, mock_save_data, mock_parse_related, mock_parse_filter):
+    def test_fluxx_export(self, mock_s3_upload, mock_s3_init, mock_download_doc, mock_list_rows, mock_fluxx, mock_save_document, mock_save_data, mock_parse_related, mock_parse_filter):
         """Assert main method calls submethods with correct args"""
+
+        # TODO test exception handling
         record_id = "12345"
         export_dir = Path(self.export_job.export_location, self.entity.name, record_id)
         model_doc_id = "12345"
         download_response = (1, 2)
         mock_fluxx.return_value = None
         mock_download_doc.return_value = download_response
-        mock_sftp_init.return_value = None
         mock_s3_init.return_value = None
         mock_list_rows.return_value = [{"id": record_id, 'model_documents': [model_doc_id]}]
 
@@ -126,15 +117,6 @@ class ExportTests(TestCase):
         mock_save_document.assert_called_once_with(*download_response, export_dir)
 
         mock_download_doc.assert_called_once_with(model_doc_id)
-
-        mock_sftp_init.assert_called_once_with(
-            self.sftp_config.host,
-            self.sftp_config.port,
-            self.sftp_config.username,
-            self.sftp_config.password,
-            self.sftp_config.remote_dir)
-        mock_sftp_upload.assert_called_once_with(export_dir)
-        mock_sftp_close.assert_called_once_with()
 
         mock_s3_init.assert_called_once_with(
             self.s3_config.bucket,
@@ -304,15 +286,6 @@ class FluxxClientTests(TestCase):
         self.assertEqual(doc[0], file_name)
 
 
-class SFTPClientTests(TestCase):
-
-    def test_init(self):
-        pass
-
-    def test_upload_directory(self):
-        pass
-
-
 class S3ClientTests(TestCase):
 
     def test_init(self):
@@ -472,9 +445,24 @@ class ViewTests(TestCase):
         """Assert view calls Exporter class and fluxx_export method with correct arguments."""
 
         mock_init.return_value = None
-        self.client.get(reverse('exportjob_run', kwargs={'pk': self.export_job.pk}))
+        mock_export.return_value = True, None
+        resp = self.client.get(reverse('exportjob_run', kwargs={'pk': self.export_job.pk}))
         mock_init.assert_called_once_with(self.export_job.pk)
         mock_export.assert_called_once_with()
+        self.assertEqual(resp.status_code, 200)
+        success_messages = list(get_messages(resp.wsgi_request))
+        self.assertEqual(len(success_messages), 1)
+        self.assertEqual(success_messages[0].level, SUCCESS)
+        self.assertEqual(str(success_messages[0]), 'Export completed successfully.')
+
+        error = 'This is a detailed error message'
+        mock_export.return_value = False, error
+        resp = self.client.get(reverse('exportjob_run', kwargs={'pk': self.export_job.pk}))
+        self.assertEqual(resp.status_code, 200)
+        error_messages = list(get_messages(resp.wsgi_request))
+        self.assertEqual(len(error_messages), 1)
+        self.assertEqual(error_messages[0].level, ERROR)
+        self.assertIn(error, str(error_messages[0]))
 
 
 class ManagementCommandTests(SimpleTestCase):

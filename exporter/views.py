@@ -1,4 +1,6 @@
+from django.contrib import messages
 from django.urls import reverse_lazy
+from django.utils.safestring import mark_safe
 from django.views.generic import DetailView, TemplateView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
 
@@ -88,5 +90,9 @@ class RunExportJobView(DetailView):
 
     def get(self, request, *args, **kwargs):
         export_job_id = int(request.get_full_path().rstrip('/').split('/')[-2])
-        Exporter(export_job_id).fluxx_export()
+        result, error = Exporter(export_job_id).fluxx_export()
+        if result:
+            messages.add_message(request, messages.SUCCESS, 'Export completed successfully.')
+        else:
+            messages.add_message(request, messages.ERROR, mark_safe(f'Export encountered an error.<br/><br/>{error}'))
         return super().get(request, *args, **kwargs)

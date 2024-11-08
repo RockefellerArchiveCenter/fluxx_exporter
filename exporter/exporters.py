@@ -1,11 +1,12 @@
 import csv
 import json
+import traceback
 import xml.etree.ElementTree as ET
 from pathlib import Path
 
 from django.core.exceptions import ObjectDoesNotExist
 
-from .clients import FluxxClient, S3Client, SFTPClient
+from .clients import FluxxClient, S3Client
 from .models import ExportJob
 
 # TODO replace prints with logging
@@ -37,58 +38,49 @@ class Exporter(object):
 
     def fluxx_export(self):
         """Exports data and documents from a Fluxx instance."""
-        fluxx_client = FluxxClient(
-            self.fluxx_config.base_url,
-            self.fluxx_config.client_id,
-            self.fluxx_config.client_secret)
+        try:
+            fluxx_client = FluxxClient(
+                self.fluxx_config.base_url,
+                self.fluxx_config.client_id,
+                self.fluxx_config.client_secret)
 
-        for entity in self.entities:
-            entity_path = (self.export_path / entity.name)
-            entity_path.mkdir(exist_ok=True)
+            for entity in self.entities:
+                entity_path = (self.export_path / entity.name)
+                entity_path.mkdir(exist_ok=True)
 
-            filter_value = self.parse_filter(self.filter_string)
-            related_entity = self.parse_related_entities(entity.related_entities.all())
-            results = fluxx_client.list_rows(
-                entity.name,
-                [c.name for c in entity.column_set.all()],
-                filter_value=filter_value,
-                related_entity=related_entity)
+                filter_value = self.parse_filter(self.filter_string)
+                related_entity = self.parse_related_entities(entity.related_entities.all())
+                results = fluxx_client.list_rows(
+                    entity.name,
+                    [c.name for c in entity.column_set.all()],
+                    filter_value=filter_value,
+                    related_entity=related_entity)
 
-            for record in results:
-                record_path = (entity_path / str(record['id']))
-                record_path.mkdir()
-                self.save_data(record, self.export_format, record_path)
-                for doc_id in record.get('model_documents', []):
-                    file_name, file_obj = fluxx_client.download_document(doc_id)
-                    self.save_document(file_name, file_obj, record_path)
+                for record in results:
+                    record_path = (entity_path / str(record['id']))
+                    record_path.mkdir()
+                    self.save_data(record, self.export_format, record_path)
+                    for doc_id in record.get('model_documents', []):
+                        file_name, file_obj = fluxx_client.download_document(doc_id)
+                        self.save_document(file_name, file_obj, record_path)
 
-            # TODO do we want to first save everything to disk and then try uploading?
-                if self.sftp_config:
-                    try:
-                        sftp_client = SFTPClient(
-                            self.sftp_config.host,
-                            self.sftp_config.port,
-                            self.sftp_config.username,
-                            self.sftp_config.password,
-                            self.sftp_config.remote_dir)
-                        sftp_client.upload_directory(record_path)
-                        sftp_client.close()
-                    except Exception as e:
-                        print(f"Exception while retrieving SFTP configuration: {e}")
-                        pass
-
-                if self.s3_config:
-                    try:
-                        s3_client = S3Client(
-                            self.s3_config.bucket,
-                            self.s3_config.access_key_id,
-                            self.s3_config.secret_key,
-                            self.s3_config.region,)
-                        s3_client.upload_directory(record_path)
-                    except Exception as e:
-                        print(
-                            f"Exception while retrieving Amazon S3 Bucket configuration: {e}")
-                        pass
+                    if self.s3_config:
+                        try:
+                            s3_client = S3Client(
+                                self.s3_config.bucket,
+                                self.s3_config.access_key_id,
+                                self.s3_config.secret_key,
+                                self.s3_config.region,)
+                            s3_client.upload_directory(record_path)
+                        except Exception as e:
+                            # TODO raise meaniungful exception
+                            print(
+                                f"Exception while retrieving Amazon S3 Bucket configuration: {e}")
+                            pass
+            return True, None
+        except Exception as err:
+            tb = '<br/>'.join(traceback.format_exception(err)[:-1])
+            return False, f'<b>{str(err)}</b><br/><br/>{tb}'
 
     def parse_filter(self, filter):
         """Split the filter string into components.
