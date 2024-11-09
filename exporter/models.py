@@ -1,13 +1,66 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.urls import reverse
 
 
 class User(AbstractUser):
     pass
 
 
+class FluxxConfig(models.Model):
+    name = models.CharField(max_length=100)
+    base_url = models.CharField(max_length=255)
+    client_id = models.CharField(max_length=100)
+    client_secret = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.name
+
+
+class SFTPConfig(models.Model):
+    name = models.CharField(max_length=100, default='SFTP Config')
+    host = models.CharField(max_length=100)
+    port = models.IntegerField(default=22)
+    username = models.CharField(max_length=100)
+    password = models.CharField(max_length=100)
+    remote_dir = models.CharField(max_length=250, default='.')
+
+    def __str__(self):
+        return self.name
+
+
+class S3Config(models.Model):
+    name = models.CharField(max_length=100, default='S3 Config')
+    bucket = models.CharField(max_length=100)
+    access_key_id = models.CharField(max_length=100)
+    secret_key = models.CharField(max_length=100)
+    region = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.name
+
+
+class ExportJob(models.Model):
+    name = models.CharField(max_length=255)
+    fluxx_config = models.ForeignKey(FluxxConfig, on_delete=models.CASCADE)
+    export_location = models.CharField(max_length=255)
+    export_format = models.CharField(max_length=10, choices=[('json', 'JSON'), ('xml', 'XML'), ('csv', 'CSV')])
+    filter_string = models.CharField(max_length=1000, null=True, blank=True)
+    s3_config = models.ForeignKey(S3Config, on_delete=models.SET_NULL, null=True, blank=True)
+    sftp_config = models.ForeignKey(SFTPConfig, on_delete=models.SET_NULL, null=True, blank=True)
+
+    def get_absolute_url(self):
+        return reverse('exportjob_detail', kwargs={'pk': self.pk})
+
+
 class Entity(models.Model):
     name = models.CharField(max_length=100)
+    include_in_export = models.BooleanField(default=False)
+    export_job = models.ForeignKey(
+        ExportJob,
+        null=True,
+        blank=True,
+        on_delete=models.CASCADE)
     related_entity = models.ForeignKey(
         'self',
         null=True,
@@ -22,39 +75,7 @@ class Entity(models.Model):
 class Column(models.Model):
     entity = models.ForeignKey(Entity, on_delete=models.CASCADE)
     name = models.CharField(max_length=100)
-
-    def __str__(self):
-        return self.name
-
-
-class FluxxConfig(models.Model):
-    name = models.CharField(max_length=100)
-    instance = models.CharField(max_length=100)
-    # domain = models.CharField(max_length=100)
-    # extention = models.CharField(max_length=10)
-    clientId = models.CharField(max_length=100)
-    clientSecret = models.CharField(max_length=100)
-
-    def __str__(self):
-        return self.name
-
-
-class sftpConfig(models.Model):
-    name = models.CharField(max_length=100, default='SFTP Config')
-    host = models.CharField(max_length=100)
-    username = models.CharField(max_length=100)
-    password = models.CharField(max_length=100)
-    directory = models.CharField(max_length=250, default='.')
-
-    def __str__(self):
-        return self.name
-
-
-class s3Config(models.Model):
-    name = models.CharField(max_length=100, default='S3 Config')
-    bucket = models.CharField(max_length=100)
-    accessKey = models.CharField(max_length=100)
-    secretKey = models.CharField(max_length=100)
+    include_in_export = models.BooleanField(default=False)
 
     def __str__(self):
         return self.name
