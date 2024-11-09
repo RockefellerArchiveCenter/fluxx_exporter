@@ -1,108 +1,25 @@
 
 {% extends 'exporter/main.html' %}
 
-    {% block content %}
+{% block content %}
 
-    <table>
-        <tr>
-            <th>Entity</th>
-        </tr>
-        {% for entity in entities %}
-            {% if not entity.related_entity %}
-            <tr>
-                <td><strong>{{ entity.name }}</strong></td>
-                <!--<td><strong>{{ entity.related_entity }}</strong></td>-->
-                {% for column in entity.column_set.all %}
-                <td>{{ column }}  <input type="checkbox" name="{{ entity.name }}|{{ column.name }}"></td>
+    <h1>Fluxx Exporter</h1>
+
+    <div class="create-export-job">
+        <a href="{% url 'exportjob_create' %}" class="btn btn--lg btn--navy">Create New Export Job</a>
+    </div>
+
+    <div class="export-job-list">
+        {% if export_jobs %}
+            <h2 class="mt-20">Saved Export Jobs</h2>
+            <ul class="list--unstyled">
+                {% for job in export_jobs %}
+                    <li>
+                        <a href="{% url 'exportjob_detail' pk=job.pk %}">{{job.name}}</a>
+                    </li>
                 {% endfor %}
-            </tr>
-            {% endif %}
-        {% endfor %}
-    </table>
-
-    <div>
-        <label for="filterInput">Filter:</label>
-        <input type="text" id="filterInput" name="filterInput">
+            </ul>
+        {% endif %}
     </div>
-
-    <div>
-        <label for="formatInput">Format:</label>
-        <select id="formatInput" name="formatInput">
-            <option value="1">JSON</option>
-            <option value="2">XML</option>
-            <option value="3">CSV</option>
-        </select>
-    </div>
-    
-    <div>
-        <label for="fileInput">Browse:</label>
-        <input type="file" id="fileInput" name="fileInput">
-    </div>
-    
-    <button onclick="exportData()">Export</button>
-    <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
-    
-    <script>
-    function exportData() {
-        var checkedColumns = [];
-        var relatedEntity = [];
-        {% for entity in entities %}
-        relatedEntity.push("{{ entity.name }}|{{ entity.related_entity.name|default_if_none:'Base'|escapejs }}");  // Ensure we handle None values
-         console.log('Related Entity for {{ entity.name }}:', relatedEntity); 
-            {% for column in entity.column_set.all %}
-                var checkbox = document.querySelector('input[name="{{ entity.name }}|{{ column.name }}"]');
-                if (checkbox && checkbox.checked) {
-                    checkedColumns.push('{{ entity.name }}|{{ column.name }}');
-                }
-            {% endfor %}
-        {% endfor %}
-        console.log(checkedColumns);
-        //console.log('Related Entity:', relatedEntity);
-        // Retrieve filter value
-        var filterValue = document.getElementById('filterInput').value;
-        console.log('Filter:', filterValue);
-
-        // Retrieve format value
-        var formatValue = document.getElementById('formatInput').value;
-        console.log('Format:', formatValue);
-
-        // Retrieve file input value
-        var fileInput = document.getElementById('fileInput');
-        var file = fileInput.files[0];
-        if (file) {
-            console.log('Selected file:', file.name);
-        }
-
-        // Retrieve CSRF token from the DOM
-        var csrfTokenElement = document.querySelector('[name=csrfmiddlewaretoken]');
-        var csrfToken = csrfTokenElement ? csrfTokenElement.value : null;
-
-        // Send data to export_data view using AJAX
-        var xhr = new XMLHttpRequest();
-        xhr.open("POST", "{% url 'export_data' %}", true);
-        xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-        
-        if (csrfToken) {
-            xhr.setRequestHeader("X-CSRFToken", csrfToken);  // Include CSRF token if available
-        }
-        xhr.onload = function() {
-            if (xhr.status === 200) {
-                console.log('Data exported successfully.');
-            } else {
-                console.error('Failed to export data.');
-            }
-        };
-
-        // Send checked columns, filter value, and format value
-        var postData = {
-            checkedColumns: checkedColumns,
-            filter: filterValue,
-            format: formatValue,
-            relatedEntity: relatedEntity
-        };
-        xhr.send(JSON.stringify(postData));
-        console.log(JSON.stringify(postData));
-    }
-    </script>
 
 {% endblock %}

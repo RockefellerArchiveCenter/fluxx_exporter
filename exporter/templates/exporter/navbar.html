@@ -10,9 +10,19 @@
           <li class="nav__item btn--navy">
             <a
               class="nav__link"
+              href="{% url 'admin:index' %}"
+              id="admin">
+              Admin
+              <span class="material-icon" aria-hidden="true">
+                arrow_right_alt
+              </span>
+            </a>
+          </li>
+          <li class="nav__item btn--navy">
+            <a
+              class="nav__link"
               href="{% url 'about' %}"
-              id="raccess"
-            >
+              id="raccess">
               About
               <span class="material-icon" aria-hidden="true">
                 arrow_right_alt
@@ -33,20 +43,26 @@
           <button
             id="nav-toggle"
             class="btn btn--navy nav__btn--mobile closed"
-            aria-expanded="false"
-          >
+            aria-expanded="false">
             <span class="material-icon">menu</span>
           </button>
           <ul
             id="nav-toggle-menu"
-            class="dropdown__list dropdown__list--mobile list--unstyled dropdown__list--navy dropdown__list--slide-left closed"
-          >
+            class="dropdown__list dropdown__list--mobile list--unstyled dropdown__list--navy dropdown__list--slide-left closed">
+            <li>
+              <a
+                class="btn btn--navy dropdown__btn dropdown__btn--mobile"
+                href="{% url 'admin:index' %}"
+                tabindex="-1">
+                Admin
+                <span class="material-icon">east</span>
+              </a>
+            </li>
             <li>
               <a
                 class="btn btn--navy dropdown__btn dropdown__btn--mobile"
                 href="{% url 'about' %}"
-                tabindex="-1"
-              >
+                tabindex="-1">
                 About
                 <span class="material-icon">east</span>
               </a>
@@ -55,8 +71,7 @@
               <a
                 class="btn btn--navy dropdown__btn dropdown__btn--mobile"
                 href="{% url 'filterhelp' %}"
-                tabindex="-1"
-              >
+                tabindex="-1">
                 Filter Help
                 <span class="material-icon">east</span>
               </a>
