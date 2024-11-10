@@ -1,0 +1,661 @@
+[
+    {
+        "model": "admin.logentry",
+        "pk": 1,
+        "fields": {
+            "action_time": "2024-11-09T20:53:10.769Z",
+            "user": 1,
+            "content_type": 7,
+            "object_id": "1",
+            "object_repr": "S3 Config",
+            "action_flag": 1,
+            "change_message": "[{\"added\": {}}]"
+        }
+    },
+    {
+        "model": "admin.logentry",
+        "pk": 2,
+        "fields": {
+            "action_time": "2024-11-09T20:53:56.044Z",
+            "user": 1,
+            "content_type": 6,
+            "object_id": "1",
+            "object_repr": "Fluxx Instance",
+            "action_flag": 1,
+            "change_message": "[{\"added\": {}}]"
+        }
+    },
+    {
+        "model": "admin.logentry",
+        "pk": 3,
+        "fields": {
+            "action_time": "2024-11-09T20:54:46.332Z",
+            "user": 1,
+            "content_type": 10,
+            "object_id": "1",
+            "object_repr": "grant_request",
+            "action_flag": 1,
+            "change_message": "[{\"added\": {}}]"
+        }
+    },
+    {
+        "model": "admin.logentry",
+        "pk": 4,
+        "fields": {
+            "action_time": "2024-11-09T20:55:20.619Z",
+            "user": 1,
+            "content_type": 11,
+            "object_id": "1",
+            "object_repr": "organization_name",
+            "action_flag": 1,
+            "change_message": "[{\"added\": {}}]"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 1,
+        "fields": {
+            "name": "Can add log entry",
+            "content_type": 1,
+            "codename": "add_logentry"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 2,
+        "fields": {
+            "name": "Can change log entry",
+            "content_type": 1,
+            "codename": "change_logentry"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 3,
+        "fields": {
+            "name": "Can delete log entry",
+            "content_type": 1,
+            "codename": "delete_logentry"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 4,
+        "fields": {
+            "name": "Can view log entry",
+            "content_type": 1,
+            "codename": "view_logentry"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 5,
+        "fields": {
+            "name": "Can add permission",
+            "content_type": 2,
+            "codename": "add_permission"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 6,
+        "fields": {
+            "name": "Can change permission",
+            "content_type": 2,
+            "codename": "change_permission"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 7,
+        "fields": {
+            "name": "Can delete permission",
+            "content_type": 2,
+            "codename": "delete_permission"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 8,
+        "fields": {
+            "name": "Can view permission",
+            "content_type": 2,
+            "codename": "view_permission"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 9,
+        "fields": {
+            "name": "Can add group",
+            "content_type": 3,
+            "codename": "add_group"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 10,
+        "fields": {
+            "name": "Can change group",
+            "content_type": 3,
+            "codename": "change_group"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 11,
+        "fields": {
+            "name": "Can delete group",
+            "content_type": 3,
+            "codename": "delete_group"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 12,
+        "fields": {
+            "name": "Can view group",
+            "content_type": 3,
+            "codename": "view_group"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 13,
+        "fields": {
+            "name": "Can add content type",
+            "content_type": 4,
+            "codename": "add_contenttype"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 14,
+        "fields": {
+            "name": "Can change content type",
+            "content_type": 4,
+            "codename": "change_contenttype"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 15,
+        "fields": {
+            "name": "Can delete content type",
+            "content_type": 4,
+            "codename": "delete_contenttype"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 16,
+        "fields": {
+            "name": "Can view content type",
+            "content_type": 4,
+            "codename": "view_contenttype"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 17,
+        "fields": {
+            "name": "Can add session",
+            "content_type": 5,
+            "codename": "add_session"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 18,
+        "fields": {
+            "name": "Can change session",
+            "content_type": 5,
+            "codename": "change_session"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 19,
+        "fields": {
+            "name": "Can delete session",
+            "content_type": 5,
+            "codename": "delete_session"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 20,
+        "fields": {
+            "name": "Can view session",
+            "content_type": 5,
+            "codename": "view_session"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 21,
+        "fields": {
+            "name": "Can add fluxx config",
+            "content_type": 6,
+            "codename": "add_fluxxconfig"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 22,
+        "fields": {
+            "name": "Can change fluxx config",
+            "content_type": 6,
+            "codename": "change_fluxxconfig"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 23,
+        "fields": {
+            "name": "Can delete fluxx config",
+            "content_type": 6,
+            "codename": "delete_fluxxconfig"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 24,
+        "fields": {
+            "name": "Can view fluxx config",
+            "content_type": 6,
+            "codename": "view_fluxxconfig"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 25,
+        "fields": {
+            "name": "Can add s3 config",
+            "content_type": 7,
+            "codename": "add_s3config"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 26,
+        "fields": {
+            "name": "Can change s3 config",
+            "content_type": 7,
+            "codename": "change_s3config"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 27,
+        "fields": {
+            "name": "Can delete s3 config",
+            "content_type": 7,
+            "codename": "delete_s3config"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 28,
+        "fields": {
+            "name": "Can view s3 config",
+            "content_type": 7,
+            "codename": "view_s3config"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 29,
+        "fields": {
+            "name": "Can add sftp config",
+            "content_type": 8,
+            "codename": "add_sftpconfig"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 30,
+        "fields": {
+            "name": "Can change sftp config",
+            "content_type": 8,
+            "codename": "change_sftpconfig"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 31,
+        "fields": {
+            "name": "Can delete sftp config",
+            "content_type": 8,
+            "codename": "delete_sftpconfig"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 32,
+        "fields": {
+            "name": "Can view sftp config",
+            "content_type": 8,
+            "codename": "view_sftpconfig"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 33,
+        "fields": {
+            "name": "Can add user",
+            "content_type": 9,
+            "codename": "add_user"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 34,
+        "fields": {
+            "name": "Can change user",
+            "content_type": 9,
+            "codename": "change_user"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 35,
+        "fields": {
+            "name": "Can delete user",
+            "content_type": 9,
+            "codename": "delete_user"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 36,
+        "fields": {
+            "name": "Can view user",
+            "content_type": 9,
+            "codename": "view_user"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 37,
+        "fields": {
+            "name": "Can add entity",
+            "content_type": 10,
+            "codename": "add_entity"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 38,
+        "fields": {
+            "name": "Can change entity",
+            "content_type": 10,
+            "codename": "change_entity"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 39,
+        "fields": {
+            "name": "Can delete entity",
+            "content_type": 10,
+            "codename": "delete_entity"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 40,
+        "fields": {
+            "name": "Can view entity",
+            "content_type": 10,
+            "codename": "view_entity"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 41,
+        "fields": {
+            "name": "Can add column",
+            "content_type": 11,
+            "codename": "add_column"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 42,
+        "fields": {
+            "name": "Can change column",
+            "content_type": 11,
+            "codename": "change_column"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 43,
+        "fields": {
+            "name": "Can delete column",
+            "content_type": 11,
+            "codename": "delete_column"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 44,
+        "fields": {
+            "name": "Can view column",
+            "content_type": 11,
+            "codename": "view_column"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 45,
+        "fields": {
+            "name": "Can add export job",
+            "content_type": 12,
+            "codename": "add_exportjob"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 46,
+        "fields": {
+            "name": "Can change export job",
+            "content_type": 12,
+            "codename": "change_exportjob"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 47,
+        "fields": {
+            "name": "Can delete export job",
+            "content_type": 12,
+            "codename": "delete_exportjob"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 48,
+        "fields": {
+            "name": "Can view export job",
+            "content_type": 12,
+            "codename": "view_exportjob"
+        }
+    },
+    {
+        "model": "contenttypes.contenttype",
+        "pk": 1,
+        "fields": {
+            "app_label": "admin",
+            "model": "logentry"
+        }
+    },
+    {
+        "model": "contenttypes.contenttype",
+        "pk": 2,
+        "fields": {
+            "app_label": "auth",
+            "model": "permission"
+        }
+    },
+    {
+        "model": "contenttypes.contenttype",
+        "pk": 3,
+        "fields": {
+            "app_label": "auth",
+            "model": "group"
+        }
+    },
+    {
+        "model": "contenttypes.contenttype",
+        "pk": 4,
+        "fields": {
+            "app_label": "contenttypes",
+            "model": "contenttype"
+        }
+    },
+    {
+        "model": "contenttypes.contenttype",
+        "pk": 5,
+        "fields": {
+            "app_label": "sessions",
+            "model": "session"
+        }
+    },
+    {
+        "model": "contenttypes.contenttype",
+        "pk": 6,
+        "fields": {
+            "app_label": "exporter",
+            "model": "fluxxconfig"
+        }
+    },
+    {
+        "model": "contenttypes.contenttype",
+        "pk": 7,
+        "fields": {
+            "app_label": "exporter",
+            "model": "s3config"
+        }
+    },
+    {
+        "model": "contenttypes.contenttype",
+        "pk": 8,
+        "fields": {
+            "app_label": "exporter",
+            "model": "sftpconfig"
+        }
+    },
+    {
+        "model": "contenttypes.contenttype",
+        "pk": 9,
+        "fields": {
+            "app_label": "exporter",
+            "model": "user"
+        }
+    },
+    {
+        "model": "contenttypes.contenttype",
+        "pk": 10,
+        "fields": {
+            "app_label": "exporter",
+            "model": "entity"
+        }
+    },
+    {
+        "model": "contenttypes.contenttype",
+        "pk": 11,
+        "fields": {
+            "app_label": "exporter",
+            "model": "column"
+        }
+    },
+    {
+        "model": "contenttypes.contenttype",
+        "pk": 12,
+        "fields": {
+            "app_label": "exporter",
+            "model": "exportjob"
+        }
+    },
+    {
+        "model": "sessions.session",
+        "pk": "c40b7jc5w6odecl84qyqs487q5bsgp7x",
+        "fields": {
+            "session_data": ".eJxVjDsOwjAQBe_iGllrO-u1Kek5g7X-4QBypHwqxN0hUgpo38y8lwi8rS1sS5nDmMVZKHH63SKnR-k7yHfut0mmqa_zGOWuyIMu8jrl8rwc7t9B46V9awussBptTbIVNRNHcIiDJ4YhVoeOwXjlOIFBBCTndQaiWiyZbEm8P7hqNos:1t9sPj:EuiihOmCrlaI3KTf5l8FWOdS58U4Sue0xtF-Wd-CZoU",
+            "expire_date": "2024-11-23T20:50:35.948Z"
+        }
+    },
+    {
+        "model": "exporter.user",
+        "pk": 1,
+        "fields": {
+            "password": "pbkdf2_sha256$870000$a66CvQoAl8ZN9m8aI1FnBo$I+90K+u4pC09TFotRVGpOgt+s9d9jV7Tp/IVAt0iwVU=",
+            "last_login": "2024-11-09T20:50:35.946Z",
+            "is_superuser": true,
+            "username": "admin",
+            "first_name": "",
+            "last_name": "",
+            "email": "admin@example.org",
+            "is_staff": true,
+            "is_active": true,
+            "date_joined": "2024-11-09T20:50:31.153Z",
+            "groups": [],
+            "user_permissions": []
+        }
+    },
+    {
+        "model": "exporter.fluxxconfig",
+        "pk": 1,
+        "fields": {
+            "name": "Fluxx Instance",
+            "base_url": "https://fluxx.io",
+            "client_id": "123456789",
+            "client_secret": "abcdefg"
+        }
+    },
+    {
+        "model": "exporter.s3config",
+        "pk": 1,
+        "fields": {
+            "name": "S3 Config",
+            "bucket": "bucket_name",
+            "access_key_id": "123456789",
+            "secret_key": "987654321",
+            "region": "us-east-1"
+        }
+    },
+    {
+        "model": "exporter.exportjob",
+        "pk": 1,
+        "fields": {
+            "name": "Export Job",
+            "fluxx_config": 1,
+            "export_location": "/tmp/exports",
+            "export_format": "json",
+            "filter_string": null,
+            "s3_config": 1,
+            "sftp_config": null
+        }
+    },
+    {
+        "model": "exporter.entity",
+        "pk": 1,
+        "fields": {
+            "name": "grant_request",
+            "include_in_export": true,
+            "export_job": 1,
+            "related_entity": null
+        }
+    },
+    {
+        "model": "exporter.column",
+        "pk": 1,
+        "fields": {
+            "entity": 1,
+            "name": "organization_name",
+            "include_in_export": false
+        }
+    }
+]
