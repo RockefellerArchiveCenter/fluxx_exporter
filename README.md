@@ -83,6 +83,12 @@ Follow these steps to set up the Fluxx Exporter:
    - Currently, related entities will not appear in the UI, so ensure any columns/fields entered in the configuration page will be fed into the API via the relation parameter.
    - There is no validation for entered entities or fields as per the Fluxx API. The correct names can be obtained from the API documentation (included in the Documentation folder) or by exporting an entity and checking the CSV output header.
 
+## Logging
+
+This application logs to the console (stdout) as well as a file. Logging level and log file location can be configured
+with the `LOG_FILE`, `FILE_LOG_LEVEL` and `CONSOLE_LOG_LEVEL` settings in `config.py`.
+
+
 ## License
 
-Include license information if applicable.
+This code is released under an MIT License. See `LICENSE` for more information.
