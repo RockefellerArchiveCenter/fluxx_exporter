@@ -1,5 +1,6 @@
 import csv
 import json
+import logging
 import traceback
 import xml.etree.ElementTree as ET
 from pathlib import Path
@@ -9,7 +10,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from .clients import FluxxClient, S3Client
 from .models import ExportJob
 
-# TODO replace prints with logging
+logging = logging.getLogger(__name__)
 
 
 class Exporter(object):
@@ -31,6 +32,7 @@ class Exporter(object):
             self.sftp_config = export_job.sftp_config
             self.entities = export_job.entity_set.all()
         except ObjectDoesNotExist:
+            logging.error(f"Could not find export job configuration for id {export_job_id}.")
             raise Exception(f"Could not find export job configuration for id {export_job_id}.")
 
         self.export_path = Path(self.export_location)
@@ -38,6 +40,7 @@ class Exporter(object):
 
     def fluxx_export(self):
         """Exports data and documents from a Fluxx instance."""
+        logging.info('Fluxx export started')
         try:
             fluxx_client = FluxxClient(
                 self.fluxx_config.base_url,
@@ -45,6 +48,7 @@ class Exporter(object):
                 self.fluxx_config.client_secret)
 
             for entity in self.entities:
+                logging.debug(f'Exporting data for entity {entity}')
                 entity_path = (self.export_path / entity.name)
                 entity_path.mkdir(exist_ok=True)
 
@@ -55,16 +59,26 @@ class Exporter(object):
                     [c.name for c in entity.column_set.all()],
                     filter_value=filter_value,
                     related_entity=related_entity)
+                logging.debug(f'Returned {len(results)} results for entity {entity} from Fluxx.')
 
+                logging.info('Saving data exported from Fluxx.')
                 for record in results:
+                    logging.debug(f'Saving data for record {record["id"]}')
                     record_path = (entity_path / str(record['id']))
                     record_path.mkdir()
-                    self.save_data(record, self.export_format, record_path)
+                    try:
+                        self.save_data(record, self.export_format, record_path)
+                    except Exception as e:
+                        logging.error(f'Error exporting {self.export_format} to {str(record_path)}: {e}')
+                        raise Exception(f'Error exporting {self.export_format} to {str(record_path)}: {e}')
                     for doc_id in record.get('model_documents', []):
+                        logging.debug(f'Downlaoding document {doc_id}')
                         file_name, file_obj = fluxx_client.download_document(doc_id)
+                        logging.debug(f'Saving document {doc_id} with file name {file_name}')
                         self.save_document(file_name, file_obj, record_path)
 
                     if self.s3_config:
+                        logging.info('Uploading to S3')
                         try:
                             s3_client = S3Client(
                                 self.s3_config.bucket,
@@ -73,12 +87,13 @@ class Exporter(object):
                                 self.s3_config.region,)
                             s3_client.upload_directory(record_path)
                         except Exception as e:
-                            # TODO raise meaniungful exception
-                            print(
-                                f"Exception while retrieving Amazon S3 Bucket configuration: {e}")
-                            pass
+                            logging.error(f'Error uploading to S3 bucket {self.s3_config.bucket}: {e}')
+                            raise Exception(f'Error uploading to S3 bucket {self.s3_config.bucket}: {e}')
+
+            logging.info('Fluxx export complete.')
             return True, None
         except Exception as err:
+            logging.error(''.join(traceback.format_exception(err)))
             tb = '<br/>'.join(traceback.format_exception(err)[:-1])
             return False, f'<b>{str(err)}</b><br/><br/>{tb}'
 
@@ -93,14 +108,17 @@ class Exporter(object):
         Returns:
             filter_parts (list): parsed filter.
         """
+        logging.debug(f'Parsing filter {filter}')
         filter_parts = None
         if filter:
             try:
                 filter_parts = filter.split(' ', 2)
                 assert len(filter_parts) == 3
             except AssertionError:
+                logging.error(f"Could not parse filter value {filter}")
                 raise Exception(f"Could not parse filter value {filter}")
 
+        logging.debug(f'Filter {filter} parsed into parts {filter_parts}')
         return filter_parts
 
     def parse_related_entities(self, related_entities):
@@ -112,10 +130,12 @@ class Exporter(object):
         Returns:
             relation_params (dict): structured relationship parameter.
         """
+        logging.debug(f'Parsing related entitites {related_entities}')
         relation_params = {}
         for related_entity in related_entities:
             re_columns = [column.name for column in related_entity.column_set.all()]
             relation_params[related_entity.name] = re_columns
+        logging.debug(f'Related entities {related_entities} parsed to params {relation_params}')
         return relation_params
 
     def save_data(self, json_data, export_format, export_location):

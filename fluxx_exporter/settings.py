@@ -127,3 +127,39 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 AUTH_USER_MODEL = "exporter.User"
+
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "verbose": {
+            "format": "{name} {levelname} {asctime} {filename} {funcName}:{lineno} {message}",
+            "style": "{",
+        },
+        "simple": {
+            "format": "{message}",
+            "style": "{",
+        },
+    },
+    "handlers": {
+        "console": {
+            "level": config.CONSOLE_LOG_LEVEL,
+            "class": "logging.StreamHandler",
+            "formatter": "simple",
+        },
+        "file": {
+            "level": config.FILE_LOG_LEVEL,
+            "class": "logging.FileHandler",
+            "filename": config.LOG_FILE,
+            "formatter": "verbose",
+        },
+    },
+    "loggers": {
+        "exporter": {
+            "handlers": ["console", "file"],
+            "level": "DEBUG",
+            "propagate": True
+        },
+    }
+}
