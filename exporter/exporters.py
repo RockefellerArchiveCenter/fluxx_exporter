@@ -59,7 +59,7 @@ class Exporter(object):
                     [c.name for c in entity.column_set.all()],
                     filter_value=filter_value,
                     related_entity=related_entity)
-                logging.debug(f'Returned {len(results)} results for entity {entity} from Fluxx.')
+                logging.debug(f'Returned results for entity {entity} from Fluxx.')
 
                 logging.info('Saving data exported from Fluxx.')
                 for record in results:

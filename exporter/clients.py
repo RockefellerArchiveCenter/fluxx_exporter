@@ -56,7 +56,7 @@ class FluxxClient(object):
         })
         logging.debug("Fluxx client authentication successful")
 
-    def list_rows(self, entity_name, column_names, filter_value=None, related_entity=None, page=1, per_page=100):
+    def list_rows(self, entity_name, column_names, filter_value=None, related_entity=None, current_page=1, per_page=100):
         """Returns data about a given entity from Fluxx API.
 
         Args:
@@ -72,16 +72,11 @@ class FluxxClient(object):
         """
         logging.debug(f'Fetching data for {entity_name} with columns {column_names} and filter {filter_value}')
 
-        params = {}
-        # TODO pagination
-
-        if page < 1:
-            raise ValueError("Page integer must be greater than 0.")
-        params.update({
+        params = {
             'cols': json.dumps(column_names),
-            'page': page,
+            'page': current_page,
             'per_page': per_page
-        })
+        }
 
         if filter_value:
             params.update({'filter': json.dumps(filter_value)})
@@ -91,8 +86,15 @@ class FluxxClient(object):
         try:
             resp = self.session.get(f"{self.api_url}{entity_name}", params=params)
             resp.raise_for_status()
-            logging.debug(resp.json())
-            return resp.json()['records'][entity_name]
+            total_pages = resp.json()['total_pages']
+            for record in resp.json()['records'][entity_name]:
+                yield record
+            while total_pages > current_page:
+                current_page += 1
+                params.update({'page': current_page})
+                resp = self.session.get(f"{self.api_url}{entity_name}", params=params)
+                for record in resp.json()['records'][entity_name]:
+                    yield record
         except Exception:
             logging.error(f"Error fetching data: {resp.text}")
             raise Exception(f"Error fetching data: {resp.text}")
