@@ -278,6 +278,7 @@ class FluxxClientTests(TestCase):
         doc = client.download_document(document_id)
         mock_get.assert_has_calls([
             call(f'{self.base_url}/api/rest/v2/model_document/{document_id}', params={'cols': '["document_file_name"]'}),
+            call().raise_for_status(),
             call().json(),
             call(f'{self.base_url}/api/rest/v2/model_document_download/{document_id}', stream=True)]
         )

@@ -114,7 +114,7 @@ class FluxxClient(object):
         document_info = self.session.get(
             f"{self.api_url}model_document/{document_id}",
             params=download_params)
-        logging.debug(document_info)
+        document_info.raise_for_status()
         document_name = document_info.json()['model_document']['document_file_name']
 
         # Get the file object
