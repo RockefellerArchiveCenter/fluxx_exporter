@@ -82,4 +82,4 @@ ExportJobWithEntities = inlineformset_factory(
 class ExportJobForm(ModelForm):
     class Meta:
         model = ExportJob
-        fields = '__all__'
+        exclude = ('sftp_config',)
