@@ -1,11 +1,12 @@
 import json
+import logging
 from pathlib import Path
 
 import boto3
 import paramiko
 import requests
 
-# TODO replace prints with logging
+logging = logging.getLogger(__name__)
 
 
 class FluxxClient(object):
@@ -24,6 +25,8 @@ class FluxxClient(object):
 
     def authenticate(self, base_url, client_id, client_secret):
         """Authenticates the client against the Fluxx API"""
+
+        logging.debug('Authenticating Fluxx client')
         # oauth parameters to retrieve token
         token_url = f"{base_url.rstrip('/')}/oauth/token"
         oauth_params = {
@@ -31,38 +34,49 @@ class FluxxClient(object):
             'client_id': client_id,
             'client_secret': client_secret
         }
+        logging.debug("OAuth params created")
 
         self.session = requests.Session()
+        logging.debug("Session initiated")
 
         # obtain oauth token
         try:
+            logging.debug('Getting OAuth token.')
             response = self.session.post(token_url, data=oauth_params)
+            response.raise_for_status()
+            token = response.json()['access_token']
+            logging.debug("OAuth token obtained")
         except Exception as e:
-            raise Exception("Could not authenticate with the supplied credentials") from e
+            logging.error(f"Could not obtain OAuth token with the supplied credentials: {e}")
+            raise Exception(f"Could not obtain OAuth token with the supplied credentials: {e}")
 
         # Set Session request headers to persist connection
-        try:
-            token = response.json()['access_token']
-            self.session.headers.update({
-                'Authorization': f'Bearer {token}'
-            })
-        except BaseException:
-            print("Could not find access token")
+        self.session.headers.update({
+            'Authorization': f'Bearer {token}'
+        })
+        logging.debug("Fluxx client authentication successful")
 
     def list_rows(self, entity_name, column_names, filter_value=None, related_entity=None, page=1, per_page=100):
-        """Function to return a list of some number of rows and pages relating to an entity (or table)
-        Filters can be applied following the format: <entity> <logic> <condition>
-        Example: amount_requested eq 10000
-        Filters can be tied together as follows: amount_requested eq 10000 and created_at today
-        Filter logic will be requested and further documented at a later date
+        """Returns data about a given entity from Fluxx API.
+
+        Args:
+            entity_name (str): name of the entity to fetch
+            column_names (list of str): column names from the entity
+            filter_value (str): string to filter entities by
+            related_entity (str): related entities to fetch
+            page (int): page number to start from
+            per_page (int): number of items per page
+
+        Returns:
+            rows (list): data about the requested entities.
         """
+        logging.debug(f'Fetching data for {entity_name} with columns {column_names} and filter {filter_value}')
 
         params = {}
         # TODO pagination
 
         if page < 1:
             raise ValueError("Page integer must be greater than 0.")
-        print(f"columns: {json.dumps(column_names)}")
         params.update({
             'cols': json.dumps(column_names),
             'page': page,
@@ -72,14 +86,27 @@ class FluxxClient(object):
         if filter_value:
             params.update({'filter': json.dumps(filter_value)})
 
+        logging.debug(f'Params: {params}')
+
         try:
             resp = self.session.get(f"{self.api_url}{entity_name}", params=params)
             resp.raise_for_status()
+            logging.debug(resp.json())
             return resp.json()['records'][entity_name]
-        except Exception as e:
-            raise Exception(f"Error fetching data: {resp.text}") from e
+        except Exception:
+            logging.error(f"Error fetching data: {resp.text}")
+            raise Exception(f"Error fetching data: {resp.text}")
 
     def download_document(self, document_id):
+        """Downloads documents by ID.
+
+        Args:
+            document_id (str): ID for a document
+
+        Returns:
+            document_name, file (str, streaming file): document name and a streaming file object.
+        """
+        logging.debug(f'Fetching document {document_id}')
         document_id = str(document_id)
         download_params = {'cols': json.dumps(["document_file_name"])}
 
@@ -87,10 +114,12 @@ class FluxxClient(object):
         document_info = self.session.get(
             f"{self.api_url}model_document/{document_id}",
             params=download_params)
+        logging.debug(document_info)
         document_name = document_info.json()['model_document']['document_file_name']
 
         # Get the file object
         document_download_url = f"{self.api_url}model_document_download/{document_id}"
+        logging.debug(document_download_url)
 
         return document_name, self.session.get(document_download_url, stream=True)
 
@@ -152,6 +181,8 @@ class S3Client(object):
 
     def __init__(self, bucket, access_key_id, secret_key, region):
         """Sets up client and other properties."""
+
+        logging.debug('Instantiating S3 client')
         self.s3_client = boto3.client(
             's3',
             aws_access_key_id=access_key_id,
@@ -169,9 +200,11 @@ class S3Client(object):
         Returns:
             None
         """
+        logging.debug(f'Starting upload of directory {directory}')
         for path in Path(directory).rglob("*"):
             if path.is_file():
                 self.s3_client.upload_file(
                     str(path),
                     self.bucket,
                     str(path.relative_to(directory.parent)))
+        logging.debug(f'Upload of directory {directory} complete')
