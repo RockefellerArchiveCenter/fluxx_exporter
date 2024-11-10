@@ -35,17 +35,19 @@ class Command(BaseCommand):
 			next(csvreader)
 			next(csvreader)
 		    
-		    #this creates two lists; one of all the Entities, and one of all the Entities and Columns with the Entities formatted lower case and with underscores
+		    #this creates two lists; one of all the Entities, and one of all the Entities and Columns. Both formatted with the Entities formatted lower case and with underscores
 			EntitiesList = []
 		 
 			EntitiesAndColumnsList = []
 			for row in csvreader:
 				EntitiesAndColumnsList.append([row[0].lower().replace(" ", "_"), row[1]])
-				if row[0] not in EntitiesList:
-					EntitiesList.append(row[0])
-		            
-		    #print(EntitiesList)
-			print(EntitiesAndColumnsList)
-		    
-		    #to do: get this into the database
+				if row[0].lower().replace(" ", "_") not in EntitiesList:
+					EntitiesList.append(row[0].lower().replace(" ", "_"))
 
+			#write entities to db
+			for item in EntitiesList:
+				entity = Entity.objects.create(name=item)
+
+			#write columns to database
+			for item in EntitiesAndColumnsList:
+				column = Column.objects.create(name=item[1], entity=Entity.objects.get(name=item[0]))
