@@ -59,11 +59,10 @@ class FluxxClientTests(SimpleTestCase):
                 ]
             }, 'total_pages': 1, 'total_entries': 3, 'current_page': 1, 'per_page': 100}
         result = client.list_rows(entity_name, column_names)
+        self.assertEqual(len(list(result)), 3)  # calling list here executes the iterator
         mock_get.assert_called_once_with(
             f'{self.base_url}/api/rest/v2/grant_request', params={'cols': json.dumps(column_names), 'page': 1, 'per_page': 100}
         )
-        self.assertIsInstance(result, list)
-        self.assertEqual(len(result), 3)
 
     @patch('requests.Session.post')
     @patch('requests.Session.get')
