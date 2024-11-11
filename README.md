@@ -45,27 +45,19 @@ Follow these steps to set up the Fluxx Exporter:
    pip install -r requirements.txt
    ```
 
-5. **Configuration**  
-   Configure the `exportScript.py` (Fluxx class) with your API credentials:
-   - `api_url`
-   - `client_id`
-   - `client_secret`
-   
-   Alternatively, you can configure the script to use environment variables, a YAML file, or a similar approach.
-
-6. **Apply Migrations**  
+5. **Apply Migrations**  
    Apply the database migrations to set up the database schema:
    ```bash
    python manage.py migrate
    ```
 
-7. **Create a Superuser**  
+6. **Create a Superuser**  
    Create a superuser to access the Django admin interface:
    ```bash
    python manage.py createsuperuser
    ```
 
-8. **Run the Development Server**  
+7. **Run the Development Server**  
    Start the Django development server:
    ```bash
    python manage.py runserver
@@ -76,12 +68,20 @@ Follow these steps to set up the Fluxx Exporter:
 
 1. Navigate to [http://127.0.0.1:8000/admin](http://127.0.0.1:8000/admin).
 2. Log in with the created superuser.
-3. Here, you can configure your Fluxx instance, SFTP instance, and Amazon S3 instance.
-4. You can also add your Fluxx entities and associate Columns with their respective entities.
+3. Here, you can configure your Fluxx instance and Amazon S3 instance.
+4. You can also manually add and/or edit your Fluxx Entities and associate Columns with their respective entities in
+   this interface.
+   - The recommended approach to creating Entities and Columns is to use the built-in management command (see below).
    - Any changes to Entities or Columns will appear immediately upon refreshing the Fluxx Exporter Tool.
    - To configure related entities, select the option to relate the current entity to previous ones during setup. Note that the entity you are relating to must already be initialized.
-   - Currently, related entities will not appear in the UI, so ensure any columns/fields entered in the configuration page will be fed into the API via the relation parameter.
    - There is no validation for entered entities or fields as per the Fluxx API. The correct names can be obtained from the API documentation (included in the Documentation folder) or by exporting an entity and checking the CSV output header.
+
+## Importing Entities and Columns from Fluxx Glossary File
+
+Entities and Columns can be imported from a Fluxx Glossary CSV file. To do this, run the management command from the project root:
+```bash
+python manage.py import_csv {/path/to/file.csv}
+```
 
 ## Logging
 
@@ -92,3 +92,7 @@ with the `LOG_FILE`, `FILE_LOG_LEVEL` and `CONSOLE_LOG_LEVEL` settings in `confi
 ## License
 
 This code is released under an MIT License. See `LICENSE` for more information.
+
+## Funding
+
+Support for the development of this application was generously provided by the Carnegie Corporation and the Ford Foundation.
