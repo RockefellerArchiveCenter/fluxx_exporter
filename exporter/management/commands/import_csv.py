@@ -4,22 +4,22 @@ from pathlib import Path
 
 from django.core.management.base import BaseCommand
 
-from exporter.models import Column as Column
-from exporter.models import Entity as Entity
+from exporter.models import Column, Entity
 
 
 class Command(BaseCommand):
     help = "This command imports a fluxx entity csv and creates columns and entities from the Fluxx glossary csv file. The syntax is python manage.py input_csv path/to/filename"
 
-    # require filename to be passed as an argument
     def add_arguments(self, parser):
+        """Adds required file_path argument"""
         parser.add_argument('file_path', type=Path)
 
-    # test for the attribute of Fluxx glossary csv having Fluxx Glossary in A1
     def test_csv(self, csvreader):
+        """Checks to make sure the CSV file has the string `Fluxx Glossary` in A1"""
         return list(csvreader)[0][0] == 'Fluxx Glossary'
 
     def is_field(self, row):
+        """Return boolean indication of whether row represents a field."""
         return "field" in row[3].lower()
 
     def handle(self, *args, **options):
