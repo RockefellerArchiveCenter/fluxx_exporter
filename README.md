@@ -76,9 +76,9 @@ Follow these steps to set up the Fluxx Exporter:
    - To configure related entities, select the option to relate the current entity to previous ones during setup. Note that the entity you are relating to must already be initialized.
    - There is no validation for entered entities or fields as per the Fluxx API. The correct names can be obtained from the API documentation (included in the Documentation folder) or by exporting an entity and checking the CSV output header.
 
-## Importing Entities and Columns from Fluxx Glossary File
+## Importing Entities and Columns from Fluxx Glossary Report
 
-Entities and Columns can be imported from a Fluxx Glossary CSV file. To do this, run the management command from the project root:
+Entities and Columns can be imported from a Fluxx Glossary Report CSV file. To do this, run the management command from the project root:
 ```bash
 python manage.py import_csv {/path/to/file.csv}
 ```
