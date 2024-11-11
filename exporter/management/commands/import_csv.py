@@ -20,6 +20,9 @@ class Command(BaseCommand):
 					return True
 				else:
 					return False
+				
+	def is_field(self, row):
+		return "field" in row[3].lower()
 
 	def handle(self, *args, **options):
 
@@ -39,7 +42,7 @@ class Command(BaseCommand):
 			EntitiesList = []
 		 
 			EntitiesAndColumnsList = []
-			for row in csvreader:
+			for row in filter(self.is_field, csvreader):
 				EntitiesAndColumnsList.append([row[0].lower().replace(" ", "_"), row[1]])
 				if row[0].lower().replace(" ", "_") not in EntitiesList:
 					EntitiesList.append(row[0].lower().replace(" ", "_"))
