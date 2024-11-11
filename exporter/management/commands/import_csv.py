@@ -1,4 +1,5 @@
 import csv
+import logging
 from pathlib import Path
 
 from django.core.management.base import BaseCommand
@@ -15,14 +16,8 @@ class Command(BaseCommand):
         parser.add_argument('file_path', type=Path)
 
     # test for the attribute of Fluxx glossary csv having Fluxx Glossary in A1
-    def test_csv(self, file_path):
-        with open(file_path, newline='') as csvfile:
-            csvreader = csv.reader(csvfile)
-            for row in csvreader:
-                if row[0] == 'Fluxx Glossary':
-                    return True
-                else:
-                    return False
+    def test_csv(self, csvreader):
+        return list(csvreader)[0][0] == 'Fluxx Glossary'
 
     def is_field(self, row):
         return "field" in row[3].lower()
@@ -30,11 +25,12 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
 
         with open(options['file_path'], newline='') as csvfile:
-            if not self.test_csv(options['file_path']):
-                print("File does not appear to be a Fluxx glossary csv.")
-                exit()
-
             csvreader = csv.reader(csvfile)
+            if not self.test_csv(csvreader):
+                logging.error(f"File {options['file_path']} does not appear to be a Fluxx glossary csv.")
+                raise Exception(f"File {options['file_path']} does not appear to be a Fluxx glossary csv.")
+
+            csvfile.seek(0)  # reset read position to beginning of file
 
             # this creates two lists; one of all the Entities, and one of all the Entities and Columns. Both formatted with the Entities formatted lower case and with underscores
             entities_list = []
