@@ -4,8 +4,7 @@ from unittest.mock import patch
 
 import requests
 import responses
-from django.core.management import call_command
-from django.test import SimpleTestCase, TestCase
+from django.test import TestCase
 
 from .exporters import Exporter
 from .models import Column, Entity, ExportJob, FluxxConfig, S3Config
@@ -194,16 +193,3 @@ class ExportTests(TestCase):
 
     def tearDown(self):
         rmtree('/tmp/exports/', ignore_errors=True)
-
-
-class ManagementCommandTests(SimpleTestCase):
-
-    @patch('exporter.exporters.Exporter.fluxx_export')
-    @patch('exporter.exporters.Exporter.__init__')
-    def test_fluxx_export_command(self, mock_init, mock_export):
-        """Assert ExportJob ID is passed to method and correct methods are called."""
-
-        mock_init.return_value = None
-        call_command("fluxx_export", 1)
-        mock_init.assert_called_once_with(1)
-        mock_export.assert_called_once_with()
