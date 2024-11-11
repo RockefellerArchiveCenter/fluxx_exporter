@@ -20,13 +20,13 @@
     </div>
   {% endfor %}
 
-  <h2>Entities</h2>
-
   {{formset.management_form}}
   {{formset.non_form_errors}}
     
-  <ul class="list--unstyled">
+
   {% for entity_form in formset %}
+    <h2>Entity</h2>
+    <ul class="list--unstyled">
 
     <li>
       {{ entity_form.id }}
@@ -67,9 +67,9 @@
         {% endfor %}
       </ul>
     {% endif %}
-
-  {% endfor %}
   </ul>
+  {% endfor %}
+ 
 
   <button class="btn btn--md btn--blue" type="submit">Submit</button>
   <a href="{% if object %}{% url 'exportjob_detail' pk=object.pk %}{% else %}{% url 'index' %}{% endif %}" class="btn btn--md btn--gray" type="cancel">Cancel</a>
