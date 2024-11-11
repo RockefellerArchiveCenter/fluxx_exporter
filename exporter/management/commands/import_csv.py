@@ -32,19 +32,7 @@ class Command(BaseCommand):
 
             csvfile.seek(0)  # reset read position to beginning of file
 
-            # this creates two lists; one of all the Entities, and one of all the Entities and Columns. Both formatted with the Entities formatted lower case and with underscores
-            entities_list = []
-            columns_list = []
-
             for row in filter(self.is_field, csvreader):
-                columns_list.append([row[0].lower().replace(" ", "_"), row[1]])
-                if row[0].lower().replace(" ", "_") not in entities_list:
-                    entities_list.append(row[0].lower().replace(" ", "_"))
-
-            # write entities to db
-            for item in entities_list:
-                Entity.objects.create(name=item)
-
-            # write columns to database
-            for item in columns_list:
-                Column.objects.create(name=item[1], entity=Entity.objects.get(name=item[0]))
+                entity_name = row[0].lower().replace(" ", "_")
+                entity, _ = Entity.objects.get_or_create(name=entity_name)
+                Column.objects.get_or_create(name=row[1], entity=entity)
