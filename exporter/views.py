@@ -1,53 +1,98 @@
-import json
-from subprocess import run
+from django.contrib import messages
+from django.urls import reverse_lazy
+from django.utils.safestring import mark_safe
+from django.views.generic import DetailView, TemplateView
+from django.views.generic.edit import CreateView, DeleteView, UpdateView
 
-from django.http import JsonResponse
-from django.shortcuts import render
-from django.views.decorators.csrf import csrf_exempt
-
-from .models import Column, Entity
-
-# Create your views here.
-
-
-@csrf_exempt
-def index(request):
-    entities = Entity.objects.all()
-    columns = Column.objects.all()
-    return render(request, 'exporter/index.html',
-                  {'entities': entities, 'columns': columns})
+from .exporters import Exporter
+from .forms import ExportJobForm, ExportJobWithEntities
+from .models import Column, Entity, ExportJob
 
 
-def about(request):
-    return render(request, 'exporter/about.html')
+class IndexView(TemplateView):
+    template_name = 'exporter/index.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["export_jobs"] = ExportJob.objects.all()
+        return context
 
 
-def filterhelp(request):
-    return render(request, 'exporter/filterhelp.html')
+class AboutView(TemplateView):
+    template_name = 'exporter/about.html'
 
 
-@csrf_exempt
-def export_data(request):
-    if request.method == 'POST':
-        # Parse JSON data from the request body
-        data = json.loads(request.body)
-        checked_columns = data.get('checkedColumns', [])
-        filter_value = data.get('filter', '')
-        format_value = data.get('format', '')
-        relatedEntity = data.get('relatedEntity', [])
+class FilterHelpView(TemplateView):
+    template_name = 'exporter/filterhelp.html'
 
-        # Process the checked columns and filter value as needed
-        print("Checked Columns:", checked_columns)
-        print("Filter Value:", filter_value)
-        print("Format value:", format_value)
-        print("Related Entity:", relatedEntity)
 
-        # Call the exportScript.py script with the data
-        run(["python", "exportScript.py", *checked_columns,
-            filter_value, format_value, *relatedEntity])
+class ExportJobView(DetailView):
+    model = ExportJob
 
-        # Return a success JSON response
-        return JsonResponse({'success': True})
-    else:
-        # Return a 400 Bad Request response if the request method is not POST
-        return JsonResponse({'error': 'Invalid request'}, status=400)
+
+class CreateExportJobView(CreateView):
+    model = ExportJob
+    template_name = 'exporter/exportjob_form.html'
+    form_class = ExportJobForm
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['formset'] = ExportJobWithEntities(**self.get_form_kwargs())
+        return context
+
+    def form_valid(self, form):
+        context = self.get_context_data(form=form)
+        entities_formset = context['formset']
+        if entities_formset.is_valid():
+            response = super().form_valid(form)
+            for form in entities_formset:
+                new_entity = Entity.objects.create(
+                    name=form.instance.name,
+                    include_in_export=form.instance.include_in_export,
+                    export_job=self.object)
+                for column in form.nested:
+                    Column.objects.create(
+                        name=column.instance.name,
+                        include_in_export=column.instance.include_in_export,
+                        entity=new_entity)
+            return response
+        else:
+            return super().form_invalid(form)
+
+
+class UpdateExportJobView(UpdateView):
+    model = ExportJob
+    template_name = 'exporter/exportjob_form.html'
+    form_class = ExportJobForm
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['formset'] = ExportJobWithEntities(**self.get_form_kwargs())
+        return context
+
+    def form_valid(self, form):
+        context = self.get_context_data(form=form)
+        entities_formset = context['formset']
+        if entities_formset.is_valid():
+            entities_formset.save()
+            return super().form_valid(form)
+        else:
+            return super().form_invalid(form)
+
+
+class DeleteExportJobView(DeleteView):
+    model = ExportJob
+    success_url = reverse_lazy('index')
+
+
+class RunExportJobView(DetailView):
+    model = ExportJob
+
+    def get(self, request, *args, **kwargs):
+        export_job_id = int(request.get_full_path().rstrip('/').split('/')[-2])
+        result, error = Exporter(export_job_id).fluxx_export()
+        if result:
+            messages.add_message(request, messages.SUCCESS, 'Export completed successfully.')
+        else:
+            messages.add_message(request, messages.ERROR, mark_safe(f'Export encountered an error.<br/><br/>{error}'))
+        return super().get(request, *args, **kwargs)

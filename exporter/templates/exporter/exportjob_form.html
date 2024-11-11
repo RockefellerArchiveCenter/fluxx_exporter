@@ -1,0 +1,79 @@
+{% extends 'exporter/main.html' %}
+
+{% block content %}
+
+<form action="" method="post" enctype="multipart/form-data">
+
+  {% for hidden_field in form.hidden_fields %}
+    {{ hidden_field.errors }}
+    {{ hidden_field }}
+  {% endfor %}
+    
+  {% csrf_token %}
+    
+  {{ form.management_form }}
+  {{ form.non_form_errors }}
+
+  {% for field in form %}
+    <div class="input">
+      {{ field.as_field_group }}
+    </div>
+  {% endfor %}
+
+  <h2>Entities</h2>
+
+  {{formset.management_form}}
+  {{formset.non_form_errors}}
+    
+  <ul class="list--unstyled">
+  {% for entity_form in formset %}
+
+    <li>
+      {{ entity_form.id }}
+      <div class="input-group">
+        <input
+          type="checkbox"
+          class="checkbox checkbox--blue"
+          id="{{ entity_form.include_in_export.auto_id }}"
+          name="{{ entity_form.include_in_export.html_name }}"
+          {% if entity_form.include_in_export.value %}checked="checked"{% endif %}
+        />
+        <label for="{{ entity_form.include_in_export.id_for_label }}" class="checkbox--blue">{{ entity_form.instance.name }}</label>
+      </div>
+    </li>
+
+    {% if entity_form.nested %}
+
+      {{entity_form.nested.management_form}}
+      {{entity_form.errors}}
+
+      <h3>Columns</h3>
+
+      <ul class="list--unstyled">
+        {% for column_form in entity_form.nested.forms %}
+
+        <li>
+          {{ column_form.id }}
+          <div class="input-group">
+            <input
+              type="checkbox"
+              class="checkbox checkbox--blue"
+              id="{{ column_form.include_in_export.auto_id }}"
+              name="{{ column_form.include_in_export.html_name }}"
+              {% if column_form.include_in_export.value %}checked="checked"{% endif %}
+            />
+            <label for="{{ column_form.include_in_export.id_for_label }}" class="checkbox--blue">{{ column_form.instance.name }}</label>
+          </li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+
+  {% endfor %}
+  </ul>
+
+  <button class="btn btn--md btn--blue" type="submit">Submit</button>
+  <a href="{% if object %}{% url 'exportjob_detail' pk=object.pk %}{% else %}{% url 'index' %}{% endif %}" class="btn btn--md btn--gray" type="cancel">Cancel</a>
+
+</form>
+
+{% endblock %}
