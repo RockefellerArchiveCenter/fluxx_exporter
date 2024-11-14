@@ -56,13 +56,13 @@
     {% if table_form.nested %}
 
       {{table_form.nested.management_form}}
-      {{table_form.errors}}
+      {{table_form.nested.non_form_errors}}
 
       <fieldset class="mb-20">
         <legend>Fields for {{ table_form.instance.name }}</legend>
         {% for field_form in table_form.nested.forms %}
         <div class="input-group">
-          {{ field_form.id }}
+          {{field_form.id}}
           <input
             type="checkbox"
             class="checkbox checkbox--blue"

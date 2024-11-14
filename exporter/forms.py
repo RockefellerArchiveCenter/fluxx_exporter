@@ -27,7 +27,8 @@ class BaseTablesWithFields(BaseInlineFormSet):
         form.nested = TableFieldFormset(
             instance=form.instance,
             data=form.data if form.is_bound else None,
-            files=form.files if form.is_bound else None)
+            files=form.files if form.is_bound else None,
+            prefix=f"tablefield-{form.prefix}-{TableFieldFormset.get_default_prefix()}")
 
     def clean(self):
         """Custom validation to ensure correct export of fields and tables."""
