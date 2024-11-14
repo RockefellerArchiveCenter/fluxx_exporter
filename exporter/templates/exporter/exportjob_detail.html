@@ -53,7 +53,7 @@
     {% endfor %}
   </ul>
 
-<div class="flex" style="justify-content: space-between;">
+<div class="flex exportjob-buttons__wrapper">
     <div>
         <a class="btn btn--md btn--light-blue" href="{% url 'exportjob_update' pk=object.pk %}">Edit</a>
     <a class="btn btn--md btn--orange" href="{% url 'exportjob_delete' pk=object.pk %}">Delete</a>
