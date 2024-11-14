@@ -53,9 +53,9 @@ class FluxxClientTests(SimpleTestCase):
         mock_get.return_value.json.return_value = {
             'records': {
                 table_name: [
-                    {'id': 22617997, 'model_documents': [11218402, 11434734, 11434735], 'grant_id': 'R-2024-00003', 'grantee_owner_name': 'De Witt, Austin'},
+                    {'id': 22617997, 'model_documents': [11218402, 11434734, 11434735], 'grant_id': 'R-2024-00003', 'grantee_owner_name': 'Dan, Desperate'},
                     {'id': 22618119, 'grant_id': 'R-2024-00006'},
-                    {'id': 22674311, 'grant_id': 'G-2024-00008', 'grantee_owner_name': 'De Witt, Austin'}
+                    {'id': 22674311, 'grant_id': 'G-2024-00008', 'grantee_owner_name': 'Dan, Desperate'}
                 ]
             }, 'total_pages': 1, 'total_entries': 3, 'current_page': 1, 'per_page': 100}
         result = client.list_rows(table_name, field_names)
