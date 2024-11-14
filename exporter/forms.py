@@ -83,3 +83,6 @@ class ExportJobForm(ModelForm):
     class Meta:
         model = ExportJob
         exclude = ('sftp_config',)
+        help_texts = {
+            'export_location': 'Directory in which exported records will be saved.'
+        }

@@ -20,58 +20,61 @@
 
   {% for field in form %}
     <div class="input mb-10">
-      {{ field.as_field_group }}
+      {{ field.label_tag }}
+        {{ field }}
+        {% if field.errors %}
+            <div id="{{field.auto_id}}-error" class="input__error">
+                {{ field.errors }}
+            </div>
+        {% endif %}
+        <div id="{{field.auto_id}}_helptext" class="input__help-text">
+          {{field.help_text}}
+        </div>
     </div>
   {% endfor %}
 
+  <h2>Tables and Fields</h2>
+
   {{formset.management_form}}
-  {{formset.non_form_errors}}
+  {% for error in formset.non_form_errors %}
+    <div class="input__error">{{error}}</div>
+  {% endfor %}
     
-
   {% for table_form in formset %}
-    <h2>Table</h2>
-    <ul class="list--unstyled">
-
-    <li>
+    <div class="input-group mt-20 mb-10">
       {{ table_form.id }}
-      <div class="input-group">
-        <input
-          type="checkbox"
-          class="checkbox checkbox--blue"
-          id="{{ table_form.include_in_export.auto_id }}"
-          name="{{ table_form.include_in_export.html_name }}"
-          {% if table_form.include_in_export.value %}checked="checked"{% endif %}
-        />
-        <label for="{{ table_form.include_in_export.id_for_label }}" class="checkbox--blue">{{ table_form.instance.name }}</label>
-      </div>
-    </li>
+      <input
+        type="checkbox"
+        class="checkbox checkbox--blue"
+        id="{{ table_form.include_in_export.auto_id }}"
+        name="{{ table_form.include_in_export.html_name }}"
+        {% if table_form.include_in_export.value %}checked="checked"{% endif %}
+      />
+      <label for="{{ table_form.include_in_export.id_for_label }}" class="checkbox--blue">{{table_form.instance.name}}</label>
+    </div>
 
     {% if table_form.nested %}
 
       {{table_form.nested.management_form}}
       {{table_form.errors}}
 
-      <h3>Fields for {{ table_form.instance.name }}</h3>
-
-      <ul class="list--unstyled">
+      <fieldset class="mb-20">
+        <legend>Fields for {{ table_form.instance.name }}</legend>
         {% for field_form in table_form.nested.forms %}
-
-        <li>
+        <div class="input-group">
           {{ field_form.id }}
-          <div class="input-group">
-            <input
-              type="checkbox"
-              class="checkbox checkbox--blue"
-              id="{{ field_form.include_in_export.auto_id }}"
-              name="{{ field_form.include_in_export.html_name }}"
-              {% if field_form.include_in_export.value %}checked="checked"{% endif %}
-            />
-            <label for="{{ field_form.include_in_export.id_for_label }}" class="checkbox--blue">{{ field_form.instance.name }}</label>
-          </li>
+          <input
+            type="checkbox"
+            class="checkbox checkbox--blue"
+            id="{{ field_form.include_in_export.auto_id }}"
+            name="{{ field_form.include_in_export.html_name }}"
+            {% if field_form.include_in_export.value %}checked="checked"{% endif %}
+          />
+          <label for="{{ field_form.include_in_export.id_for_label }}" class="checkbox--blue">{{ field_form.instance.name }}</label>
+        </div>
         {% endfor %}
-      </ul>
+      </fieldset>
     {% endif %}
-  </ul>
   {% endfor %}
  
 
