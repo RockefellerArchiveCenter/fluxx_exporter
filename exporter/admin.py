@@ -1,9 +1,9 @@
 from django.contrib import admin
 
-from .models import Column, Entity, FluxxConfig, S3Config, User
+from .models import AmazonS3Config, Field, FluxxConfig, Table, User
 
-admin.site.register(Entity)
-admin.site.register(Column)
+admin.site.register(Table)
+admin.site.register(Field)
 admin.site.register(User)
 admin.site.register(FluxxConfig)
-admin.site.register(S3Config)
+admin.site.register(AmazonS3Config)

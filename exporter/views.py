@@ -5,8 +5,8 @@ from django.views.generic import DetailView, TemplateView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
 
 from .exporters import Exporter
-from .forms import ExportJobForm, ExportJobWithEntities
-from .models import Column, Entity, ExportJob
+from .forms import ExportJobForm, ExportJobWithTables
+from .models import ExportJob, Field, Table
 
 
 class IndexView(TemplateView):
@@ -37,24 +37,24 @@ class CreateExportJobView(CreateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['formset'] = ExportJobWithEntities(**self.get_form_kwargs())
+        context['formset'] = ExportJobWithTables(**self.get_form_kwargs())
         return context
 
     def form_valid(self, form):
         context = self.get_context_data(form=form)
-        entities_formset = context['formset']
-        if entities_formset.is_valid():
+        tables_formset = context['formset']
+        if tables_formset.is_valid():
             response = super().form_valid(form)
-            for form in entities_formset:
-                new_entity = Entity.objects.create(
+            for form in tables_formset:
+                new_table = Table.objects.create(
                     name=form.instance.name,
                     include_in_export=form.instance.include_in_export,
                     export_job=self.object)
-                for column in form.nested:
-                    Column.objects.create(
-                        name=column.instance.name,
-                        include_in_export=column.instance.include_in_export,
-                        entity=new_entity)
+                for field in form.nested:
+                    Field.objects.create(
+                        name=field.instance.name,
+                        include_in_export=field.instance.include_in_export,
+                        table=new_table)
             return response
         else:
             return super().form_invalid(form)
@@ -67,14 +67,14 @@ class UpdateExportJobView(UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['formset'] = ExportJobWithEntities(**self.get_form_kwargs())
+        context['formset'] = ExportJobWithTables(**self.get_form_kwargs())
         return context
 
     def form_valid(self, form):
         context = self.get_context_data(form=form)
-        entities_formset = context['formset']
-        if entities_formset.is_valid():
-            entities_formset.save()
+        tables_formset = context['formset']
+        if tables_formset.is_valid():
+            tables_formset.save()
             return super().form_valid(form)
         else:
             return super().form_invalid(form)

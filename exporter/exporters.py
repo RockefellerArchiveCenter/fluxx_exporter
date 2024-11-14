@@ -7,7 +7,7 @@ from pathlib import Path
 
 from django.core.exceptions import ObjectDoesNotExist
 
-from .clients import FluxxClient, S3Client
+from .clients import AmazonS3Client, FluxxClient
 from .models import ExportJob
 
 logging = logging.getLogger(__name__)
@@ -28,9 +28,9 @@ class Exporter(object):
             self.filter_string = export_job.filter_string
             self.export_format = export_job.export_format
             self.export_location = export_job.export_location
-            self.s3_config = export_job.s3_config
+            self.amazon_s3_config = export_job.amazon_s3_config
             self.sftp_config = export_job.sftp_config
-            self.entities = export_job.entity_set.all()
+            self.tables = export_job.table_set.all()
         except ObjectDoesNotExist:
             logging.error(f"Could not find export job configuration for id {export_job_id}.")
             raise Exception(f"Could not find export job configuration for id {export_job_id}.")
@@ -47,24 +47,24 @@ class Exporter(object):
                 self.fluxx_config.client_id,
                 self.fluxx_config.client_secret)
 
-            for entity in self.entities:
-                logging.debug(f'Exporting data for entity {entity}')
-                entity_path = (self.export_path / entity.name)
-                entity_path.mkdir(exist_ok=True)
+            for table in self.tables:
+                logging.debug(f'Exporting data for table {table}')
+                table_path = (self.export_path / table.name)
+                table_path.mkdir(exist_ok=True)
 
                 filter_value = self.parse_filter(self.filter_string)
-                related_entity = self.parse_related_entities(entity.related_entities.all())
+                related_table = self.parse_related_tables(table.field_set.all())
                 results = fluxx_client.list_rows(
-                    entity.name,
-                    [c.name for c in entity.column_set.all()],
+                    table.name,
+                    [c.name for c in table.field_set.all()],
                     filter_value=filter_value,
-                    related_entity=related_entity)
-                logging.debug(f'Returned results for entity {entity} from Fluxx.')
+                    related_table=related_table)
+                logging.debug(f'Returned results for table {table} from Fluxx.')
 
                 logging.info('Saving data exported from Fluxx.')
                 for record in results:
                     logging.debug(f'Saving data for record {record["id"]}')
-                    record_path = (entity_path / str(record['id']))
+                    record_path = (table_path / str(record['id']))
                     record_path.mkdir()
                     try:
                         self.save_data(record, self.export_format, record_path)
@@ -77,18 +77,18 @@ class Exporter(object):
                         logging.debug(f'Saving document {doc_id} with file name {file_name}')
                         self.save_document(file_name, file_obj, record_path)
 
-                    if self.s3_config:
+                    if self.amazon_s3_config:
                         logging.info('Uploading to S3')
                         try:
-                            s3_client = S3Client(
-                                self.s3_config.bucket,
-                                self.s3_config.access_key_id,
-                                self.s3_config.secret_key,
-                                self.s3_config.region,)
+                            s3_client = AmazonS3Client(
+                                self.amazon_s3_config.bucket,
+                                self.amazon_s3_config.access_key_id,
+                                self.amazon_s3_config.secret_key,
+                                self.amazon_s3_config.region,)
                             s3_client.upload_directory(record_path)
                         except Exception as e:
-                            logging.error(f'Error uploading to S3 bucket {self.s3_config.bucket}: {e}')
-                            raise Exception(f'Error uploading to S3 bucket {self.s3_config.bucket}: {e}')
+                            logging.error(f'Error uploading to S3 bucket {self.amazon_s3_config.bucket}: {e}')
+                            raise Exception(f'Error uploading to S3 bucket {self.amazon_s3_config.bucket}: {e}')
 
             logging.info('Fluxx export complete.')
             return True, None
@@ -121,21 +121,21 @@ class Exporter(object):
         logging.debug(f'Filter {filter} parsed into parts {filter_parts}')
         return filter_parts
 
-    def parse_related_entities(self, related_entities):
-        """Structures related entities request parameter.
+    def parse_related_tables(self, related_tables):
+        """Structures related tables request parameter.
 
         Args:
-            related_entities (list of Entity instances): list of related entities.
+            related_tables (list of Table instances): list of related tables.
 
         Returns:
             relation_params (dict): structured relationship parameter.
         """
-        logging.debug(f'Parsing related entitites {related_entities}')
+        logging.debug(f'Parsing related table {related_tables}')
         relation_params = {}
-        for related_entity in related_entities:
-            re_columns = [column.name for column in related_entity.column_set.all()]
-            relation_params[related_entity.name] = re_columns
-        logging.debug(f'Related entities {related_entities} parsed to params {relation_params}')
+        for related_table in related_tables:
+            re_fields = [field.name for field in related_table.field_set.all()]
+            relation_params[related_table.name] = re_fields
+        logging.debug(f'Related tables {related_tables} parsed to params {relation_params}')
         return relation_params
 
     def save_data(self, json_data, export_format, export_location):

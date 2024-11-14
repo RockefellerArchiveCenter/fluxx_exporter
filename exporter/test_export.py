@@ -7,7 +7,7 @@ import responses
 from django.test import TestCase
 
 from .exporters import Exporter
-from .models import Column, Entity, ExportJob, FluxxConfig, S3Config
+from .models import AmazonS3Config, ExportJob, Field, FluxxConfig, Table
 
 
 class ExportTests(TestCase):
@@ -31,7 +31,7 @@ class ExportTests(TestCase):
         self.assertEqual(exporter.filter_string, export_job.filter_string)
         self.assertEqual(exporter.export_format, export_job.export_format)
         self.assertEqual(exporter.export_location, export_job.export_location)
-        self.assertEqual(exporter.s3_config, export_job.s3_config)
+        self.assertEqual(exporter.amazon_s3_config, export_job.amazon_s3_config)
 
         """Missing export job throws a useful exception."""
         ExportJob.objects.all().delete()
@@ -40,23 +40,23 @@ class ExportTests(TestCase):
         self.assertIn("100", str(e.exception))
 
     @patch('exporter.exporters.Exporter.parse_filter')
-    @patch('exporter.exporters.Exporter.parse_related_entities')
+    @patch('exporter.exporters.Exporter.parse_related_tables')
     @patch('exporter.exporters.Exporter.save_data')
     @patch('exporter.exporters.Exporter.save_document')
     @patch('exporter.clients.FluxxClient.__init__')
     @patch('exporter.clients.FluxxClient.list_rows')
     @patch('exporter.clients.FluxxClient.download_document')
-    @patch('exporter.clients.S3Client.__init__')
-    @patch('exporter.clients.S3Client.upload_directory')
+    @patch('exporter.clients.AmazonS3Client.__init__')
+    @patch('exporter.clients.AmazonS3Client.upload_directory')
     def test_fluxx_export(self, mock_s3_upload, mock_s3_init, mock_download_doc, mock_list_rows, mock_fluxx, mock_save_document, mock_save_data, mock_parse_related, mock_parse_filter):
         """Assert main method calls submethods with correct args"""
 
         record_id = "12345"
         export_job = ExportJob.objects.all().first()
         fluxx_config = FluxxConfig.objects.all().first()
-        s3_config = s3_config = S3Config.objects.all().first()
-        entity = Entity.objects.all().first()
-        export_dir = Path(export_job.export_location, entity.name, record_id)
+        s3_config = s3_config = AmazonS3Config.objects.all().first()
+        table = Table.objects.all().first()
+        export_dir = Path(export_job.export_location, table.name, record_id)
         model_doc_id = "12345"
         download_response = (1, 2)
         mock_fluxx.return_value = None
@@ -75,10 +75,10 @@ class ExportTests(TestCase):
         mock_parse_filter.assert_called_once_with(export_job.filter_string)
         mock_parse_related.assert_called_once()
 
-        self.assertEqual(mock_list_rows.call_args[0][0], entity.name)
+        self.assertEqual(mock_list_rows.call_args[0][0], table.name)
         self.assertEqual(mock_list_rows.call_args[1]['filter_value'], mock_parse_filter.return_value)
-        self.assertEqual(mock_list_rows.call_args[1]['related_entity'], mock_parse_related.return_value)
-        self.assertQuerySetEqual(mock_list_rows.call_args[0][1], [c.name for c in entity.column_set.all()])
+        self.assertEqual(mock_list_rows.call_args[1]['related_table'], mock_parse_related.return_value)
+        self.assertQuerySetEqual(mock_list_rows.call_args[0][1], [c.name for c in table.field_set.all()])
         mock_list_rows.assert_called_once()
 
         mock_save_data.assert_called_once_with(
@@ -104,18 +104,18 @@ class ExportTests(TestCase):
         self.assertEqual(output[0], False)
         self.assertIn(error_message, output[1])
 
-    def test_parse_related_entity(self):
-        """"Assert related entities are parsed as expected."""
+    def test_parse_related_table(self):
+        """"Assert related tables are parsed as expected."""
         export_job = ExportJob.objects.all().first()
-        entity = Entity.objects.all().first()
-        column = Column.objects.all().first()
+        table = Table.objects.all().first()
+        field = Field.objects.all().first()
         exporter = Exporter(export_job.pk)
-        result = exporter.parse_related_entities([])
+        result = exporter.parse_related_tables([])
         self.assertEqual(result, {})
 
-        entities = Entity.objects.all()
-        result = exporter.parse_related_entities(entities)
-        self.assertEqual(result, {entity.name: [column.name]})
+        tables = Table.objects.all()
+        result = exporter.parse_related_tables(tables)
+        self.assertEqual(result, {table.name: [field.name]})
 
     def test_parse_filter(self):
         """Assert filter is parsed as expected."""

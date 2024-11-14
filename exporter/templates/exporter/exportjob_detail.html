@@ -35,15 +35,15 @@
     {% endif %}
   </dl>
 
-  <h2>Entities and Columns</h2>
+  <h2>Tables and Fields</h2>
   <ul>
-    {% for entity in object.entity_set.all %}
-        {% if entity.include_in_export %}
-            <li>{{ entity.name }}</li>
+    {% for table in object.table_set.all %}
+        {% if table.include_in_export %}
+            <li>{{ table.name }}</li>
             <ul>
-            {% for column in entity.column_set.all %}
-                {% if column.include_in_export %}
-                <li>{{ column.name }}</li>
+            {% for field in table.field_set.all %}
+                {% if field.include_in_export %}
+                <li>{{ field.name }}</li>
                 {% endif %}
             {% endfor %}
             </ul>

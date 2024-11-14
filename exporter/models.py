@@ -29,7 +29,7 @@ class SFTPConfig(models.Model):
         return self.name
 
 
-class S3Config(models.Model):
+class AmazonS3Config(models.Model):
     name = models.CharField(max_length=100, default='S3 Config')
     bucket = models.CharField(max_length=100)
     access_key_id = models.CharField(max_length=100)
@@ -46,14 +46,14 @@ class ExportJob(models.Model):
     export_location = models.CharField(max_length=255)
     export_format = models.CharField(max_length=10, choices=[('json', 'JSON'), ('xml', 'XML'), ('csv', 'CSV')])
     filter_string = models.CharField(max_length=1000, null=True, blank=True)
-    s3_config = models.ForeignKey(S3Config, on_delete=models.SET_NULL, null=True, blank=True)
+    amazon_s3_config = models.ForeignKey(AmazonS3Config, on_delete=models.SET_NULL, null=True, blank=True)
     sftp_config = models.ForeignKey(SFTPConfig, on_delete=models.SET_NULL, null=True, blank=True)
 
     def get_absolute_url(self):
         return reverse('exportjob_detail', kwargs={'pk': self.pk})
 
 
-class Entity(models.Model):
+class Table(models.Model):
     name = models.CharField(max_length=100)
     include_in_export = models.BooleanField(default=False)
     export_job = models.ForeignKey(
@@ -61,19 +61,19 @@ class Entity(models.Model):
         null=True,
         blank=True,
         on_delete=models.CASCADE)
-    related_entity = models.ForeignKey(
+    related_table = models.ForeignKey(
         'self',
         null=True,
         blank=True,
         on_delete=models.SET_NULL,
-        related_name='related_entities')
+        related_name='related_tables')
 
     def __str__(self):
         return self.name
 
 
-class Column(models.Model):
-    entity = models.ForeignKey(Entity, on_delete=models.CASCADE)
+class Field(models.Model):
+    table = models.ForeignKey(Table, on_delete=models.CASCADE)
     name = models.CharField(max_length=100)
     include_in_export = models.BooleanField(default=False)
 

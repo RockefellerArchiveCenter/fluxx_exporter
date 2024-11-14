@@ -2,35 +2,35 @@ from django.forms import ValidationError
 from django.forms.models import (BaseInlineFormSet, ModelForm,
                                  inlineformset_factory)
 
-from .models import Column, Entity, ExportJob
+from .models import ExportJob, Field, Table
 
-EntityColumnFormset = inlineformset_factory(
-    Entity,
-    Column,
+TableFieldFormset = inlineformset_factory(
+    Table,
+    Field,
     fields=('id', 'include_in_export',),
     extra=0,
     can_delete=False)
 
 
-class BaseEntitiesWithColumns(BaseInlineFormSet):
+class BaseTablesWithFields(BaseInlineFormSet):
 
     def get_queryset(self):
         if self.instance.id:
-            queryset = Entity.objects.filter(export_job=self.instance)
+            queryset = Table.objects.filter(export_job=self.instance)
         else:
-            queryset = Entity.objects.filter(export_job__isnull=True)
+            queryset = Table.objects.filter(export_job__isnull=True)
         return queryset
 
     def add_fields(self, form, index):
         super().add_fields(form, index)
 
-        form.nested = EntityColumnFormset(
+        form.nested = TableFieldFormset(
             instance=form.instance,
             data=form.data if form.is_bound else None,
             files=form.files if form.is_bound else None)
 
     def clean(self):
-        """Custom validation to ensure correct export of columns and entities."""
+        """Custom validation to ensure correct export of fields and tables."""
 
         super().clean()
 
@@ -38,12 +38,12 @@ class BaseEntitiesWithColumns(BaseInlineFormSet):
             if form.instance.include_in_export:
                 if hasattr(form, "nested"):
                     if not any([c.instance.include_in_export for c in form.nested]):
-                        raise ValidationError('You must add at least one field to this column.')
+                        raise ValidationError('You must add at least one field to this table.')
 
             else:
                 if hasattr(form, "nested"):
                     if any([c.instance.include_in_export for c in form.nested]):
-                        raise ValidationError('You cannot export fields without also exporting the parent column.')
+                        raise ValidationError('You cannot export fields without also exporting the parent table.')
 
     def is_valid(self):
         """Validate the nested formsets."""
@@ -69,10 +69,10 @@ class BaseEntitiesWithColumns(BaseInlineFormSet):
         return result
 
 
-ExportJobWithEntities = inlineformset_factory(
+ExportJobWithTables = inlineformset_factory(
     ExportJob,
-    Entity,
-    formset=BaseEntitiesWithColumns,
+    Table,
+    formset=BaseTablesWithFields,
     fields=('id', 'include_in_export',),
     extra=0,
     can_delete=False

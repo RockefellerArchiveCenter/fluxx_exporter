@@ -4,11 +4,11 @@ from pathlib import Path
 
 from django.core.management.base import BaseCommand
 
-from exporter.models import Column, Entity
+from exporter.models import Field, Table
 
 
 class Command(BaseCommand):
-    help = "This command imports a fluxx entity csv and creates columns and entities from the Fluxx glossary csv file. The syntax is python manage.py input_csv path/to/filename"
+    help = "This command imports a Fluxx Glossary Report CSV file and generates corresponding Fields and Tables."
 
     def add_arguments(self, parser):
         """Adds required file_path argument"""
@@ -33,6 +33,6 @@ class Command(BaseCommand):
             csvfile.seek(0)  # reset read position to beginning of file
 
             for row in filter(self.is_field, csvreader):
-                entity_name = row[0].lower().replace(" ", "_")
-                entity, _ = Entity.objects.get_or_create(name=entity_name)
-                Column.objects.get_or_create(name=row[1], entity=entity)
+                table_name = row[0].lower().replace(" ", "_")
+                table, _ = Table.objects.get_or_create(name=table_name)
+                Field.objects.get_or_create(name=row[1], table=table)

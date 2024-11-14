@@ -273,7 +273,7 @@
         "fields": {
             "name": "Can add s3 config",
             "content_type": 7,
-            "codename": "add_s3config"
+            "codename": "add_amazons3config"
         }
     },
     {
@@ -282,7 +282,7 @@
         "fields": {
             "name": "Can change s3 config",
             "content_type": 7,
-            "codename": "change_s3config"
+            "codename": "change_amazons3config"
         }
     },
     {
@@ -291,7 +291,7 @@
         "fields": {
             "name": "Can delete s3 config",
             "content_type": 7,
-            "codename": "delete_s3config"
+            "codename": "delete_amazons3config"
         }
     },
     {
@@ -300,7 +300,7 @@
         "fields": {
             "name": "Can view s3 config",
             "content_type": 7,
-            "codename": "view_s3config"
+            "codename": "view_amazons3config"
         }
     },
     {
@@ -616,7 +616,7 @@
         }
     },
     {
-        "model": "exporter.s3config",
+        "model": "exporter.amazons3config",
         "pk": 1,
         "fields": {
             "name": "S3 Config",
@@ -635,44 +635,44 @@
             "export_location": "/tmp/exports",
             "export_format": "json",
             "filter_string": null,
-            "s3_config": 1,
+            "amazon_s3_config": 1,
             "sftp_config": null
         }
     },
     {
-        "model": "exporter.entity",
+        "model": "exporter.table",
         "pk": 1,
         "fields": {
             "name": "grant_request",
             "include_in_export": false,
             "export_job": null,
-            "related_entity": null
+            "related_table": null
         }
     },
     {
-        "model": "exporter.entity",
+        "model": "exporter.table",
         "pk": 2,
         "fields": {
             "name": "grant_request",
             "include_in_export": true,
             "export_job": 1,
-            "related_entity": null
+            "related_table": null
         }
     },
     {
-        "model": "exporter.column",
+        "model": "exporter.field",
         "pk": 1,
         "fields": {
-            "entity": 1,
+            "table": 1,
             "name": "organization_name",
             "include_in_export": false
         }
     },
     {
-        "model": "exporter.column",
+        "model": "exporter.field",
         "pk": 2,
         "fields": {
-            "entity": 2,
+            "table": 2,
             "name": "organization_name",
             "include_in_export": true
         }
