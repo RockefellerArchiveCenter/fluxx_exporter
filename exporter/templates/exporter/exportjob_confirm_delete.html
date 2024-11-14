@@ -1,5 +1,7 @@
 {% extends 'exporter/main.html' %}
 
+{% block title %}Fluxx Exporter - Confirm Deletion of {{object.name}}{% endblock %}
+
 {% block content %}
 
 <form method="post">{% csrf_token %}
