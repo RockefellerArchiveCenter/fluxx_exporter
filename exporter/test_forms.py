@@ -20,12 +20,15 @@ class FormTests(TestCase):
             'table_set-MAX_NUM_FORMS': '1000',
             'table_set-0-id': '1',
             'table_set-0-include_in_export': 'on',
-            'field_set-TOTAL_FORMS': '1',
-            'field_set-INITIAL_FORMS': '1',
-            'field_set-MIN_NUM_FORMS': '0',
-            'field_set-MAX_NUM_FORMS': '1000',
-            'field_set-0-id': '1',
-            'field_set-0-include_in_export': 'on',
+            'tablefield-table_set-0-field_set-TOTAL_FORMS': '4',
+            'tablefield-table_set-0-field_set-INITIAL_FORMS': '4',
+            'tablefield-table_set-0-field_set-MIN_NUM_FORMS': '0',
+            'tablefield-table_set-0-field_set-MAX_NUM_FORMS': '1000',
+            'tablefield-table_set-0-field_set-0-id': '2391',
+            'tablefield-table_set-0-field_set-0-include_in_export': 'on',
+            'tablefield-table_set-0-field_set-1-id': '2392',
+            'tablefield-table_set-0-field_set-2-id': '2393',
+            'tablefield-table_set-0-field_set-3-id': '2394',
         }
 
     def test_custom_formset(self):
@@ -36,14 +39,14 @@ class FormTests(TestCase):
         for f in form.forms:
             self.assertIsInstance(f.nested, TableFieldFormset)
 
-        self.form_data.pop('field_set-0-include_in_export')
+        self.form_data.pop('tablefield-table_set-0-field_set-0-include_in_export')
         form = ExportJobWithTables(data=self.form_data)
         with self.assertRaises(ValidationError) as err:
             form.clean()
         self.assertEqual(err.exception.message, 'You must add at least one field to this table.')
 
         self.form_data.pop('table_set-0-include_in_export')
-        self.form_data['field_set-0-include_in_export'] = 'on'
+        self.form_data['tablefield-table_set-0-field_set-0-include_in_export'] = 'on'
         form = ExportJobWithTables(data=self.form_data)
         with self.assertRaises(ValidationError) as err:
             form.clean()

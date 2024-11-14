@@ -24,12 +24,12 @@ class ViewTests(TestCase):
             'table_set-MAX_NUM_FORMS': '1000',
             'table_set-0-id': '1',
             'table_set-0-include_in_export': 'on',
-            'field_set-TOTAL_FORMS': '1',
-            'field_set-INITIAL_FORMS': '1',
-            'field_set-MIN_NUM_FORMS': '0',
-            'field_set-MAX_NUM_FORMS': '1000',
-            'field_set-0-id': '1',
-            'field_set-0-include_in_export': 'on',
+            'tablefield-table_set-0-field_set-TOTAL_FORMS': '1',
+            'tablefield-table_set-0-field_set-INITIAL_FORMS': '1',
+            'tablefield-table_set-0-field_set-MIN_NUM_FORMS': '0',
+            'tablefield-table_set-0-field_set-MAX_NUM_FORMS': '1000',
+            'tablefield-table_set-0-field_set-0-id': '1',
+            'tablefield-table_set-0-field_set-0-include_in_export': 'on',
         }
 
     def test_create_export_job_view(self):
