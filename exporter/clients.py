@@ -56,13 +56,43 @@ class FluxxClient(object):
         })
         logging.debug("Fluxx client authentication successful")
 
-    def list_rows(self, table_name, field_names, filter_value=None, related_table=None, current_page=1, per_page=100):
+    def request(self, method, url, params=None):
+        """Handle HTTP request."""
+        logging.debug(f'Making {method} request for {url} with params {params}')
+        try:
+            resp = getattr(self.session, method)(url, params=params)
+            resp.raise_for_status()
+            return resp.json()
+        except Exception:
+            logging.error(f"Error making {method.upper()} request from {url}: {resp.text}")
+            raise Exception(f"Error making {method.upper()} request from {url}: {resp.text}")
+
+    def get(self, url, params=None):
+        """Handle a request for a single page."""
+        return self.request('get', url, params=params)
+
+    def list(self, url, params=None):
+        """Handle a paged request."""
+        table_name = url.rstrip('/').split('/')[-1]
+        current_page = params['page']
+        resp = self.request('get', url, params=params)
+        total_pages = resp['total_pages']
+        for record in resp['records'][table_name]:
+            yield record
+        while total_pages > current_page:
+            current_page += 1
+            params.update({'page': current_page})
+            resp = self.request('get', f"{self.api_url}{table_name}", params=params)
+            for record in resp['records'][table_name]:
+                yield record
+
+    def list_rows(self, table_name, field_names, filter_value=None, grant_ids=None, related_table=None, current_page=1, per_page=100):
         """Returns data about a given table from Fluxx API.
 
         Args:
             table_name (str): name of the table to fetch
             field_names (list of str): field names from the table
-            filter_value (str): string to filter records by
+            filter_value (list): list representing a filter
             related_table (str): related tables to fetch
             page (int): page number to start from
             per_page (int): number of items per page
@@ -70,34 +100,26 @@ class FluxxClient(object):
         Returns:
             rows (list): data about the requested tables.
         """
-        logging.debug(f'Fetching data for {table_name} with fields {field_names} and filter {filter_value}')
+        logging.debug(f'Fetching data for {table_name} with fields {field_names}, filter {filter_value} and grant_ids {grant_ids}')
 
-        params = {
-            'cols': json.dumps(field_names),
-            'page': current_page,
-            'per_page': per_page
-        }
+        params = {}
 
         if filter_value:
             params.update({'filter': json.dumps(filter_value)})
 
         logging.debug(f'Params: {params}')
 
-        try:
-            resp = self.session.get(f"{self.api_url}{table_name}", params=params)
-            resp.raise_for_status()
-            total_pages = resp.json()['total_pages']
-            for record in resp.json()['records'][table_name]:
-                yield record
-            while total_pages > current_page:
-                current_page += 1
-                params.update({'page': current_page})
-                resp = self.session.get(f"{self.api_url}{table_name}", params=params)
-                for record in resp.json()['records'][table_name]:
-                    yield record
-        except Exception:
-            logging.error(f"Error fetching data: {resp.text}")
-            raise Exception(f"Error fetching data: {resp.text}")
+        if grant_ids:
+            for g_id in grant_ids:
+                yield self.get(f"{self.api_url}{table_name}/{g_id}")
+
+        else:
+            params.update({
+                'cols': json.dumps(field_names),
+                'page': current_page,
+                'per_page': per_page
+            })
+            yield from self.list(f"{self.api_url}{table_name}", params=params)
 
     def download_document(self, document_id):
         """Downloads documents by ID.
@@ -113,11 +135,8 @@ class FluxxClient(object):
         download_params = {'cols': json.dumps(["document_file_name"])}
 
         # Get the filename
-        document_info = self.session.get(
-            f"{self.api_url}model_document/{document_id}",
-            params=download_params)
-        document_info.raise_for_status()
-        document_name = document_info.json()['model_document']['document_file_name']
+        document_info = self.get(f"{self.api_url}model_document/{document_id}", params=download_params)
+        document_name = document_info['model_document']['document_file_name']
 
         # Get the file object
         document_download_url = f"{self.api_url}model_document_download/{document_id}"
