@@ -61,21 +61,24 @@ class Table(models.Model):
         null=True,
         blank=True,
         on_delete=models.CASCADE)
-    related_table = models.ForeignKey(
-        'self',
-        null=True,
-        blank=True,
-        on_delete=models.SET_NULL,
-        related_name='related_tables')
 
     def __str__(self):
         return self.name
 
 
 class Field(models.Model):
-    table = models.ForeignKey(Table, on_delete=models.CASCADE)
+    table = models.ForeignKey(
+        Table,
+        on_delete=models.CASCADE,
+        related_name='fields')
     name = models.CharField(max_length=100)
     include_in_export = models.BooleanField(default=False)
+    related_table = models.ForeignKey(
+        Table,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='related_tables')
 
     def __str__(self):
         return self.name
