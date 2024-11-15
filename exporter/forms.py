@@ -9,7 +9,8 @@ TableFieldFormset = inlineformset_factory(
     Field,
     fields=('id', 'include_in_export',),
     extra=0,
-    can_delete=False)
+    can_delete=False,
+    fk_name='table')
 
 
 class BaseTablesWithFields(BaseInlineFormSet):
