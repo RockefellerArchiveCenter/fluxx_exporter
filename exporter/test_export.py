@@ -29,6 +29,7 @@ class ExportTests(TestCase):
         exporter = Exporter(export_job.pk)
         self.assertEqual(exporter.fluxx_config, export_job.fluxx_config)
         self.assertEqual(exporter.filter_string, export_job.filter_string)
+        self.assertEqual(exporter.grant_ids, export_job.grant_ids)
         self.assertEqual(exporter.export_format, export_job.export_format)
         self.assertEqual(exporter.export_location, export_job.export_location)
         self.assertEqual(exporter.amazon_s3_config, export_job.amazon_s3_config)
@@ -40,6 +41,7 @@ class ExportTests(TestCase):
         self.assertIn("100", str(e.exception))
 
     @patch('exporter.exporters.Exporter.parse_filter')
+    @patch('exporter.exporters.Exporter.parse_grant_ids')
     @patch('exporter.exporters.Exporter.parse_related_tables')
     @patch('exporter.exporters.Exporter.save_data')
     @patch('exporter.exporters.Exporter.save_document')
@@ -48,7 +50,7 @@ class ExportTests(TestCase):
     @patch('exporter.clients.FluxxClient.download_document')
     @patch('exporter.clients.AmazonS3Client.__init__')
     @patch('exporter.clients.AmazonS3Client.upload_directory')
-    def test_fluxx_export(self, mock_s3_upload, mock_s3_init, mock_download_doc, mock_list_rows, mock_fluxx, mock_save_document, mock_save_data, mock_parse_related, mock_parse_filter):
+    def test_fluxx_export(self, mock_s3_upload, mock_s3_init, mock_download_doc, mock_list_rows, mock_fluxx, mock_save_document, mock_save_data, mock_parse_related, mock_parse_ids, mock_parse_filter):
         """Assert main method calls submethods with correct args"""
 
         record_id = "12345"
@@ -73,11 +75,13 @@ class ExportTests(TestCase):
             fluxx_config.client_id,
             fluxx_config.client_secret)
         mock_parse_filter.assert_called_once_with(export_job.filter_string)
+        mock_parse_ids.assert_called_once_with(export_job.grant_ids)
         mock_parse_related.assert_called_once()
 
         self.assertEqual(mock_list_rows.call_args[0][0], table.name)
         self.assertEqual(mock_list_rows.call_args[1]['filter_value'], mock_parse_filter.return_value)
         self.assertEqual(mock_list_rows.call_args[1]['related_table'], mock_parse_related.return_value)
+        self.assertEqual(mock_list_rows.call_args[1]['grant_ids'], mock_parse_ids.return_value)
         self.assertQuerySetEqual(mock_list_rows.call_args[0][1], [c.name for c in table.field_set.all()])
         mock_list_rows.assert_called_once()
 
@@ -128,6 +132,17 @@ class ExportTests(TestCase):
         with self.assertRaises(Exception) as e:
             exporter.parse_filter("foo eq")
         self.assertIn("foo eq", str(e.exception))
+
+    def test_parse_grant_ids(self):
+        """Assert grant IDs are parsed as expected"""
+        export_job = ExportJob.objects.all().first()
+        exporter = Exporter(export_job.pk)
+
+        result = exporter.parse_grant_ids(None)
+        self.assertEqual(result, None)
+
+        result = exporter.parse_grant_ids(exporter.grant_ids)
+        self.assertEqual(result, ['1', '2', '3', '4'])
 
     @patch('exporter.exporters.Exporter.write_csv')
     @patch('exporter.exporters.Exporter.write_json')
