@@ -3,7 +3,7 @@ from unittest.mock import patch
 from django.core.management import call_command
 from django.test import TestCase
 
-from .models import Column, Entity
+from .models import Field, Table
 
 
 class ManagementCommandTests(TestCase):
@@ -21,13 +21,13 @@ class ManagementCommandTests(TestCase):
     def test_import_csv_command(self):
         """Assert import CSV command imports records as expected."""
 
-        self.assertEqual(Column.objects.all().count(), 0)
-        self.assertEqual(Entity.objects.all().count(), 0)
+        self.assertEqual(Field.objects.all().count(), 0)
+        self.assertEqual(Table.objects.all().count(), 0)
 
         call_command('import_csv', 'exporter/fixtures/fluxx_glossary_report.csv')
 
-        self.assertEqual(Column.objects.all().count(), 380)
-        self.assertEqual(Entity.objects.all().count(), 6)
+        self.assertEqual(Field.objects.all().count(), 380)
+        self.assertEqual(Table.objects.all().count(), 6)
 
         with self.assertRaises(Exception) as err:
             call_command('import_csv', 'exporter/fixtures/non_fluxx_glossary_report.csv')

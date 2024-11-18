@@ -56,24 +56,24 @@ class FluxxClient(object):
         })
         logging.debug("Fluxx client authentication successful")
 
-    def list_rows(self, entity_name, column_names, filter_value=None, related_entity=None, current_page=1, per_page=100):
-        """Returns data about a given entity from Fluxx API.
+    def list_rows(self, table_name, field_names, filter_value=None, related_table=None, current_page=1, per_page=100):
+        """Returns data about a given table from Fluxx API.
 
         Args:
-            entity_name (str): name of the entity to fetch
-            column_names (list of str): column names from the entity
-            filter_value (str): string to filter entities by
-            related_entity (str): related entities to fetch
+            table_name (str): name of the table to fetch
+            field_names (list of str): field names from the table
+            filter_value (str): string to filter records by
+            related_table (str): related tables to fetch
             page (int): page number to start from
             per_page (int): number of items per page
 
         Returns:
-            rows (list): data about the requested entities.
+            rows (list): data about the requested tables.
         """
-        logging.debug(f'Fetching data for {entity_name} with columns {column_names} and filter {filter_value}')
+        logging.debug(f'Fetching data for {table_name} with fields {field_names} and filter {filter_value}')
 
         params = {
-            'cols': json.dumps(column_names),
+            'cols': json.dumps(field_names),
             'page': current_page,
             'per_page': per_page
         }
@@ -84,16 +84,16 @@ class FluxxClient(object):
         logging.debug(f'Params: {params}')
 
         try:
-            resp = self.session.get(f"{self.api_url}{entity_name}", params=params)
+            resp = self.session.get(f"{self.api_url}{table_name}", params=params)
             resp.raise_for_status()
             total_pages = resp.json()['total_pages']
-            for record in resp.json()['records'][entity_name]:
+            for record in resp.json()['records'][table_name]:
                 yield record
             while total_pages > current_page:
                 current_page += 1
                 params.update({'page': current_page})
-                resp = self.session.get(f"{self.api_url}{entity_name}", params=params)
-                for record in resp.json()['records'][entity_name]:
+                resp = self.session.get(f"{self.api_url}{table_name}", params=params)
+                for record in resp.json()['records'][table_name]:
                     yield record
         except Exception:
             logging.error(f"Error fetching data: {resp.text}")
@@ -179,7 +179,7 @@ class SFTPClient(object):
         self.ssh.close()
 
 
-class S3Client(object):
+class AmazonS3Client(object):
 
     def __init__(self, bucket, access_key_id, secret_key, region):
         """Sets up client and other properties."""
