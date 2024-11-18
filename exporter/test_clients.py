@@ -7,7 +7,7 @@ import requests
 from django.test import SimpleTestCase
 from moto import mock_aws
 
-from .clients import FluxxClient, S3Client
+from .clients import AmazonS3Client, FluxxClient
 
 
 class FluxxClientTests(SimpleTestCase):
@@ -48,20 +48,20 @@ class FluxxClientTests(SimpleTestCase):
         mock_post.return_value.json.return_value = {"access_token": self.access_token}
         client = FluxxClient(self.base_url, self.client_id, self.client_secret)
 
-        entity_name = 'grant_request'
-        column_names = ['id, model_documents', 'grant_id', 'grantee_owner_name']
+        table_name = 'grant_request'
+        field_names = ['id, model_documents', 'grant_id', 'grantee_owner_name']
         mock_get.return_value.json.return_value = {
             'records': {
-                entity_name: [
-                    {'id': 22617997, 'model_documents': [11218402, 11434734, 11434735], 'grant_id': 'R-2024-00003', 'grantee_owner_name': 'De Witt, Austin'},
+                table_name: [
+                    {'id': 22617997, 'model_documents': [11218402, 11434734, 11434735], 'grant_id': 'R-2024-00003', 'grantee_owner_name': 'Dan, Desperate'},
                     {'id': 22618119, 'grant_id': 'R-2024-00006'},
-                    {'id': 22674311, 'grant_id': 'G-2024-00008', 'grantee_owner_name': 'De Witt, Austin'}
+                    {'id': 22674311, 'grant_id': 'G-2024-00008', 'grantee_owner_name': 'Dan, Desperate'}
                 ]
             }, 'total_pages': 1, 'total_entries': 3, 'current_page': 1, 'per_page': 100}
-        result = client.list_rows(entity_name, column_names)
+        result = client.list_rows(table_name, field_names)
         self.assertEqual(len(list(result)), 3)  # calling list here executes the iterator
         mock_get.assert_called_once_with(
-            f'{self.base_url}/api/rest/v2/grant_request', params={'cols': json.dumps(column_names), 'page': 1, 'per_page': 100}
+            f'{self.base_url}/api/rest/v2/grant_request', params={'cols': json.dumps(field_names), 'page': 1, 'per_page': 100}
         )
 
     @patch('requests.Session.post')
@@ -87,11 +87,11 @@ class FluxxClientTests(SimpleTestCase):
         self.assertEqual(doc[0], file_name)
 
 
-class S3ClientTests(SimpleTestCase):
+class AmazonS3ClientTests(SimpleTestCase):
 
     def test_init(self):
         """Assert attributes are set as expected."""
-        client = S3Client("bucket", "access_key_id", "secret_key", "us-east-1")
+        client = AmazonS3Client("bucket", "access_key_id", "secret_key", "us-east-1")
         self.assertEqual(client.bucket, "bucket")
         self.assertIsInstance(client.s3_client, botocore.client.BaseClient)
 
@@ -100,7 +100,7 @@ class S3ClientTests(SimpleTestCase):
         """Assert files are uploaded to S3 as expected."""
         bucket_name = "test_bucket"
         fixture_dir = Path('fixtures', 'grant_request_export')
-        client = S3Client(bucket_name, "access_key_id", "secret_key", "us-east-1")
+        client = AmazonS3Client(bucket_name, "access_key_id", "secret_key", "us-east-1")
         client.s3_client.create_bucket(Bucket=bucket_name)
         client.upload_directory(fixture_dir)
         uploaded = [obj['Key'] for obj in client.s3_client.list_objects_v2(Bucket=bucket_name)['Contents']]

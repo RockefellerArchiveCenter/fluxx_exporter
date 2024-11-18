@@ -4,8 +4,8 @@ from django.contrib.messages import ERROR, SUCCESS, get_messages
 from django.test import TestCase
 from django.urls import reverse
 
-from .forms import ExportJobWithEntities
-from .models import Column, Entity, ExportJob
+from .forms import ExportJobWithTables
+from .models import ExportJob, Field, Table
 
 
 class ViewTests(TestCase):
@@ -18,44 +18,44 @@ class ViewTests(TestCase):
             'fluxx_config': '1',
             'export_location': 'asdf',
             'export_format': 'json',
-            'entity_set-TOTAL_FORMS': '1',
-            'entity_set-INITIAL_FORMS': '1',
-            'entity_set-MIN_NUM_FORMS': '0',
-            'entity_set-MAX_NUM_FORMS': '1000',
-            'entity_set-0-id': '1',
-            'entity_set-0-include_in_export': 'on',
-            'column_set-TOTAL_FORMS': '1',
-            'column_set-INITIAL_FORMS': '1',
-            'column_set-MIN_NUM_FORMS': '0',
-            'column_set-MAX_NUM_FORMS': '1000',
-            'column_set-0-id': '1',
-            'column_set-0-include_in_export': 'on',
+            'table_set-TOTAL_FORMS': '1',
+            'table_set-INITIAL_FORMS': '1',
+            'table_set-MIN_NUM_FORMS': '0',
+            'table_set-MAX_NUM_FORMS': '1000',
+            'table_set-0-id': '1',
+            'table_set-0-include_in_export': 'on',
+            'tablefield-table_set-0-field_set-TOTAL_FORMS': '1',
+            'tablefield-table_set-0-field_set-INITIAL_FORMS': '1',
+            'tablefield-table_set-0-field_set-MIN_NUM_FORMS': '0',
+            'tablefield-table_set-0-field_set-MAX_NUM_FORMS': '1000',
+            'tablefield-table_set-0-field_set-0-id': '1',
+            'tablefield-table_set-0-field_set-0-include_in_export': 'on',
         }
 
     def test_create_export_job_view(self):
         """Assert custom behavior in get_context_data and is_valid."""
         response = self.client.get(reverse('exportjob_create'))
-        self.assertIsInstance(response.context['formset'], ExportJobWithEntities)
+        self.assertIsInstance(response.context['formset'], ExportJobWithTables)
 
-        initial_entities = Entity.objects.all().count()
-        initial_columns = Column.objects.all().count()
+        initial_tables = Table.objects.all().count()
+        initial_fields = Field.objects.all().count()
         response = self.client.post(reverse('exportjob_create'), self.form_data)
-        self.assertEqual(Entity.objects.all().count(), initial_entities * 2)
-        self.assertEqual(Column.objects.all().count(), initial_columns * 2)
+        self.assertEqual(Table.objects.all().count(), initial_tables * 2)
+        self.assertEqual(Field.objects.all().count(), initial_fields * 2)
 
     def test_update_export_job_view(self):
         """Assert custom behavior in get_context_data."""
 
         export_job = ExportJob.objects.all().first()
         response = self.client.get(reverse('exportjob_update', kwargs={'pk': export_job.pk}))
-        self.assertIsInstance(response.context['formset'], ExportJobWithEntities)
+        self.assertIsInstance(response.context['formset'], ExportJobWithTables)
 
-        initial_entities = Entity.objects.all().count()
-        initial_columns = Column.objects.all().count()
+        initial_tables = Table.objects.all().count()
+        initial_fields = Field.objects.all().count()
         response = self.client.post(reverse('exportjob_update', kwargs={'pk': export_job.pk}), self.form_data)
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(Entity.objects.all().count(), initial_entities)
-        self.assertEqual(Column.objects.all().count(), initial_columns)
+        self.assertEqual(Table.objects.all().count(), initial_tables)
+        self.assertEqual(Field.objects.all().count(), initial_fields)
 
     @patch('exporter.exporters.Exporter.fluxx_export')
     @patch('exporter.exporters.Exporter.__init__')

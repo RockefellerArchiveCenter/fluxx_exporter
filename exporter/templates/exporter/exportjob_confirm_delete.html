@@ -1,5 +1,7 @@
 {% extends 'exporter/main.html' %}
 
+{% block title %}Fluxx Exporter - Confirm Deletion of {{object.name}}{% endblock %}
+
 {% block content %}
 
 <form method="post">{% csrf_token %}
@@ -7,7 +9,7 @@
     <p>Are you sure you want to delete "{{ object.name }}"?</p>
     {{ form }}
     <button class="btn btn--md btn--navy" type="submit">Confirm</button>
-    <a href="{% url 'exportjob_detail' pk=object.pk %}" class="btn btn--md btn--navy">Cancel</a>
+    <a href="{% url 'exportjob_detail' pk=object.pk %}" class="btn btn--md btn--orange">Cancel</a>
 </form>
 
 {% endblock %}

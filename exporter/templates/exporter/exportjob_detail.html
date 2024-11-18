@@ -1,5 +1,7 @@
 {% extends 'exporter/main.html' %}
 
+{% block title %}Fluxx Exporter - {{object.name}}{% endblock %}
+
 {% block content %}
 
 <h1>{{object.name}}</h1>
@@ -35,15 +37,15 @@
     {% endif %}
   </dl>
 
-  <h2>Entities and Columns</h2>
+  <h2>Tables and Fields</h2>
   <ul>
-    {% for entity in object.entity_set.all %}
-        {% if entity.include_in_export %}
-            <li>{{ entity.name }}</li>
+    {% for table in object.table_set.all %}
+        {% if table.include_in_export %}
+            <li>{{ table.name }}</li>
             <ul>
-            {% for column in entity.column_set.all %}
-                {% if column.include_in_export %}
-                <li>{{ column.name }}</li>
+            {% for field in table.field_set.all %}
+                {% if field.include_in_export %}
+                <li>{{ field.name }}</li>
                 {% endif %}
             {% endfor %}
             </ul>
@@ -51,7 +53,7 @@
     {% endfor %}
   </ul>
 
-<div class="flex" style="justify-content: space-between;">
+<div class="flex exportjob-buttons__wrapper">
     <div>
         <a class="btn btn--md btn--light-blue" href="{% url 'exportjob_update' pk=object.pk %}">Edit</a>
     <a class="btn btn--md btn--orange" href="{% url 'exportjob_delete' pk=object.pk %}">Delete</a>
