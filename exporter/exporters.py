@@ -26,6 +26,7 @@ class Exporter(object):
             export_job = ExportJob.objects.get(pk=export_job_id)
             self.fluxx_config = export_job.fluxx_config
             self.filter_string = export_job.filter_string
+            self.grant_ids = export_job.grant_ids
             self.export_format = export_job.export_format
             self.export_location = export_job.export_location
             self.amazon_s3_config = export_job.amazon_s3_config
@@ -53,11 +54,13 @@ class Exporter(object):
                 table_path.mkdir(exist_ok=True)
 
                 filter_value = self.parse_filter(self.filter_string)
+                grant_ids = self.parse_grant_ids(self.grant_ids)
                 related_table = self.parse_related_tables(table.field_set.all())
                 results = fluxx_client.list_rows(
                     table.name,
                     [c.name for c in table.field_set.all()],
                     filter_value=filter_value,
+                    grant_ids=grant_ids,
                     related_table=related_table)
                 logging.debug(f'Returned results for table {table} from Fluxx.')
 
@@ -120,6 +123,17 @@ class Exporter(object):
 
         logging.debug(f'Filter {filter} parsed into parts {filter_parts}')
         return filter_parts
+
+    def parse_grant_ids(self, grant_ids):
+        """Split a string of Grant IDs into a list.
+
+        Args:
+            grant_ids (str): comma-separated list of grant ids.
+
+        Returns:
+            grant_id_list (list): list of grant ids.
+        """
+        return [g.strip() for g in grant_ids.split(',')] if grant_ids else None
 
     def parse_related_tables(self, related_tables):
         """Structures related tables request parameter.
