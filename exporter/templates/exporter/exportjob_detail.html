@@ -43,7 +43,7 @@
         {% if table.include_in_export %}
             <li>{{ table.name }}</li>
             <ul>
-            {% for field in table.field_set.all %}
+            {% for field in table.fields.all %}
                 {% if field.include_in_export %}
                 <li>{{ field.name }}</li>
                 {% endif %}
