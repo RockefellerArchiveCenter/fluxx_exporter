@@ -1,6 +1,6 @@
 import json
 from pathlib import Path
-from unittest.mock import call, patch
+from unittest.mock import patch
 
 import botocore
 import requests
@@ -42,7 +42,62 @@ class FluxxClientTests(SimpleTestCase):
 
     @patch('requests.Session.post')
     @patch('requests.Session.get')
-    def test_list_rows(self, mock_get, mock_post):
+    def test_request(self, mock_get, mock_post):
+        """Assert args and exception string."""
+        mock_post.return_value.json.return_value = {"access_token": self.access_token}
+        client = FluxxClient(self.base_url, self.client_id, self.client_secret)
+
+        url = "https://foo/bar/baz"
+        params = {"biz": "baz"}
+        return_value = {"foo": "bar"}
+        mock_get.return_value.json.return_value = return_value
+        output = client.request('get', url, params=params)
+        self.assertEqual(return_value, output)
+
+        mock_get.return_value.raise_for_status.side_effect = requests.exceptions.HTTPError()
+        mock_get.return_value.text = "foo"
+        with self.assertRaises(Exception) as err:
+            client.request('get', url, params=params)
+        exception = str(err.exception)
+        self.assertIn("foo", exception)
+        self.assertIn(url, exception)
+        self.assertIn('GET', exception)
+
+    @patch('requests.Session.post')
+    @patch('exporter.clients.FluxxClient.request')
+    def test_get(self, mock_request, mock_post):
+        """Assert args."""
+        mock_post.return_value.json.return_value = {"access_token": self.access_token}
+        client = FluxxClient(self.base_url, self.client_id, self.client_secret)
+        url = "https://foo/bar/baz"
+        params = {"biz": "baz"}
+        output = client.get(url, params)
+        mock_request.assert_called_once_with('get', url, params=params)
+        self.assertEqual(output, mock_request.return_value)
+
+    @patch('requests.Session.post')
+    @patch('exporter.clients.FluxxClient.request')
+    def test_list(self, mock_request, mock_post):
+        mock_post.return_value.json.return_value = {"access_token": self.access_token}
+        client = FluxxClient(self.base_url, self.client_id, self.client_secret)
+        url = "https://foo/bar/baz"
+        params = {"biz": "baz", "page": 1}
+        expected_return = [{"foo": "bar"}]
+        mock_request.return_value = {
+            "total_pages": 1,
+            "records": {
+                "baz": expected_return
+            }
+        }
+
+        output = list(client.list(url, params))
+        mock_request.assert_called_once_with('get', url, params=params)
+        self.assertEqual(output, expected_return)
+
+    @patch('requests.Session.post')
+    @patch('exporter.clients.FluxxClient.list')
+    @patch('exporter.clients.FluxxClient.get')
+    def test_list_rows(self, mock_get, mock_list, mock_post):
         """Asserts calls to Fluxx API and correct return value."""
 
         mock_post.return_value.json.return_value = {"access_token": self.access_token}
@@ -50,23 +105,38 @@ class FluxxClientTests(SimpleTestCase):
 
         table_name = 'grant_request'
         field_names = ['id, model_documents', 'grant_id', 'grantee_owner_name']
-        mock_get.return_value.json.return_value = {
-            'records': {
-                table_name: [
-                    {'id': 22617997, 'model_documents': [11218402, 11434734, 11434735], 'grant_id': 'R-2024-00003', 'grantee_owner_name': 'Dan, Desperate'},
-                    {'id': 22618119, 'grant_id': 'R-2024-00006'},
-                    {'id': 22674311, 'grant_id': 'G-2024-00008', 'grantee_owner_name': 'Dan, Desperate'}
-                ]
-            }, 'total_pages': 1, 'total_entries': 3, 'current_page': 1, 'per_page': 100}
-        result = client.list_rows(table_name, field_names)
+        mock_list.return_value = [
+            {'id': 22617997, 'model_documents': [11218402, 11434734, 11434735], 'grant_id': 'R-2024-00003', 'grantee_owner_name': 'Dan, Desperate'},
+            {'id': 22618119, 'grant_id': 'R-2024-00006'},
+            {'id': 22674311, 'grant_id': 'G-2024-00008', 'grantee_owner_name': 'Dan, Desperate'}
+        ]
+        mock_get.return_value = mock_list.return_value = [
+            {'id': 22617997, 'model_documents': [11218402, 11434734, 11434735], 'grant_id': 'R-2024-00003', 'grantee_owner_name': 'Dan, Desperate'},
+            {'id': 22618119, 'grant_id': 'R-2024-00006'},
+            {'id': 22674311, 'grant_id': 'G-2024-00008', 'grantee_owner_name': 'Dan, Desperate'}
+        ]
+
+        result = client.list_rows(table_name, field_names, filter_value=['foo', 'eq', 'bar'])
         self.assertEqual(len(list(result)), 3)  # calling list here executes the iterator
-        mock_get.assert_called_once_with(
-            f'{self.base_url}/api/rest/v2/grant_request', params={'cols': json.dumps(field_names), 'page': 1, 'per_page': 100}
-        )
+        mock_list.assert_called_once_with(
+            f'{self.base_url}/api/rest/v2/grant_request',
+            params={
+                'filter': '["foo", "eq", "bar"]',
+                'cols': json.dumps(field_names),
+                'page': 1,
+                'per_page': 100})
+        mock_get.assert_not_called()
+        mock_list.reset_mock()
+
+        result = client.list_rows(table_name, field_names, grant_ids=[1, 2, 3])
+        self.assertEqual(len(list(result)), 3)  # calling list here executes the iterator
+        self.assertEqual(mock_get.call_count, 3)
+        mock_list.assert_not_called()
 
     @patch('requests.Session.post')
     @patch('requests.Session.get')
-    def test_download_document(self, mock_get, mock_post):
+    @patch('exporter.clients.FluxxClient.get')
+    def test_download_document(self, mock_client_get, mock_get, mock_post):
         """Asserts calls to Fluxx API and correct return from function."""
 
         mock_post.return_value.json.return_value = {"access_token": self.access_token}
@@ -74,14 +144,14 @@ class FluxxClientTests(SimpleTestCase):
 
         document_id = 11218402
         file_name = 'TestLineItems.csv'
-        mock_get.return_value.json.return_value = {'model_document': {'id': document_id, 'document_file_name': file_name}}
+        mock_client_get.return_value = {'model_document': {'id': document_id, 'document_file_name': file_name}}
         doc = client.download_document(document_id)
-        mock_get.assert_has_calls([
-            call(f'{self.base_url}/api/rest/v2/model_document/{document_id}', params={'cols': '["document_file_name"]'}),
-            call().raise_for_status(),
-            call().json(),
-            call(f'{self.base_url}/api/rest/v2/model_document_download/{document_id}', stream=True)]
-        )
+        mock_client_get.assert_called_once_with(
+            f'https://fluxx.io/api/rest/v2/model_document/{document_id}',
+            params={'cols': '["document_file_name"]'})
+        mock_get.called_once_with(
+            f'{self.base_url}/api/rest/v2/model_document_download/{document_id}',
+            stream=True)
         self.assertIsInstance(doc, tuple)
         self.assertEqual(len(doc), 2)
         self.assertEqual(doc[0], file_name)
