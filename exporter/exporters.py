@@ -48,20 +48,21 @@ class Exporter(object):
                 self.fluxx_config.client_id,
                 self.fluxx_config.client_secret)
 
-            for table in self.tables:
+            for table in self.tables.filter(include_in_export=True, name='grant_request'):
                 logging.debug(f'Exporting data for table {table}')
                 table_path = (self.export_path / table.name)
                 table_path.mkdir(exist_ok=True)
 
                 filter_value = self.parse_filter(self.filter_string)
                 grant_ids = self.parse_grant_ids(self.grant_ids)
-                related_table = self.parse_related_tables(table.field_set.all())
+                field_names = self.parse_field_names(table)
+                related_fields = self.parse_related_fields(table)
                 results = fluxx_client.list_rows(
                     table.name,
-                    [c.name for c in table.field_set.all()],
+                    field_names,
                     filter_value=filter_value,
                     grant_ids=grant_ids,
-                    related_table=related_table)
+                    related_table=related_fields)
                 logging.debug(f'Returned results for table {table} from Fluxx.')
 
                 logging.info('Saving data exported from Fluxx.')
@@ -75,7 +76,7 @@ class Exporter(object):
                         logging.error(f'Error exporting {self.export_format} to {str(record_path)}: {e}')
                         raise Exception(f'Error exporting {self.export_format} to {str(record_path)}: {e}')
                     for doc_id in record.get('model_documents', []):
-                        logging.debug(f'Downlaoding document {doc_id}')
+                        logging.debug(f'Downloading document {doc_id}')
                         file_name, file_obj = fluxx_client.download_document(doc_id)
                         logging.debug(f'Saving document {doc_id} with file name {file_name}')
                         self.save_document(file_name, file_obj, record_path)
@@ -99,6 +100,17 @@ class Exporter(object):
             logging.error(''.join(traceback.format_exception(err)))
             tb = '<br/>'.join(traceback.format_exception(err)[:-1])
             return False, f'<b>{str(err)}</b><br/><br/>{tb}'
+
+    def parse_field_names(self, table):
+        """Return field names to export
+
+        Args:
+            table (Table instance): parent Table containing fields.
+
+        Returns:
+            fields (list of str): names of fields to export.
+        """
+        return [c.name for c in table.fields.filter(include_in_export=True)]
 
     def parse_filter(self, filter):
         """Split the filter string into components.
@@ -135,7 +147,7 @@ class Exporter(object):
         """
         return [g.strip() for g in grant_ids.split(',')] if grant_ids else None
 
-    def parse_related_tables(self, related_tables):
+    def parse_related_fields(self, table):
         """Structures related tables request parameter.
 
         Args:
@@ -144,12 +156,13 @@ class Exporter(object):
         Returns:
             relation_params (dict): structured relationship parameter.
         """
-        logging.debug(f'Parsing related table {related_tables}')
+        logging.debug(f'Parsing related tables for fields in {table.name}')
         relation_params = {}
-        for related_table in related_tables:
-            re_fields = [field.name for field in related_table.field_set.all()]
-            relation_params[related_table.name] = re_fields
-        logging.debug(f'Related tables {related_tables} parsed to params {relation_params}')
+        for field in table.fields.filter(include_in_export=True, related_table__isnull=False):
+            related_fields = [field.name for field in field.related_table.fields.filter(include_in_export=True)]
+            relation_params[field.related_table.name] = related_fields
+            logging.debug(f'Params for fields {related_fields} in related table {field.related_table.name} added.')
+        logging.debug(f'Related tables for {table.name} parsed to params {relation_params}')
         return relation_params
 
     def save_data(self, json_data, export_format, export_location):
