@@ -23,10 +23,10 @@
         <dt class="summary-list__key">Filter String</dt>
         <dd class="summary-list__value">{{ object.filter_string }}</dd>
     </div>
-    {% if object.s3_config %}
+    {% if object.amazon_s3_config %}
     <div class="summary-list__row">
         <dt class="summary-list__key">S3 Configuration</dt>
-        <dd class="summary-list__value">{{ object.s3_config }}</dd>
+        <dd class="summary-list__value">{{ object.amazon_s3_config }}</dd>
     </div>
     {% endif %}
     {% if object.sftp_config %}
