@@ -635,6 +635,7 @@
             "export_location": "/tmp/exports",
             "export_format": "json",
             "filter_string": null,
+            "grant_ids": "1,2,3,4",
             "amazon_s3_config": 1,
             "sftp_config": null
         }

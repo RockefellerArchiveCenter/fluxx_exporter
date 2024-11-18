@@ -46,6 +46,7 @@ class ExportJob(models.Model):
     export_location = models.CharField(max_length=255)
     export_format = models.CharField(max_length=10, choices=[('json', 'JSON'), ('xml', 'XML'), ('csv', 'CSV')])
     filter_string = models.CharField(max_length=1000, null=True, blank=True)
+    grant_ids = models.TextField(null=True, blank=True)
     amazon_s3_config = models.ForeignKey(AmazonS3Config, on_delete=models.SET_NULL, null=True, blank=True)
     sftp_config = models.ForeignKey(SFTPConfig, on_delete=models.SET_NULL, null=True, blank=True)
 
