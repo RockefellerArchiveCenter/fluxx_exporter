@@ -1,4 +1,5 @@
 from django.contrib.auth.models import AbstractUser
+from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 from django.urls import reverse
 
@@ -52,6 +53,17 @@ class ExportJob(models.Model):
 
     def get_absolute_url(self):
         return reverse('exportjob_detail', kwargs={'pk': self.pk})
+
+    @property
+    def grant_request_table(self):
+        try:
+            return Table.objects.get(export_job=self, name='grant_request')
+        except ObjectDoesNotExist:
+            return None
+
+    @property
+    def related_tables(self):
+        return Table.objects.filter(export_job=self).exclude(name='grant_request')
 
 
 class Table(models.Model):
