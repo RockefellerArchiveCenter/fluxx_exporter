@@ -71,7 +71,7 @@ class ExportTests(TestCase):
         fluxx_config = FluxxConfig.objects.all().first()
         s3_config = s3_config = AmazonS3Config.objects.all().first()
         table = Table.objects.all().first()
-        export_dir = Path(export_job.export_location, table.name, record_id)
+        export_dir = Path(export_job.export_location, f"{table.name}_{record_id}")
         model_doc_id = "12345"
         download_response = (1, 2)
         mock_fluxx.return_value = None
