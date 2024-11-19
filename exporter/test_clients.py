@@ -169,7 +169,7 @@ class AmazonS3ClientTests(SimpleTestCase):
     def test_upload_directory(self):
         """Assert files are uploaded to S3 as expected."""
         bucket_name = "test_bucket"
-        fixture_dir = Path('fixtures', 'grant_request_export')
+        fixture_dir = Path('exporter', 'fixtures', 'grant_request_export')
         client = AmazonS3Client(bucket_name, "access_key_id", "secret_key", "us-east-1")
         client.s3_client.create_bucket(Bucket=bucket_name)
         client.upload_directory(fixture_dir)

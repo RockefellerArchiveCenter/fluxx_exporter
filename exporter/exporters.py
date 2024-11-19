@@ -31,7 +31,7 @@ class Exporter(object):
             self.export_location = export_job.export_location
             self.amazon_s3_config = export_job.amazon_s3_config
             self.sftp_config = export_job.sftp_config
-            self.tables = export_job.table_set.all()
+            self.grant_request_table = export_job.grant_request_table
         except ObjectDoesNotExist:
             logging.error(f"Could not find export job configuration for id {export_job_id}.")
             raise Exception(f"Could not find export job configuration for id {export_job_id}.")
@@ -48,50 +48,48 @@ class Exporter(object):
                 self.fluxx_config.client_id,
                 self.fluxx_config.client_secret)
 
-            for table in self.tables:
-                logging.debug(f'Exporting data for table {table}')
-                table_path = (self.export_path / table.name)
-                table_path.mkdir(exist_ok=True)
+            logging.debug('Exporting data for grant_request table')
 
-                filter_value = self.parse_filter(self.filter_string)
-                grant_ids = self.parse_grant_ids(self.grant_ids)
-                related_table = self.parse_related_tables(table.field_set.all())
-                results = fluxx_client.list_rows(
-                    table.name,
-                    [c.name for c in table.field_set.all()],
-                    filter_value=filter_value,
-                    grant_ids=grant_ids,
-                    related_table=related_table)
-                logging.debug(f'Returned results for table {table} from Fluxx.')
+            filter_value = self.parse_filter(self.filter_string)
+            grant_ids = self.parse_grant_ids(self.grant_ids)
+            field_names = self.parse_field_names(self.grant_request_table)
+            relations = self.parse_related_fields(self.grant_request_table)
+            results = fluxx_client.list_rows(
+                'grant_request',
+                field_names,
+                filter_value=filter_value,
+                grant_ids=grant_ids,
+                relations=relations)
+            logging.debug('Returned results for grant_request table from Fluxx.')
 
-                logging.info('Saving data exported from Fluxx.')
-                for record in results:
-                    logging.debug(f'Saving data for record {record["id"]}')
-                    record_path = (table_path / str(record['id']))
-                    record_path.mkdir()
+            logging.info('Saving data exported from Fluxx.')
+            for record in results:
+                logging.debug(f'Saving data for record {record["id"]}')
+                record_path = (self.export_path / f"grant_request_{str(record['id'])}")
+                record_path.mkdir()
+                try:
+                    self.save_data(record, self.export_format, record_path)
+                except Exception as e:
+                    logging.error(f'Error exporting {self.export_format} to {str(record_path)}: {e}')
+                    raise Exception(f'Error exporting {self.export_format} to {str(record_path)}: {e}')
+                for doc_id in record.get('model_documents', []):
+                    logging.debug(f'Downloading document {doc_id}')
+                    file_name, file_obj = fluxx_client.download_document(doc_id)
+                    logging.debug(f'Saving document {doc_id} with file name {file_name}')
+                    self.save_document(file_name, file_obj, record_path)
+
+                if self.amazon_s3_config:
+                    logging.info('Uploading to S3')
                     try:
-                        self.save_data(record, self.export_format, record_path)
+                        s3_client = AmazonS3Client(
+                            self.amazon_s3_config.bucket,
+                            self.amazon_s3_config.access_key_id,
+                            self.amazon_s3_config.secret_key,
+                            self.amazon_s3_config.region,)
+                        s3_client.upload_directory(record_path)
                     except Exception as e:
-                        logging.error(f'Error exporting {self.export_format} to {str(record_path)}: {e}')
-                        raise Exception(f'Error exporting {self.export_format} to {str(record_path)}: {e}')
-                    for doc_id in record.get('model_documents', []):
-                        logging.debug(f'Downlaoding document {doc_id}')
-                        file_name, file_obj = fluxx_client.download_document(doc_id)
-                        logging.debug(f'Saving document {doc_id} with file name {file_name}')
-                        self.save_document(file_name, file_obj, record_path)
-
-                    if self.amazon_s3_config:
-                        logging.info('Uploading to S3')
-                        try:
-                            s3_client = AmazonS3Client(
-                                self.amazon_s3_config.bucket,
-                                self.amazon_s3_config.access_key_id,
-                                self.amazon_s3_config.secret_key,
-                                self.amazon_s3_config.region,)
-                            s3_client.upload_directory(record_path)
-                        except Exception as e:
-                            logging.error(f'Error uploading to S3 bucket {self.amazon_s3_config.bucket}: {e}')
-                            raise Exception(f'Error uploading to S3 bucket {self.amazon_s3_config.bucket}: {e}')
+                        logging.error(f'Error uploading to S3 bucket {self.amazon_s3_config.bucket}: {e}')
+                        raise Exception(f'Error uploading to S3 bucket {self.amazon_s3_config.bucket}: {e}')
 
             logging.info('Fluxx export complete.')
             return True, None
@@ -99,6 +97,17 @@ class Exporter(object):
             logging.error(''.join(traceback.format_exception(err)))
             tb = '<br/>'.join(traceback.format_exception(err)[:-1])
             return False, f'<b>{str(err)}</b><br/><br/>{tb}'
+
+    def parse_field_names(self, table):
+        """Return field names to export
+
+        Args:
+            table (Table instance): parent Table containing fields.
+
+        Returns:
+            fields (list of str): names of fields to export.
+        """
+        return [c.name for c in table.fields.filter(include_in_export=True)]
 
     def parse_filter(self, filter):
         """Split the filter string into components.
@@ -135,7 +144,7 @@ class Exporter(object):
         """
         return [g.strip() for g in grant_ids.split(',')] if grant_ids else None
 
-    def parse_related_tables(self, related_tables):
+    def parse_related_fields(self, table):
         """Structures related tables request parameter.
 
         Args:
@@ -144,12 +153,13 @@ class Exporter(object):
         Returns:
             relation_params (dict): structured relationship parameter.
         """
-        logging.debug(f'Parsing related table {related_tables}')
+        logging.debug(f'Parsing related tables for fields in {table.name}')
         relation_params = {}
-        for related_table in related_tables:
-            re_fields = [field.name for field in related_table.field_set.all()]
-            relation_params[related_table.name] = re_fields
-        logging.debug(f'Related tables {related_tables} parsed to params {relation_params}')
+        for field in table.fields.filter(include_in_export=True, related_table__isnull=False):
+            related_fields = [field.name for field in field.related_table.fields.filter(include_in_export=True)]
+            relation_params[field.name] = related_fields
+            logging.debug(f'Params for fields {related_fields} in related table {field.related_table.name} added.')
+        logging.debug(f'Related tables for {table.name} parsed to params {relation_params}')
         return relation_params
 
     def save_data(self, json_data, export_format, export_location):

@@ -23,10 +23,10 @@
         <dt class="summary-list__key">Filter String</dt>
         <dd class="summary-list__value">{{ object.filter_string }}</dd>
     </div>
-    {% if object.s3_config %}
+    {% if object.amazon_s3_config %}
     <div class="summary-list__row">
         <dt class="summary-list__key">S3 Configuration</dt>
-        <dd class="summary-list__value">{{ object.s3_config }}</dd>
+        <dd class="summary-list__value">{{ object.amazon_s3_config }}</dd>
     </div>
     {% endif %}
     {% if object.sftp_config %}
@@ -35,28 +35,22 @@
         <dd class="summary-list__value">{{ object.sftp_config }}</dd>
     </div>
     {% endif %}
-  </dl>
+</dl>
 
-  <h2>Tables and Fields</h2>
-  <ul>
-    {% for table in object.table_set.all %}
-        {% if table.include_in_export %}
-            <li>{{ table.name }}</li>
-            <ul>
-            {% for field in table.field_set.all %}
-                {% if field.include_in_export %}
-                <li>{{ field.name }}</li>
-                {% endif %}
-            {% endfor %}
-            </ul>
-        {% endif %}
-    {% endfor %}
-  </ul>
+<h2>Grant Request Fields</h2>
+{% include 'exporter/includes/inline_table_card.html' with table=object.grant_request_table %}
+
+<h2>Connected Tables and Fields</h2>
+{% for table in object.related_tables.all %}
+    {% if table.include_in_export %}
+        {% include 'exporter/includes/inline_table_card.html' with table=table %}
+    {% endif %}
+{% endfor %}
 
 <div class="flex exportjob-buttons__wrapper">
     <div>
         <a class="btn btn--md btn--light-blue" href="{% url 'exportjob_update' pk=object.pk %}">Edit</a>
-    <a class="btn btn--md btn--orange" href="{% url 'exportjob_delete' pk=object.pk %}">Delete</a>
+        <a class="btn btn--md btn--orange" href="{% url 'exportjob_delete' pk=object.pk %}">Delete</a>
     </div>
     <a class="btn btn--md btn--navy" href="{% url 'exportjob_run' pk=object.pk %}">Run</a>
 </div>

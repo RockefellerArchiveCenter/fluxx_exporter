@@ -86,14 +86,14 @@ class FluxxClient(object):
             for record in resp['records'][table_name]:
                 yield record
 
-    def list_rows(self, table_name, field_names, filter_value=None, grant_ids=None, related_table=None, current_page=1, per_page=100):
+    def list_rows(self, table_name, field_names, filter_value=None, grant_ids=None, relations=None, current_page=1, per_page=100):
         """Returns data about a given table from Fluxx API.
 
         Args:
             table_name (str): name of the table to fetch
             field_names (list of str): field names from the table
             filter_value (list): list representing a filter
-            related_table (str): related tables to fetch
+            relations (str): relation params
             page (int): page number to start from
             per_page (int): number of items per page
 
@@ -107,9 +107,11 @@ class FluxxClient(object):
         if filter_value:
             params.update({'filter': json.dumps(filter_value)})
 
-        logging.debug(f'Params: {params}')
+        if relations:
+            params.update({'relation': json.dumps(relations)})
 
         if grant_ids:
+            logging.debug(f'Params: {params}')
             for g_id in grant_ids:
                 yield self.get(f"{self.api_url}{table_name}/{g_id}")
 
@@ -119,6 +121,7 @@ class FluxxClient(object):
                 'page': current_page,
                 'per_page': per_page
             })
+            logging.debug(f'Params: {params}')
             yield from self.list(f"{self.api_url}{table_name}", params=params)
 
     def download_document(self, document_id):

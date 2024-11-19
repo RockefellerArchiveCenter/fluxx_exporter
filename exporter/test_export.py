@@ -42,7 +42,8 @@ class ExportTests(TestCase):
 
     @patch('exporter.exporters.Exporter.parse_filter')
     @patch('exporter.exporters.Exporter.parse_grant_ids')
-    @patch('exporter.exporters.Exporter.parse_related_tables')
+    @patch('exporter.exporters.Exporter.parse_field_names')
+    @patch('exporter.exporters.Exporter.parse_related_fields')
     @patch('exporter.exporters.Exporter.save_data')
     @patch('exporter.exporters.Exporter.save_document')
     @patch('exporter.clients.FluxxClient.__init__')
@@ -50,7 +51,19 @@ class ExportTests(TestCase):
     @patch('exporter.clients.FluxxClient.download_document')
     @patch('exporter.clients.AmazonS3Client.__init__')
     @patch('exporter.clients.AmazonS3Client.upload_directory')
-    def test_fluxx_export(self, mock_s3_upload, mock_s3_init, mock_download_doc, mock_list_rows, mock_fluxx, mock_save_document, mock_save_data, mock_parse_related, mock_parse_ids, mock_parse_filter):
+    def test_fluxx_export(
+            self,
+            mock_s3_upload,
+            mock_s3_init,
+            mock_download_doc,
+            mock_list_rows,
+            mock_fluxx,
+            mock_save_document,
+            mock_save_data,
+            mock_parse_related,
+            mock_parse_fields,
+            mock_parse_ids,
+            mock_parse_filter):
         """Assert main method calls submethods with correct args"""
 
         record_id = "12345"
@@ -58,7 +71,7 @@ class ExportTests(TestCase):
         fluxx_config = FluxxConfig.objects.all().first()
         s3_config = s3_config = AmazonS3Config.objects.all().first()
         table = Table.objects.all().first()
-        export_dir = Path(export_job.export_location, table.name, record_id)
+        export_dir = Path(export_job.export_location, f"{table.name}_{record_id}")
         model_doc_id = "12345"
         download_response = (1, 2)
         mock_fluxx.return_value = None
@@ -76,13 +89,14 @@ class ExportTests(TestCase):
             fluxx_config.client_secret)
         mock_parse_filter.assert_called_once_with(export_job.filter_string)
         mock_parse_ids.assert_called_once_with(export_job.grant_ids)
+        mock_parse_fields.assert_called_once()
         mock_parse_related.assert_called_once()
 
         self.assertEqual(mock_list_rows.call_args[0][0], table.name)
         self.assertEqual(mock_list_rows.call_args[1]['filter_value'], mock_parse_filter.return_value)
-        self.assertEqual(mock_list_rows.call_args[1]['related_table'], mock_parse_related.return_value)
         self.assertEqual(mock_list_rows.call_args[1]['grant_ids'], mock_parse_ids.return_value)
-        self.assertQuerySetEqual(mock_list_rows.call_args[0][1], [c.name for c in table.field_set.all()])
+        self.assertEqual(mock_list_rows.call_args[1]['relations'], mock_parse_related.return_value)
+        self.assertQuerySetEqual(mock_list_rows.call_args[0][1], [c.name for c in table.fields.filter(include_in_export=True)])
         mock_list_rows.assert_called_once()
 
         mock_save_data.assert_called_once_with(
@@ -108,18 +122,20 @@ class ExportTests(TestCase):
         self.assertEqual(output[0], False)
         self.assertIn(error_message, output[1])
 
-    def test_parse_related_table(self):
-        """"Assert related tables are parsed as expected."""
+    def test_parse_related_fields(self):
+        """"Assert related fields are parsed as expected."""
         export_job = ExportJob.objects.all().first()
         table = Table.objects.all().first()
-        field = Field.objects.all().first()
+        # field = Field.objects.all().first()
+        # TODO update fixture
+        # Add another entity, set as related, add fields that have include_in_export flag
         exporter = Exporter(export_job.pk)
-        result = exporter.parse_related_tables([])
+        result = exporter.parse_related_fields(table)
         self.assertEqual(result, {})
 
-        tables = Table.objects.all()
-        result = exporter.parse_related_tables(tables)
-        self.assertEqual(result, {table.name: [field.name]})
+        Field.objects.all().delete()
+        result = exporter.parse_related_fields(table)
+        self.assertEqual(result, {})
 
     def test_parse_filter(self):
         """Assert filter is parsed as expected."""

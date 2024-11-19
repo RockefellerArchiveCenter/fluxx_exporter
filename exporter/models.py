@@ -1,4 +1,5 @@
 from django.contrib.auth.models import AbstractUser
+from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 from django.urls import reverse
 
@@ -53,6 +54,17 @@ class ExportJob(models.Model):
     def get_absolute_url(self):
         return reverse('exportjob_detail', kwargs={'pk': self.pk})
 
+    @property
+    def grant_request_table(self):
+        try:
+            return Table.objects.get(export_job=self, name='grant_request')
+        except ObjectDoesNotExist:
+            return None
+
+    @property
+    def related_tables(self):
+        return Table.objects.filter(export_job=self).exclude(name='grant_request')
+
 
 class Table(models.Model):
     name = models.CharField(max_length=100)
@@ -62,21 +74,24 @@ class Table(models.Model):
         null=True,
         blank=True,
         on_delete=models.CASCADE)
-    related_table = models.ForeignKey(
-        'self',
-        null=True,
-        blank=True,
-        on_delete=models.SET_NULL,
-        related_name='related_tables')
 
     def __str__(self):
         return self.name
 
 
 class Field(models.Model):
-    table = models.ForeignKey(Table, on_delete=models.CASCADE)
+    table = models.ForeignKey(
+        Table,
+        on_delete=models.CASCADE,
+        related_name='fields')
     name = models.CharField(max_length=100)
     include_in_export = models.BooleanField(default=False)
+    related_table = models.ForeignKey(
+        Table,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='related_tables')
 
     def __str__(self):
         return self.name
