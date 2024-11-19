@@ -1,4 +1,3 @@
-from django.forms import ValidationError
 from django.forms.models import (BaseInlineFormSet, ModelForm,
                                  inlineformset_factory)
 
@@ -40,12 +39,20 @@ class BaseTablesWithFields(BaseInlineFormSet):
             if form.instance.include_in_export:
                 if hasattr(form, "nested"):
                     if not any([c.instance.include_in_export for c in form.nested]):
-                        raise ValidationError('You must add at least one field to this table.')
-
+                        form.add_error(None, 'You must add at least one field to this table.')
             else:
                 if hasattr(form, "nested"):
                     if any([c.instance.include_in_export for c in form.nested]):
-                        raise ValidationError('You cannot export fields without also exporting the parent table.')
+                        form.add_error(None, 'You cannot export fields without also exporting the parent table.')
+
+            related_tables_in_export = [f.instance.name for f in self.forms if f.instance.include_in_export]
+
+            if form.instance.name == 'grant_request':
+                if hasattr(form, "nested"):
+                    for formset in form.nested:
+                        if formset.instance.related_table:
+                            if formset.instance.related_table.name not in related_tables_in_export:
+                                form.add_error(None, f'You must include the {formset.instance.related_table} table and at least one of its fields in the export job.')
 
     def is_valid(self):
         """Validate the nested formsets."""
