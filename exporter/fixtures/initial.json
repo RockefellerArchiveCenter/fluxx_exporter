@@ -646,8 +646,7 @@
         "fields": {
             "name": "grant_request",
             "include_in_export": false,
-            "export_job": null,
-            "related_table": null
+            "export_job": null
         }
     },
     {
@@ -656,8 +655,24 @@
         "fields": {
             "name": "grant_request",
             "include_in_export": true,
-            "export_job": 1,
-            "related_table": null
+            "export_job": 1
+        }
+    },
+    {
+        "model": "exporter.table",
+        "pk": 3,
+        "fields": {
+            "name": "organization",
+            "include_in_export": true,
+            "export_job": 1
+        }
+    },
+    {
+        "model": "exporter.table",
+        "pk": 4,
+        "fields": {
+            "name": "organization",
+            "include_in_export": false
         }
     },
     {
@@ -665,8 +680,9 @@
         "pk": 1,
         "fields": {
             "table": 1,
-            "name": "organization_name",
-            "include_in_export": false
+            "name": "program_organization_id",
+            "include_in_export": false,
+            "related_table": 3
         }
     },
     {
@@ -674,8 +690,27 @@
         "pk": 2,
         "fields": {
             "table": 2,
-            "name": "organization_name",
+            "name": "program_organization_id",
+            "include_in_export": true,
+            "related_table": 3
+        }
+    },
+    {
+        "model": "exporter.field",
+        "pk": 3,
+        "fields": {
+            "table": 3,
+            "name": "name",
             "include_in_export": true
+        }
+    },
+    {
+        "model": "exporter.field",
+        "pk": 4,
+        "fields": {
+            "table": 4,
+            "name": "name",
+            "include_in_export": false
         }
     }
 ]

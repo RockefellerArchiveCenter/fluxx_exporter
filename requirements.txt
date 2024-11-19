@@ -8,6 +8,8 @@ asgiref==3.8.1
     # via django
 bcrypt==4.2.0
     # via paramiko
+beautifulsoup4==4.12.3
+    # via -r requirements.in
 boto3==1.35.57
     # via
     #   -r requirements.in
@@ -75,6 +77,8 @@ s3transfer==0.10.3
     # via boto3
 six==1.16.0
     # via python-dateutil
+soupsieve==2.6
+    # via beautifulsoup4
 sqlparse==0.5.1
     # via django
 typing-extensions==4.12.2

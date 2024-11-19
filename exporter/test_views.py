@@ -10,26 +10,37 @@ from .models import ExportJob, Field, Table
 
 class ViewTests(TestCase):
 
-    fixtures = ['views.json']
+    fixtures = ['initial.json']
 
     def setUp(self):
         self.form_data = {
-            'name': 'asdfa',
+            'name': 'Export Job',
             'fluxx_config': '1',
-            'export_location': 'asdf',
+            'export_location': '/tmp/exports',
             'export_format': 'json',
-            'table_set-TOTAL_FORMS': '1',
-            'table_set-INITIAL_FORMS': '1',
+            'filter_string': '',
+            'grant_ids': '1,2,3,4',
+            'amazon_s3_config': '1',
+            'table_set-TOTAL_FORMS': '2',
+            'table_set-INITIAL_FORMS': '2',
             'table_set-MIN_NUM_FORMS': '0',
             'table_set-MAX_NUM_FORMS': '1000',
-            'table_set-0-id': '1',
+            'table_set-0-id': '2',
             'table_set-0-include_in_export': 'on',
-            'tablefield-table_set-0-field_set-TOTAL_FORMS': '1',
-            'tablefield-table_set-0-field_set-INITIAL_FORMS': '1',
-            'tablefield-table_set-0-field_set-MIN_NUM_FORMS': '0',
-            'tablefield-table_set-0-field_set-MAX_NUM_FORMS': '1000',
-            'tablefield-table_set-0-field_set-0-id': '1',
-            'tablefield-table_set-0-field_set-0-include_in_export': 'on',
+            'tablefield-table_set-0-fields-TOTAL_FORMS': '1',
+            'tablefield-table_set-0-fields-INITIAL_FORMS': '1',
+            'tablefield-table_set-0-fields-MIN_NUM_FORMS': '0',
+            'tablefield-table_set-0-fields-MAX_NUM_FORMS': '1000',
+            'tablefield-table_set-0-fields-0-id': '2',
+            'tablefield-table_set-0-fields-0-include_in_export': 'on',
+            'table_set-1-id': '3',
+            'table_set-1-include_in_export': 'on',
+            'tablefield-table_set-1-fields-TOTAL_FORMS': '1',
+            'tablefield-table_set-1-fields-INITIAL_FORMS': '1',
+            'tablefield-table_set-1-fields-MIN_NUM_FORMS': '0',
+            'tablefield-table_set-1-fields-MAX_NUM_FORMS': '1000',
+            'tablefield-table_set-1-fields-0-id': '3',
+            'tablefield-table_set-1-fields-0-include_in_export': 'on'
         }
 
     def test_create_export_job_view(self):
@@ -37,11 +48,9 @@ class ViewTests(TestCase):
         response = self.client.get(reverse('exportjob_create'))
         self.assertIsInstance(response.context['formset'], ExportJobWithTables)
 
-        initial_tables = Table.objects.all().count()
-        initial_fields = Field.objects.all().count()
         response = self.client.post(reverse('exportjob_create'), self.form_data)
-        self.assertEqual(Table.objects.all().count(), initial_tables * 2)
-        self.assertEqual(Field.objects.all().count(), initial_fields * 2)
+        self.assertEqual(Table.objects.all().count(), 6)
+        self.assertEqual(Field.objects.all().count(), 6)
 
     def test_update_export_job_view(self):
         """Assert custom behavior in get_context_data."""
