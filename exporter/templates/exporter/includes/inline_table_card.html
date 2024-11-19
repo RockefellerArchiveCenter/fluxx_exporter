@@ -1,0 +1,13 @@
+<div class="card card--container flex--column mb-20">
+    <h3>{{ table.name }} table</h3>
+    <ul>
+        {% for field in table.fields.all %}
+            {% if field.include_in_export %}
+                <li>
+                    {{ field.name }}
+                    {% if field.related_table.id %} <span class="text--italic">(connected data type: {{field.related_table.name}})</span>{% endif %}
+                </li>
+            {% endif %}
+        {% endfor %}
+    </ul>
+</div>

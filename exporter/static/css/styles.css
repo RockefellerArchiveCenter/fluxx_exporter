@@ -18,3 +18,7 @@ h2 {
 .card h3 {
     margin-top: 0px;
 }
+
+.text--italic {
+    font-style: italic;
+}
