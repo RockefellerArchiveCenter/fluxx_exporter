@@ -6,19 +6,13 @@
 <h1>About the Fluxx Exporter</h1>
 
 <p>
-    The Fluxx Exporter is a Django-based application designed to streamline the process of exporting data from the Fluxx Labs API. 
-    This project serves as a versatile tool for users needing to access and manipulate data across various entities within the Fluxx environment.
-</p>
-
-<p>
-    This project is built using Python and Django, ensuring a robust and scalable framework that can grow with user needs. 
-    The Fluxx Exporter aims to provide a reliable and efficient solution for managing data within the Fluxx ecosystem.
+    The Fluxx Exporter is an open-source tool that integrates with the grants management system <a href="https://www.fluxx.io/">Fluxx</a> for the purposes of exporting select elements of grant records in an automated way. The tool is built on Python and Django, and uses the Fluxx API to export data from the Fluxx instance. It can export both structured data that is entered into fields and stored in the database as well as files that are uploaded and attached to the grant record.
 </p>
 
 <h2>Key Features</h2>
 <ul>
-    <li><strong>Dynamic API Interaction:</strong> The application leverages the Fluxx Labs API to facilitate real-time data retrieval and manipulation, allowing users to apply various filters based on their needs.</li>
-    <li><strong>User-Friendly Interface:</strong> With a Django-powered admin interface, users can easily manage their Fluxx instances, including configuring SFTP and Amazon S3 integrations, as well as defining and associating entities and columns.</li>
+    <li><strong>Dynamic API Interaction:</strong> The application leverages the Fluxx API to facilitate real-time data retrieval and manipulation, allowing users to apply various filters based on their needs.</li>
+    <li><strong>User-Friendly Interface:</strong> With a familiar Django-based interface, users can set up, monitor, run, and save Fluxx export jobs. The Django Admin panel allows adminsitrators to  manage their Fluxx instances, including configuring Amazon S3 integrations, as well as defining and associating tables and fields.</li>
     <li><strong>Superuser Access:</strong> The project includes a superuser feature for secure access to the administration dashboard, enabling users to customize their configurations and ensure data integrity.</li>
 </ul>
 

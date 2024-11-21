@@ -1,6 +1,12 @@
 
 # Fluxx Exporter
 
+## About
+
+The Fluxx Exporter is an open-source tool that integrates with the grants management system [Fluxx](https://www.fluxx.io/) for the purposes of exporting select elements of grant records in an automated way. The tool is built on Python and Django, and uses the Fluxx API to export data from the Fluxx instance. It can export both structured data that is entered into fields and stored in the database as well as files that are uploaded and attached to the grant record.
+
+Foundations use grants management systems (GMS) such as Fluxx to manage their grant making from the time a grantee begins an application, through the award process, and on to the grantees’ final reporting on activities. For most foundations, the GMS is the permanent system of record for all grant-related records. Foundation archivists have struggled to find scalable solutions for exporting closed grant records from these systems.  This tool allows archivists to select and export grant information,  for long-term preservation and researcher access. 
+
 ## Prerequisites
 
 Before you begin, ensure you have the following installed on your system:
@@ -44,44 +50,75 @@ Follow these steps to set up the Fluxx Exporter:
    ```bash
    pip install -r requirements.txt
    ```
+5. **Create config file**
+   Create a config file from the template :
+   ```bash
+   cp fluxx_exporter/config.py.deploy fluxx_exporter/config.py
+   ```
 
-5. **Apply Migrations**  
+6. **Apply Migrations**  
    Apply the database migrations to set up the database schema:
    ```bash
    python manage.py migrate
    ```
 
-6. **Create a Superuser**  
+7. **Create a Superuser**  
    Create a superuser to access the Django admin interface:
    ```bash
    python manage.py createsuperuser
    ```
 
-7. **Run the Development Server**  
+8. **Run the Development Server**  
    Start the Django development server:
    ```bash
    python manage.py runserver
    ```
-   Open your web browser and navigate to [http://127.0.0.1:8000/](http://127.0.0.1:8000/) to access the application.
+   Open your web browser and navigate to [http://127.0.0.1:8000/](http://127.0.0.1:8000/) or [http://localost:8000](http://localost:8000) to access the application.
 
 ## Configure the Environment
 
-1. Navigate to [http://127.0.0.1:8000/admin](http://127.0.0.1:8000/admin).
+1. Navigate to [http://127.0.0.1:8000/admin](http://127.0.0.1:8000/admin) or [http://localost:8000/admin](http://localost:8000/admin).
 2. Log in with the created superuser.
-3. Here, you can configure your Fluxx instance and Amazon S3 instance.
-4. You can also manually add and/or edit your Fluxx Entities and associate Columns with their respective entities in
-   this interface.
-   - The recommended approach to creating Entities and Columns is to use the built-in management command (see below).
-   - Any changes to Entities or Columns will appear immediately upon refreshing the Fluxx Exporter Tool.
-   - To configure related entities, select the option to relate the current entity to previous ones during setup. Note that the entity you are relating to must already be initialized.
-   - There is no validation for entered entities or fields as per the Fluxx API. The correct names can be obtained from the API documentation (included in the Documentation folder) or by exporting an entity and checking the CSV output header.
+3. Configure your Fluxx instance ([see below for obtaining API credentials](#Authorizing-the-tool-with-your-Fluxx-instance-and-creating-the-Client-ID-and-Secret)) and Amazon S3 instance.
+4. Configure the app to recognize the tables and fields in your Fluxx instance. Use the built-in management command (preferred) or  do so manually from the admin panel. See [Importing Tables and Fields](#Importing-Tables-and-Fields) below for more information.
 
-## Importing Entities and Columns from Fluxx Glossary Report
+## Authorizing the tool with your Fluxx instance and creating the Client ID and Secret
 
-Entities and Columns can be imported from a Fluxx Glossary Report CSV file. To do this, run the management command from the project root:
+**NB: **You must have Fluxx administrator access to perform these steps.**
+
+In order for the Fluxx Exporter tool to be able to access your Fluxx instance, you need to authorize the app and create a Client ID and Client Secret.
+
+Log into Fluxx and navigate to this page: https://{yourfluxxinstance.fluxx.io}/oauth/applications/
+
+Click "New Application," name the authorization (e.g. Fluxx Exporter), copy your Fluxx instance's URL into the redirect URI (e.g. https://{yourfluxxinstance.fluxx.io}), and leave Scopes blank.  Press "Submit." You should receive an application ID and secret on the following page.  Save these in a safe place. Navigate to the app's admin panel, and enter the newly created credentials there.
+
+If you have access to the Fluxx API documentation, see the file "4 Getting Started with Fluxx APIs.pdf".
+
+## Importing Tables and Fields
+
+The recommended approach to creating tables and fields is to use the built-in management command and the Fluxx Glossary Report CSV. The Fluxx Glossary Report CSV file can be downloaded from the Live Reports tab in Fluxx. Place the csv file in app's root folder, and run the management command from the project root:
 ```bash
 python manage.py import_csv {/path/to/file.csv}
 ```
+You can also manually add and/or edit your Fluxx tables and associate fields with their respective tables in the admin interface.
+   - Any changes to tables or fields will appear immediately upon refreshing the Fluxx Exporter Tool.
+   - To configure related tables, select the option to relate the current table to previous ones during setup. Note that the table you are relating to must already be initialized.
+   - There is no validation for entered tables or fields as per the Fluxx API. The correct names can be obtained from the API documentation (included in the Documentation folder) or by exporting a table and checking the CSV output header.
+
+Tables and fields can also be found in your Fluxx instance's built-in API documentation: https://{your-fluxx-instance}.fluxx.io/api/rest/v2/doc. For example, if there is a table named GrantRequest, the fields can be found here: https://{your-fluxx-instance}.fluxx.io/api/rest/v2/GrantRequest/doc
+
+## Running the Export
+
+Once the app is fully configured, navigate to [http://127.0.0.1:8000/](http://127.0.0.1:8000/). From this page you can configure your export to run, with records selected either as a list of grant IDs or as a filtered search. Some sample filter queries:
+
+"grant_id eq R-2024-00003"
+"project_title eq Test Project"
+"created_at last-n-months 5"
+"created_at this-year -"
+
+Note that in the last filter ('created_at this-year -'), the last input of the hyphen is not a typo. This is how the Fluxx API handles less than 3 raw inputs into the filter. It is best to consult your Fluxx instance's built-in API pages to see which filters will work for a given table, which are around at: https://{your-fluxx-instance}.fluxx.io/api/rest/v2/doc
+
+If you have access to the Fluxx API documentation, see also the file "6.1 API Filter Examples.pdf".
 
 ## Logging
 
