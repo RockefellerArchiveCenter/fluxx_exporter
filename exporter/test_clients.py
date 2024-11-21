@@ -128,6 +128,9 @@ class FluxxClientTests(SimpleTestCase):
         mock_get.assert_not_called()
         mock_list.reset_mock()
 
+        mock_get.return_value = {
+            'grant_request': {'id': 22618119, 'grant_id': 'R-2024-00006'}
+        }
         result = client.list_rows(table_name, field_names, grant_ids=[1, 2, 3])
         self.assertEqual(len(list(result)), 3)  # calling list here executes the iterator
         self.assertEqual(mock_get.call_count, 3)
