@@ -102,7 +102,7 @@ class FluxxClient(object):
         """
         logging.debug(f'Fetching data for {table_name} with fields {field_names}, filter {filter_value} and grant_ids {grant_ids}')
 
-        params = {}
+        params = {'cols': json.dumps(field_names)}
 
         if filter_value:
             params.update({'filter': json.dumps(filter_value)})
@@ -113,11 +113,10 @@ class FluxxClient(object):
         if grant_ids:
             logging.debug(f'Params: {params}')
             for g_id in grant_ids:
-                yield self.get(f"{self.api_url}{table_name}/{g_id}")
+                yield self.get(f"{self.api_url}{table_name}/{g_id}", params=params)['grant_request']
 
         else:
             params.update({
-                'cols': json.dumps(field_names),
                 'page': current_page,
                 'per_page': per_page
             })
