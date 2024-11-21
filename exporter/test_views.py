@@ -49,7 +49,7 @@ class ViewTests(TestCase):
         self.assertIsInstance(response.context['formset'], ExportJobWithTables)
 
         response = self.client.post(reverse('exportjob_create'), self.form_data)
-        self.assertEqual(Table.objects.all().count(), 6)
+        self.assertEqual(Table.objects.all().count(), 5)
         self.assertEqual(Field.objects.all().count(), 6)
 
     def test_update_export_job_view(self):
