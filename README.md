@@ -109,7 +109,7 @@ Tables and fields can also be found in your Fluxx instance's built-in API docume
 
 ## Running the Export
 
-Once the app is fully configured, navigate to [http://127.0.0.1:8000/](http://127.0.0.1:8000/). From this page you can configure your export to run, with records selected either as a list of grant IDs or as a filtered search. Some sample filter queries:
+Once the app is fully configured, navigate to [http://127.0.0.1:8000/](http://127.0.0.1:8000/) or [http://localost:8000](http://localost:8000 ). From this page you can configure your export to run, with records selected either as a list of grant IDs or as a filtered search. Some sample filter queries:
 
 "grant_id eq R-2024-00003"
 "project_title eq Test Project"
