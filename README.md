@@ -50,7 +50,7 @@ Follow these steps to set up the Fluxx Exporter:
    ```bash
    pip install -r requirements.txt
    ```
-5. **Create config file**
+5. **Create config file**  
    Create a config file from the template:
    ```bash
    cp fluxx_exporter/config.py.deploy fluxx_exporter/config.py
@@ -111,10 +111,10 @@ Tables and fields can also be found in your Fluxx instance's built-in API docume
 
 Once the app is fully configured, navigate to [http://127.0.0.1:8000/](http://127.0.0.1:8000/) or [http://localost:8000](http://localost:8000 ). From this page you can configure your export to run, with records selected either as a list of grant IDs or as a filtered search. Some sample filter queries:
 
-"grant_id eq R-2024-00003"
-"project_title eq Test Project"
-"created_at last-n-months 5"
-"created_at this-year -"
+   "grant_id eq R-2024-00003"  
+   "project_title eq Test Project"
+   "created_at last-n-months 5"
+   "created_at this-year -"
 
 Note that in the last filter ('created_at this-year -'), the last input of the hyphen is not a typo. This is how the Fluxx API handles less than 3 raw inputs into the filter. It is best to consult your Fluxx instance's built-in API pages to see which filters will work for a given table, which are around at: https://{your-fluxx-instance}.fluxx.io/api/rest/v2/doc
 
