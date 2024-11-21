@@ -19,10 +19,18 @@
         <dt class="summary-list__key">Export Format</dt>
         <dd class="summary-list__value">{{ object.export_format }}</dd>
     </div>
+    {% if object.filter_string %}
     <div class="summary-list__row">
         <dt class="summary-list__key">Filter String</dt>
         <dd class="summary-list__value">{{ object.filter_string }}</dd>
     </div>
+    {% endif %}
+    {% if object.grant_ids %}
+    <div class="summary-list__row">
+        <dt class="summary-list__key">Grant IDs</dt>
+        <dd class="summary-list__value">{{ object.grant_ids }}</dd>
+    </div>
+    {% endif %}
     {% if object.amazon_s3_config %}
     <div class="summary-list__row">
         <dt class="summary-list__key">S3 Configuration</dt>

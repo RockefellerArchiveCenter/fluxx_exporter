@@ -46,14 +46,22 @@ class CreateExportJobView(CreateView):
         if tables_formset.is_valid():
             response = super().form_valid(form)
             for form in tables_formset:
-                new_table = Table.objects.create(
+                new_table, _ = Table.objects.get_or_create(
                     name=form.instance.name,
                     include_in_export=form.instance.include_in_export,
                     export_job=self.object)
                 for field in form.nested:
+                    related_table = None
+                    if field.instance.related_table:
+                        related_table, _ = Table.objects.get_or_create(
+                            name=field.instance.related_table.name,
+                            include_in_export=form.instance.include_in_export,
+                            export_job=self.object
+                        )
                     Field.objects.create(
                         name=field.instance.name,
                         include_in_export=field.instance.include_in_export,
+                        related_table=related_table,
                         table=new_table)
             return response
         else:
