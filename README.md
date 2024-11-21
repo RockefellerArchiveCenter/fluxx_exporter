@@ -50,7 +50,7 @@ Follow these steps to set up the Fluxx Exporter:
    ```bash
    pip install -r requirements.txt
    ```
-5. **Create config file**  
+5. **Create Config File**  
    Create a config file from the template:
    ```bash
    cp fluxx_exporter/config.py.deploy fluxx_exporter/config.py
@@ -82,7 +82,7 @@ Follow these steps to set up the Fluxx Exporter:
 3. Configure your Fluxx instance ([see below for obtaining API credentials](#Authorizing-the-tool-with-your-Fluxx-instance-and-creating-the-Client-ID-and-Secret)) and Amazon S3 instance.
 4. Configure the app to recognize the tables and fields in your Fluxx instance. Use the built-in management command (preferred) or  do so manually from the admin panel. See [Importing Tables and Fields](#Importing-Tables-and-Fields) below for more information.
 
-## Authorizing the tool with your Fluxx instance and creating the Client ID and Secret
+## Authorize the tool with your Fluxx instance and create the Client ID and Secret
 
 **NB: **You must have Fluxx administrator access to perform these steps.**
 
@@ -96,7 +96,7 @@ If you have access to the Fluxx API documentation, see the file "4 Getting Start
 
 ## Importing Tables and Fields
 
-The recommended approach to creating tables and fields is to use the built-in management command and the Fluxx Glossary Report CSV. The Fluxx Glossary Report CSV file can be downloaded from the Live Reports tab in Fluxx. Place the csv file in app's root folder, and run the management command from the project root:
+The recommended approach to creating tables and fields is to use the built-in management command and the Fluxx Glossary Report CSV. The Fluxx Glossary Report CSV file can be downloaded from the Live Reports tab in Fluxx. Run the management command from the project root:
 ```bash
 python manage.py import_csv {/path/to/file.csv}
 ```
