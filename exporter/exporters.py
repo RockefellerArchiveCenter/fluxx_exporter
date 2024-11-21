@@ -107,7 +107,8 @@ class Exporter(object):
         Returns:
             fields (list of str): names of fields to export.
         """
-        return [c.name for c in table.fields.filter(include_in_export=True)]
+        default_fields = ['model_documents']
+        return default_fields + [c.name for c in table.fields.filter(include_in_export=True)]
 
     def parse_filter(self, filter):
         """Split the filter string into components.
