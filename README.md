@@ -51,7 +51,7 @@ Follow these steps to set up the Fluxx Exporter:
    pip install -r requirements.txt
    ```
 5. **Create config file**
-   Create a config file from the template :
+   Create a config file from the template:
    ```bash
    cp fluxx_exporter/config.py.deploy fluxx_exporter/config.py
    ```
