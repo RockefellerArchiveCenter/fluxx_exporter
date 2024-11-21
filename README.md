@@ -56,19 +56,19 @@ Follow these steps to set up the Fluxx Exporter:
    cp fluxx_exporter/config.py.deploy fluxx_exporter/config.py
    ```
 
-6. **Apply Migrations**  
+7. **Apply Migrations**  
    Apply the database migrations to set up the database schema:
    ```bash
    python manage.py migrate
    ```
 
-7. **Create a Superuser**  
+8. **Create a Superuser**  
    Create a superuser to access the Django admin interface:
    ```bash
    python manage.py createsuperuser
    ```
 
-8. **Run the Development Server**  
+9. **Run the Development Server**  
    Start the Django development server:
    ```bash
    python manage.py runserver
