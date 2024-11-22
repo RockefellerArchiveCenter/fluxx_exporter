@@ -22,3 +22,7 @@ h2 {
 .text--italic {
     font-style: italic;
 }
+
+.footer-secondary .container.flex {
+    justify-content: center;
+}
