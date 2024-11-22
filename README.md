@@ -14,7 +14,7 @@ Before you begin, ensure you have the following installed on your system:
 1. **Python**: Python 3.6 or higher. You can download it from [python.org](https://www.python.org/downloads/).
 2. **Git**: Git must be installed. Download it from [git-scm.com](https://git-scm.com/downloads).
 
-## Installation and Configuration Steps
+## Installation
 
 Follow these steps to set up the Fluxx Exporter:
 
@@ -85,50 +85,86 @@ Follow these steps to set up the Fluxx Exporter:
    python manage.py createsuperuser
    ```
 
-## Configure the Environment
+## Configuration
 
 1. Navigate to [http://localost:8000/admin](http://localost:8000/admin).
 2. Log in with the created superuser.
-3. Configure your Fluxx instance ([see below for obtaining API credentials](#Authorizing-the-tool-with-your-Fluxx-instance-and-creating-the-Client-ID-and-Secret)) and Amazon S3 instance.
-4. Configure the app to recognize the tables and fields in your Fluxx instance. Use the built-in management command (preferred) or  do so manually from the admin panel. See [Importing Tables and Fields](#Importing-Tables-and-Fields) below for more information.
+3. [Configure your Fluxx instance](#configuring-a-fluxx-instance)
+4. If desired, [add credentials for an Amazon S3 Bucket](#configuring-an-amazon-s3-bucket).
+4. Configure the app to [recognize the tables and fields in your Fluxx instance](#configuring-tables-and-fields).
 
-## Authorize the tool with your Fluxx instance and create the Client ID and Secret
+### Configuring a Fluxx Instance
 
-**NB: **You must have Fluxx administrator access to perform these steps.**
+#### Acquiring Fluxx Credentials
+
+**You must have Fluxx administrator access to perform these steps.**
 
 In order for the Fluxx Exporter tool to be able to access your Fluxx instance, you need to authorize the app and create a Client ID and Client Secret.
 
 Log into Fluxx and navigate to this page: https://{yourfluxxinstance}.fluxx.io/oauth/applications/
 
-Click "New Application," name the authorization (e.g. Fluxx Exporter), copy your Fluxx instance's URL into the redirect URI (e.g. https://{yourfluxxinstance}.fluxx.io), and leave Scopes blank.  Press "Submit." You should receive an application ID and secret on the following page.  Save these in a safe place. Navigate to the app's admin panel, and enter the newly created credentials there.
+Click "New Application," name the authorization (e.g. Fluxx Exporter), copy your Fluxx instance's URL into the redirect URI (e.g. https://{yourfluxxinstance}.fluxx.io), and leave Scopes blank.  Press "Submit." You should receive an application ID and secret on the following page. Save these in a safe place. 
 
-If you have access to the Fluxx API documentation, see the file "4 Getting Started with Fluxx APIs.pdf".
+#### Creating a Fluxx Configuration
 
-## Importing Tables and Fields
+On the Fluxx Exporter admin page, under "Site Administration", click on "Fluxx configs" and then the "Add Fluxx Config" button. Enter the credentials you created in Fluxx in the fields provided, along with a descriptive name for the Fluxx instance. You can configure additional Fluxx instances if desired.
 
-The recommended approach to creating tables and fields is to use the built-in management command and the Fluxx Glossary Report CSV. The Fluxx Glossary Report CSV file can be downloaded from the Live Reports tab in Fluxx. Run the management command from the project root:
+
+### Configuring an Amazon S3 Bucket
+On the Fluxx Exporter admin page, under "Site Administration", click on "Amazon s3 configs" and then the "Add Amazon S3 Config" button. Enter the bucket name, credentials, and region in the fields provided, along with a descriptive name for the S# instance. You can configure additional S3 instances if desired.
+
+
+### Configuring Tables and Fields
+
+The recommended approach to creating tables and fields is to use the built-in management command to import data from Fluxx API documentation.
+
+#### Downloading Documentation Pages
+
+**You must have Fluxx administrator access to perform these steps.**
+
+Your Fluxx instance's built-in API documentation is available at https://{your-fluxx-instance}.fluxx.io/api/rest/v2/doc. For each table you wish to export from Fluxx, download the documentation page to a local folder, using the table's normalized name as a filename. For example, the GrantRequest table docs, located at: https://{your-fluxx-instance}.fluxx.io/api/rest/v2/GrantRequest/doc would be saved as `grant_request.html`. Save all downloaded docs in the same local folder.
+
+#### Running the management command
+
+In a terminal window, navigate to the application root. If you are running the application in a Docker container, execute the management command, targeting the running container:
 ```bash
-python manage.py import_csv {/path/to/file.csv}
+docker compose exec web python manage.py import_html {/path/to/directory/with/html/files}
 ```
+
+If you are not using Docker, you can execute the command directly:
+```bash
+python manage.py import_html {/path/to/directory/with/html/files}
+```
+
+#### Manually adding or editing tables and fields
 You can also manually add and/or edit your Fluxx tables and associate fields with their respective tables in the admin interface.
    - Any changes to tables or fields will appear immediately upon refreshing the Fluxx Exporter Tool.
    - To configure related tables, select the option to relate the current table to previous ones during setup. Note that the table you are relating to must already be initialized.
-   - There is no validation for entered tables or fields as per the Fluxx API. The correct names can be obtained from the API documentation (included in the Documentation folder) or by exporting a table and checking the CSV output header.
+   - There is no validation for entered tables or fields as per the Fluxx API. The correct names can be obtained from the API documentation or by exporting a table from the Fluxx UI and checking the CSV output header.
 
-Tables and fields can also be found in your Fluxx instance's built-in API documentation: https://{your-fluxx-instance}.fluxx.io/api/rest/v2/doc. For example, if there is a table named GrantRequest, the fields can be found here: https://{your-fluxx-instance}.fluxx.io/api/rest/v2/GrantRequest/doc
+## Exporting Grants
 
-## Running the Export
+Once the app is fully configured, navigate to [http://localost:8000](http://localost:8000). From this page you can create
+an export job, which can then be run on demand.
 
-Once the app is fully configured, navigate to [http://localost:8000](http://localost:8000). From this page you can configure your export to run, with records selected either as a list of grant IDs or as a filtered search. Some sample filter queries:
+### Creating Export Jobs
+Export jobs require at minimum a name, a Fluxx configuration, a local export location, an export format, and the tables and fields you want to export. Optionally, if you wish to upload exported records to an Amazon S3 bucket, you can add an Amazon S3 configuration. 
+
+There are two options available for filtering which records you want to export:
+- A comma-separated list of grant IDs to export.
+- A filter that is applied to grant records (see [Filters](#filters) below.)
+
+#### Filters
+Fluxx API filters generally consist of three parts, for example:
 
    - "grant_id eq R-2024-00003"  
    - "project_title eq Test Project"
    - "created_at last-n-months 5"
    - "created_at this-year -"
 
-Note that in the last filter ('created_at this-year -'), the last input of the hyphen is not a typo. This is how the Fluxx API handles less than 3 raw inputs into the filter. It is best to consult your Fluxx instance's built-in API pages to see which filters will work for a given table, which are around at: https://{your-fluxx-instance}.fluxx.io/api/rest/v2/doc
+Note that in the last filter ('created_at this-year -'), the last input of the hyphen is not a typo. This is how the Fluxx API handles less than 3 raw inputs into the filter. 
 
-If you have access to the Fluxx API documentation, see also the file "6.1 API Filter Examples.pdf".
+It is best to consult your Fluxx instance's built-in API pages at https://{your-fluxx-instance}.fluxx.io/api/rest/v2/doc to see which filters will work for a given table. Additional documentation is available in the official Fluxx API documentation, in the "PI Filter Examples" section.
 
 ## Logging
 
