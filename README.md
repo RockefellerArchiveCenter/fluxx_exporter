@@ -3,9 +3,9 @@
 
 ## About
 
-The Fluxx Exporter is an open-source tool that integrates with the grants management system [Fluxx](https://www.fluxx.io/) for the purposes of exporting select elements of grant records in an automated way. The tool is built on Python and Django, and uses the Fluxx API to export data from the Fluxx instance. It can export both structured data that is entered into fields and stored in the database as well as files that are uploaded and attached to the grant record.
+The Fluxx Exporter is an open-source tool that integrates with the grants management system [Fluxx](https://www.fluxx.io/) for the purposes of automating exports of select elements of grant records. The tool is built on Python and Django, and uses the Fluxx API to export data from a configured Fluxx instance. It can export both structured data that is entered into fields and stored in the database as well as files that are uploaded and attached to the grant record.
 
-Foundations use grants management systems (GMS) such as Fluxx to manage their grant making from the time a grantee begins an application, through the award process, and on to the grantees’ final reporting on activities. For most foundations, the GMS is the permanent system of record for all grant-related records. Foundation archivists have struggled to find scalable solutions for exporting closed grant records from these systems.  This tool allows archivists to select and export grant information,  for long-term preservation and researcher access. 
+Foundations use grants management systems (GMS) such as Fluxx to manage their grant making from the time a grantee begins an application, through the award process, and on to the grantees’ final reporting on activities. For most foundations, the GMS is the permanent system of record for all grant-related records. Foundation archivists have struggled to find scalable solutions for exporting closed grant records from these systems. This tool allows archivists to select and export grant information, for long-term preservation and researcher access. 
 
 ## Prerequisites
 
@@ -42,7 +42,8 @@ Follow these steps to set up the Fluxx Exporter:
    ```bash
    docker compose up
    ```
-   If you don't have Docker installed, follow steps 4a-4d below.
+   If you don't have Docker installed, follow steps 4a-4d below. Otherwise skip 
+   to step 5.
 
 4a. **(Optional) Create a Virtual Environment**  
    It's recommended to create a virtual environment to manage dependencies:
@@ -78,7 +79,6 @@ Follow these steps to set up the Fluxx Exporter:
    ```
    Open your web browser and navigate to [http://localost:8000](http://localost:8000) to access the application.
 
-
 5. **Create a Superuser**  
    Create a superuser to access the Django admin interface:
    ```bash
@@ -98,9 +98,9 @@ Follow these steps to set up the Fluxx Exporter:
 
 In order for the Fluxx Exporter tool to be able to access your Fluxx instance, you need to authorize the app and create a Client ID and Client Secret.
 
-Log into Fluxx and navigate to this page: https://{yourfluxxinstance.fluxx.io}/oauth/applications/
+Log into Fluxx and navigate to this page: https://{yourfluxxinstance}.fluxx.io/oauth/applications/
 
-Click "New Application," name the authorization (e.g. Fluxx Exporter), copy your Fluxx instance's URL into the redirect URI (e.g. https://{yourfluxxinstance.fluxx.io}), and leave Scopes blank.  Press "Submit." You should receive an application ID and secret on the following page.  Save these in a safe place. Navigate to the app's admin panel, and enter the newly created credentials there.
+Click "New Application," name the authorization (e.g. Fluxx Exporter), copy your Fluxx instance's URL into the redirect URI (e.g. https://{yourfluxxinstance}.fluxx.io), and leave Scopes blank.  Press "Submit." You should receive an application ID and secret on the following page.  Save these in a safe place. Navigate to the app's admin panel, and enter the newly created credentials there.
 
 If you have access to the Fluxx API documentation, see the file "4 Getting Started with Fluxx APIs.pdf".
 
