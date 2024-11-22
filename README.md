@@ -171,6 +171,10 @@ It is best to consult your Fluxx instance's built-in API pages at https://{your-
 This application logs to the console (stdout) as well as a file. Logging level and log file location can be configured
 with the `LOG_FILE`, `FILE_LOG_LEVEL` and `CONSOLE_LOG_LEVEL` settings in `config.py`.
 
+## User Management
+
+This application currently does not require authentication, however the Django Administration site (which allows configuration of Fluxx instances and S3 buckets) requires a login from a user with admin access. In the steps above, the superuser account that is created will provide access to this interface.
+
 
 ## License
 
