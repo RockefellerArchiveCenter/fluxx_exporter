@@ -30,7 +30,21 @@ Follow these steps to set up the Fluxx Exporter:
    cd fluxx_exporter
    ```
 
-3. **(Optional) Create a Virtual Environment**  
+3. **Create Config File**  
+   Create a config file from the template:
+   ```bash
+   cp fluxx_exporter/config.py.example fluxx_exporter/config.py
+   ```
+
+4. **Start app with Docker**
+   If you have [Docker](https://www.docker.com/products/docker-desktop/) installed, 
+   you can bring the application up by running:
+   ```bash
+   docker compose up
+   ```
+   If you don't have Docker installed, follow steps 4a-4d below.
+
+4a. **(Optional) Create a Virtual Environment**  
    It's recommended to create a virtual environment to manage dependencies:
    ```bash
    python -m venv venv
@@ -45,39 +59,35 @@ Follow these steps to set up the Fluxx Exporter:
      venv\Scripts\activate
      ```
 
-4. **Install Dependencies**  
+4b. **Install Dependencies**  
    Install the required Python packages using pip:
    ```bash
    pip install -r requirements.txt
    ```
-5. **Create Config File**  
-   Create a config file from the template:
-   ```bash
-   cp fluxx_exporter/config.py.deploy fluxx_exporter/config.py
-   ```
 
-7. **Apply Migrations**  
+4c. **Apply Migrations**  
    Apply the database migrations to set up the database schema:
    ```bash
    python manage.py migrate
    ```
 
-8. **Create a Superuser**  
+4d. **Run the Development Server**  
+   Start the Django development server:
+   ```bash
+   python manage.py runserver
+   ```
+   Open your web browser and navigate to [http://localost:8000](http://localost:8000) to access the application.
+
+
+5. **Create a Superuser**  
    Create a superuser to access the Django admin interface:
    ```bash
    python manage.py createsuperuser
    ```
 
-9. **Run the Development Server**  
-   Start the Django development server:
-   ```bash
-   python manage.py runserver
-   ```
-   Open your web browser and navigate to [http://127.0.0.1:8000/](http://127.0.0.1:8000/) or [http://localost:8000](http://localost:8000) to access the application.
-
 ## Configure the Environment
 
-1. Navigate to [http://127.0.0.1:8000/admin](http://127.0.0.1:8000/admin) or [http://localost:8000/admin](http://localost:8000/admin).
+1. Navigate to [http://localost:8000/admin](http://localost:8000/admin).
 2. Log in with the created superuser.
 3. Configure your Fluxx instance ([see below for obtaining API credentials](#Authorizing-the-tool-with-your-Fluxx-instance-and-creating-the-Client-ID-and-Secret)) and Amazon S3 instance.
 4. Configure the app to recognize the tables and fields in your Fluxx instance. Use the built-in management command (preferred) or  do so manually from the admin panel. See [Importing Tables and Fields](#Importing-Tables-and-Fields) below for more information.
@@ -109,7 +119,7 @@ Tables and fields can also be found in your Fluxx instance's built-in API docume
 
 ## Running the Export
 
-Once the app is fully configured, navigate to [http://127.0.0.1:8000/](http://127.0.0.1:8000/) or [http://localost:8000](http://localost:8000 ). From this page you can configure your export to run, with records selected either as a list of grant IDs or as a filtered search. Some sample filter queries:
+Once the app is fully configured, navigate to [http://localost:8000](http://localost:8000). From this page you can configure your export to run, with records selected either as a list of grant IDs or as a filtered search. Some sample filter queries:
 
    - "grant_id eq R-2024-00003"  
    - "project_title eq Test Project"
