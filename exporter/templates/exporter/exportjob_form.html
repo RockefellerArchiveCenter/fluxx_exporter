@@ -43,7 +43,7 @@
 		
 	{% for table_form in formset %}
 		{% if table_form.instance.name == 'grant_request' %}
-			{% include 'exporter/includes/inline_table_form.html' with table_form=table_form %}
+			{% include 'exporter/includes/inline_table_form.html' with table_form=table_form include_by_default='true' %}
 		{% endif %}
 	{% endfor %}
 
