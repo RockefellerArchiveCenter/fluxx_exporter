@@ -1,8 +1,6 @@
 
 # Fluxx Exporter
 
-## About
-
 The Fluxx Exporter is an open-source tool that integrates with the grants management system [Fluxx](https://www.fluxx.io/) for the purposes of automating exports of select elements of grant records. The tool is built on Python and Django, and uses the Fluxx API to export data from a configured Fluxx instance. It can export both structured data that is entered into fields and stored in the database as well as files that are uploaded and attached to the grant record.
 
 Foundations use grants management systems (GMS) such as Fluxx to manage their grant making from the time a grantee begins an application, through the award process, and on to the grantees’ final reporting on activities. For most foundations, the GMS is the permanent system of record for all grant-related records. Foundation archivists have struggled to find scalable solutions for exporting closed grant records from these systems. This tool allows archivists to select and export grant information, for long-term preservation and researcher access. 
@@ -37,13 +35,11 @@ Follow these steps to set up the Fluxx Exporter:
    ```
 
 4. **Start app with Docker**
-   If you have [Docker](https://www.docker.com/products/docker-desktop/) installed, 
-   you can bring the application up by running:
+   If you have [Docker](https://www.docker.com/products/docker-desktop/) installed, you can bring the application up by running:
    ```bash
    docker compose up
    ```
-   If you don't have Docker installed, follow steps 4a-4d below. Otherwise skip 
-   to step 5.
+   If you don't have Docker installed, follow steps 4a-4d below. Otherwise skip to step 5.
 
 4a. **(Optional) Create a Virtual Environment**  
    It's recommended to create a virtual environment to manage dependencies:
@@ -85,6 +81,11 @@ Follow these steps to set up the Fluxx Exporter:
    python manage.py createsuperuser
    ```
 
+   In Docker:
+   ```bash
+   docker compose exec web python manage.py createsuperuser
+   ```
+
 ## Configuration
 
 1. Navigate to [http://localost:8000/admin](http://localost:8000/admin).
@@ -99,11 +100,14 @@ Follow these steps to set up the Fluxx Exporter:
 
 **You must have Fluxx administrator access to perform these steps.**
 
-In order for the Fluxx Exporter tool to be able to access your Fluxx instance, you need to authorize the app and create a Client ID and Client Secret.
+In order for the Fluxx Exporter tool to be able to access your Fluxx instance, you need to authorize the app and create a Client ID and Client Secret:
 
-Log into Fluxx and navigate to this page: https://{yourfluxxinstance}.fluxx.io/oauth/applications/
+1. Log into Fluxx and navigate to this page: https://{yourfluxxinstance}.fluxx.io/oauth/applications/
 
-Click "New Application," name the authorization (e.g. Fluxx Exporter), copy your Fluxx instance's URL into the redirect URI (e.g. https://{yourfluxxinstance}.fluxx.io), and leave Scopes blank.  Press "Submit." You should receive an application ID and secret on the following page. Save these in a safe place. 
+2. Click "New Application," name the authorization (e.g. Fluxx Exporter).
+3. Copy your Fluxx instance's URL into the redirect URI (e.g. https://{yourfluxxinstance}.fluxx.io).
+4. Leave Scopes blank.
+5. Press "Submit." You should receive an application ID and secret on the following page. Save these in a safe place. 
 
 #### Creating a Fluxx Configuration
 
@@ -118,7 +122,7 @@ On the Fluxx Exporter admin page, under "Site Administration", click on "Amazon 
 
 The recommended approach to creating tables and fields is to use the built-in management command to import data from Fluxx API documentation.
 
-#### Downloading Documentation Pages
+#### Downloading API Documentation Pages
 
 **You must have Fluxx administrator access to perform these steps.**
 
@@ -144,11 +148,17 @@ You can also manually add and/or edit your Fluxx tables and associate fields wit
 
 ## Exporting Grants
 
-Once the app is fully configured, navigate to [http://localost:8000](http://localost:8000). From this page you can create
-an export job, which can then be run on demand.
+Once the app is fully configured, navigate to [http://localost:8000](http://localost:8000). From this page you can create an export job, which can then be run on demand.
 
 ### Creating Export Jobs
-Export jobs require at minimum a name, a Fluxx configuration, a local export location, an export format, and the tables and fields you want to export. Optionally, if you wish to upload exported records to an Amazon S3 bucket, you can add an Amazon S3 configuration. 
+Export jobs require at minimum:
+- Name
+- Fluxx configuration
+- Local export location
+- Export format
+- The tables and fields you want to export
+
+Optionally, if you wish to upload exported records to an Amazon S3 bucket, you can add an Amazon S3 configuration. 
 
 There are two options available for filtering which records you want to export:
 - A comma-separated list of grant IDs to export.
