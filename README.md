@@ -102,10 +102,10 @@ Follow these steps to set up the Fluxx Exporter:
 
 In order for the Fluxx Exporter tool to be able to access your Fluxx instance, you need to authorize the app and create a Client ID and Client Secret:
 
-1. Log into Fluxx and navigate to this page: https://{yourfluxxinstance}.fluxx.io/oauth/applications/
+1. Log into Fluxx and navigate to this page: https://{your-fluxx-instance}.fluxx.io/oauth/applications/
 
 2. Click "New Application," name the authorization (e.g. Fluxx Exporter).
-3. Copy your Fluxx instance's URL into the redirect URI (e.g. https://{yourfluxxinstance}.fluxx.io).
+3. Copy your Fluxx instance's URL into the redirect URI (e.g. https://{your-fluxx-instance}.fluxx.io).
 4. Leave Scopes blank.
 5. Press "Submit." You should receive an application ID and secret on the following page. Save these in a safe place. 
 
