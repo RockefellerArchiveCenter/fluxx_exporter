@@ -22,10 +22,6 @@ class AboutView(TemplateView):
     template_name = 'exporter/about.html'
 
 
-class FilterHelpView(TemplateView):
-    template_name = 'exporter/filterhelp.html'
-
-
 class ExportJobView(DetailView):
     model = ExportJob
 

@@ -5,12 +5,25 @@
     <h3>{{ table_form.instance.name }} table</h3>
     <div class="input-group mb-20">
         {{ table_form.id }}
-        <input
-            type="hidden"
-            id="{{ table_form.include_in_export.auto_id }}"
-            name="{{ table_form.include_in_export.html_name }}"
-            value="on"
-        />
+        {% if include_by_default == 'true' %}
+            <input
+                type="hidden"
+                id="{{ table_form.include_in_export.auto_id }}"
+                name="{{ table_form.include_in_export.html_name }}"
+                value="on"
+            />
+        {% else %}
+            <input
+                type="checkbox"
+                class="checkbox checkbox--blue"
+                id="{{ table_form.include_in_export.auto_id }}"
+                name="{{ table_form.include_in_export.html_name }}"
+                {% if table_form.include_in_export.value %}checked="checked"{% endif %}
+            />
+            <label for="{{ table_form.include_in_export.id_for_label }}" class="checkbox--blue">
+                Include in export?
+            </label>
+        {% endif %}
     </div>
 
     {% if table_form.nested %}
