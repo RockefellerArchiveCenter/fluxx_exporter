@@ -164,7 +164,7 @@ Fluxx API filters generally consist of three parts, for example:
 
 Note that in the last filter ('created_at this-year -'), the last input of the hyphen is not a typo. This is how the Fluxx API handles less than 3 raw inputs into the filter. 
 
-It is best to consult your Fluxx instance's built-in API pages at https://{your-fluxx-instance}.fluxx.io/api/rest/v2/doc to see which filters will work for a given table. Additional documentation is available in the official Fluxx API documentation, in the "PI Filter Examples" section.
+It is best to consult your Fluxx instance's built-in API pages at https://{your-fluxx-instance}.fluxx.io/api/rest/v2/doc to see which filters will work for a given table. If you have access to the official Fluxx API documentation, more information is available in the "API Filter Examples" section.
 
 ## Logging
 
