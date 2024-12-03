@@ -148,7 +148,7 @@ You can also manually add and/or edit your Fluxx tables and associate fields wit
 
 ## Exporting Grants
 
-Once the app is fully configured, navigate to [http://localost:8000](http://localost:8000). From this page you can create an export job, which can then be run on demand.
+Once the app is fully configured, navigate to [http://localhost:8000](http://localhost:8000). From this page you can create an export job, which can then be run on demand.
 
 ### Creating Export Jobs
 Export jobs require at minimum:
