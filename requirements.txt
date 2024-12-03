@@ -6,15 +6,15 @@
 #
 asgiref==3.8.1
     # via django
-bcrypt==4.2.0
+bcrypt==4.2.1
     # via paramiko
 beautifulsoup4==4.12.3
     # via -r requirements.in
-boto3==1.35.57
+boto3==1.35.71
     # via
     #   -r requirements.in
     #   moto
-botocore==1.35.57
+botocore==1.35.71
     # via
     #   -r requirements.in
     #   boto3
@@ -28,7 +28,7 @@ cffi==1.17.1
     #   pynacl
 charset-normalizer==3.4.0
     # via requests
-cryptography==43.0.3
+cryptography==44.0.0
     # via
     #   moto
     #   paramiko
@@ -46,7 +46,7 @@ markupsafe==3.0.2
     # via
     #   jinja2
     #   werkzeug
-moto==5.0.20
+moto==5.0.21
     # via -r requirements.in
 paramiko==3.5.0
     # via
@@ -73,13 +73,13 @@ responses==0.25.3
     # via
     #   -r requirements.in
     #   moto
-s3transfer==0.10.3
+s3transfer==0.10.4
     # via boto3
 six==1.16.0
     # via python-dateutil
 soupsieve==2.6
     # via beautifulsoup4
-sqlparse==0.5.1
+sqlparse==0.5.2
     # via django
 typing-extensions==4.12.2
     # via asgiref
