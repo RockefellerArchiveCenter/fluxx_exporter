@@ -9,7 +9,7 @@ Foundations use grants management systems (GMS) such as Fluxx to manage their gr
 
 Before you begin, ensure you have the following installed on your system:
 
-1. **Python**: Python 3.6 or higher. You can download it from [python.org](https://www.python.org/downloads/).
+1. **Python**: Python 3.11. You can download it from [python.org](https://www.python.org/downloads/).
 2. **Git**: Git must be installed. Download it from [git-scm.com](https://git-scm.com/downloads).
 
 ## Installation
@@ -34,19 +34,24 @@ Follow these steps to set up the Fluxx Exporter:
    cp fluxx_exporter/config.py.example fluxx_exporter/config.py
    ```
 
-4. **Start app with Docker**
+4. **Start the application**
+   You can run the application using the supplied Docker container, which we recommend. If you are not able to use Docker, 
+   additional steps must be taken to create a local environment in which the application can run. 
+
+   **Using Docker**
+   
    If you have [Docker](https://www.docker.com/products/docker-desktop/) installed, you can bring the application up by running:
    ```bash
    docker compose up
    ```
-   If you don't have Docker installed, follow steps 4a-4d below. Otherwise skip to step 5.
+   Open your web browser and navigate to [http://localost:8000](http://localost:8000) to access the application.
 
-4a. **(Optional) Create a Virtual Environment**  
-   It's recommended to create a virtual environment to manage dependencies:
+   **Using a local environment**
+   1. Create a virtual environment to manage dependencies:
    ```bash
    python -m venv venv
    ```
-   Activate the virtual environment:
+   2. Activate the virtual environment:
    - On macOS/Linux:
      ```bash
      source venv/bin/activate
@@ -56,20 +61,17 @@ Follow these steps to set up the Fluxx Exporter:
      venv\Scripts\activate
      ```
 
-4b. **Install Dependencies**  
-   Install the required Python packages using pip:
+   3. Install the required Python packages using pip:
    ```bash
    pip install -r requirements.txt
    ```
 
-4c. **Apply Migrations**  
-   Apply the database migrations to set up the database schema:
+   4. Apply the database migrations to set up the database schema:
    ```bash
    python manage.py migrate
    ```
 
-4d. **Run the Development Server**  
-   Start the Django development server:
+   5. Start the Django development server:
    ```bash
    python manage.py runserver
    ```
@@ -77,14 +79,18 @@ Follow these steps to set up the Fluxx Exporter:
 
 5. **Create a Superuser**  
    Create a superuser to access the Django admin interface:
+   If you're using the Docker container, enter the following command in a new terminal window:
+   ```bash
+   docker compose exec web python manage.py createsuperuser
+   ```
+   
+   If you're running the application in your local environment, enter the following command
+   in a new terminal window from the application's root directory:
    ```bash
    python manage.py createsuperuser
    ```
 
-   In Docker:
-   ```bash
-   docker compose exec web python manage.py createsuperuser
-   ```
+   
 
 ## Configuration
 
