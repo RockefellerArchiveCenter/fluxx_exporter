@@ -37,6 +37,7 @@ class CreateExportJobView(CreateView):
         return context
 
     def form_valid(self, form):
+        """Creates Table objects and associates them with the export job."""
         context = self.get_context_data(form=form)
         tables_formset = context['formset']
         if tables_formset.is_valid():
@@ -51,7 +52,6 @@ class CreateExportJobView(CreateView):
                     if field.instance.related_table:
                         related_table, _ = Table.objects.get_or_create(
                             name=field.instance.related_table.name,
-                            include_in_export=form.instance.include_in_export,
                             export_job=self.object
                         )
                     Field.objects.create(
