@@ -104,9 +104,10 @@ In order for the Fluxx Exporter tool to be able to access your Fluxx instance, y
 
 1. Log into Fluxx and navigate to this page: https://{your-fluxx-instance}.fluxx.io/oauth/applications/
 
-2. Click "New Application," name the authorization (e.g. Fluxx Exporter).
+2. Click "New Application" in the Fluxx interface.
+3. Name the new application (e.g. Fluxx Exporter).
 3. Copy your Fluxx instance's URL into the redirect URI (e.g. https://{your-fluxx-instance}.fluxx.io).
-4. Leave Scopes blank.
+4. Leave Scopes field blank.
 5. Press "Submit." You should receive an application ID and secret on the following page. Save these in a safe place. 
 
 #### Creating a Fluxx Configuration
@@ -174,7 +175,7 @@ Fluxx API filters generally consist of three parts, for example:
 
 Note that in the last filter ('created_at this-year -'), the last input of the hyphen is not a typo. This is how the Fluxx API handles less than 3 raw inputs into the filter. 
 
-Consult your Fluxx instance's built-in API pages at https://{your-fluxx-instance}.fluxx.io/api/rest/v2/doc to see which filters will work for a given table. Official Fluxx API documentation, which is not publicly available, contains more information is available in the "API Filter Examples" section.
+Consult your Fluxx instance's built-in API pages at https://{your-fluxx-instance}.fluxx.io/api/rest/v2/doc to see which filters will work for a given table. Official Fluxx API documentation, which is not publicly available, contains   more information is available in the "API Filter Examples" section.
 
 ## Logging
 
