@@ -44,7 +44,7 @@ Follow these steps to set up the Fluxx Exporter:
    ```bash
    docker compose up
    ```
-   Open your web browser and navigate to [http://localost:8000](http://localost:8000) to access the application.
+   Open your web browser and navigate to [http://localhost:8000](http://localhost:8000) to access the application.
 
    **Using a local environment**
    1. Create a virtual environment to manage dependencies:
@@ -75,7 +75,7 @@ Follow these steps to set up the Fluxx Exporter:
    ```bash
    python manage.py runserver
    ```
-   Open your web browser and navigate to [http://localost:8000](http://localost:8000) to access the application.
+   Open your web browser and navigate to [http://localhost:8000](http://localhost:8000) to access the application.
 
 5. **Create a Superuser**  
    Create a superuser to access the Django admin interface:
@@ -91,7 +91,6 @@ Follow these steps to set up the Fluxx Exporter:
    ```
 
    
-
 ## Configuration
 
 1. Navigate to [http://localost:8000/admin](http://localost:8000/admin).
