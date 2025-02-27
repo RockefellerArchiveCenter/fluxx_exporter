@@ -78,7 +78,8 @@ Follow these steps to set up the Fluxx Exporter:
    Open your web browser and navigate to [http://localhost:8000](http://localhost:8000) to access the application.
 
 5. **Create a Superuser**  
-   Create a superuser to access the Django admin interface:
+   Create a superuser to access the Django admin interface.
+
    If you're using the Docker container, enter the following command in a new terminal window:
    ```bash
    docker compose exec web python manage.py createsuperuser
@@ -93,11 +94,11 @@ Follow these steps to set up the Fluxx Exporter:
    
 ## Configuration
 
-1. Navigate to [http://localost:8000/admin](http://localost:8000/admin).
+1. Navigate to [http://localhost:8000/admin](http://localhost:8000/admin).
 2. Log in with the created superuser.
 3. [Configure your Fluxx instance](#configuring-a-fluxx-instance)
 4. If desired, [add credentials for an Amazon S3 Bucket](#configuring-an-amazon-s3-bucket).
-4. Configure the app to [recognize the tables and fields in your Fluxx instance](#configuring-tables-and-fields).
+5. Configure the app to [recognize the tables and fields in your Fluxx instance](#configuring-tables-and-fields).
 
 ### Configuring a Fluxx Instance
 
@@ -107,11 +108,11 @@ Follow these steps to set up the Fluxx Exporter:
 
 In order for the Fluxx Exporter tool to be able to access your Fluxx instance, you need to authorize the app and create a Client ID and Client Secret:
 
-1. Log into Fluxx and navigate to this page: https://{your-fluxx-instance}.fluxx.io/oauth/applications/
+1. Log into Fluxx and navigate to this page: {fluxx-instance-base-url}/oauth/applications/
 
 2. Click "New Application" in the Fluxx interface.
 3. Name the new application (e.g. Fluxx Exporter).
-3. Copy your Fluxx instance's URL into the redirect URI (e.g. https://{your-fluxx-instance}.fluxx.io).
+3. Copy your Fluxx instance's base URL into the redirect URI.
 4. Leave Scopes field blank.
 5. Press "Submit." You should receive an application ID and secret on the following page. Save these in a safe place. 
 
@@ -132,7 +133,7 @@ The recommended approach to creating tables and fields is to use the built-in ma
 
 **You must have Fluxx administrator access to perform these steps.**
 
-Your Fluxx instance's built-in API documentation is available at https://{your-fluxx-instance}.fluxx.io/api/rest/v2/doc. For each table you wish to export from Fluxx, download the documentation page to a local folder, using the table's normalized name as a filename. For example, the GrantRequest table docs, located at: https://{your-fluxx-instance}.fluxx.io/api/rest/v2/GrantRequest/doc would be saved as `grant_request.html`. Save all downloaded docs in the same local folder.
+Your Fluxx instance's built-in API documentation is available at {fluxx-instance-base-url}/api/rest/v2/doc. For each table you wish to export from Fluxx, download the documentation page to a local folder, using the table's normalized name as a filename. For example, the GrantRequest table docs, located at: {fluxx-instance-base-url}/api/rest/v2/GrantRequest/doc would be saved as `grant_request.html`. Save all downloaded docs in the same local folder.
 
 #### Running the management command
 
@@ -180,7 +181,7 @@ Fluxx API filters generally consist of three parts, for example:
 
 Note that in the last filter ('created_at this-year -'), the last input of the hyphen is not a typo. This is how the Fluxx API handles less than 3 raw inputs into the filter. 
 
-Consult your Fluxx instance's built-in API pages at https://{your-fluxx-instance}.fluxx.io/api/rest/v2/doc to see which filters will work for a given table. Official Fluxx API documentation, which is not publicly available, contains   more information is available in the "API Filter Examples" section.
+Consult your Fluxx instance's built-in API pages at {fluxx-instance-base-url}/api/rest/v2/doc to see which filters will work for a given table. Official Fluxx API documentation, which is not publicly available, contains   more information is available in the "API Filter Examples" section.
 
 ## Logging
 
