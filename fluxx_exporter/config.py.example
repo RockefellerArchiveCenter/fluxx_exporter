@@ -6,6 +6,6 @@ DJANGO_TIME_ZONE = 'UTC'
 SQL_ENGINE = "django.db.backends.sqlite3"  # the database engine (string, one of django.db.backends)
 SQL_DATABASE = "db.sqlite3"  # name of the application database (string)
 
-LOG_FILE = '/code/export_tool.debug.log' # path to debug log file
+LOG_FILE = 'export_tool.debug.log' # path to debug log file
 FILE_LOG_LEVEL = 'DEBUG' # log level for file logging, one of DEBUG, INFO, WARNING, ERROR or CRITICAL
 CONSOLE_LOG_LEVEL = 'INFO' # log level for console logging, one of DEBUG, INFO, WARNING, ERROR or CRITICAL
