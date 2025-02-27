@@ -3,13 +3,17 @@ from django.forms.models import (BaseInlineFormSet, ModelForm,
 
 from .models import ExportJob, Field, Table
 
-TableFieldFormset = inlineformset_factory(
-    Table,
-    Field,
-    fields=('id', 'include_in_export',),
-    extra=0,
-    can_delete=False,
-    fk_name='table')
+
+class TableFieldFormset(inlineformset_factory(
+        Table,
+        Field,
+        fields=('id', 'include_in_export',),
+        extra=0,
+        can_delete=False,
+        fk_name='table')):
+
+    def get_queryset(self, *args, **kwargs):
+        return super(TableFieldFormset, self).get_queryset().order_by('name')
 
 
 class BaseTablesWithFields(BaseInlineFormSet):
