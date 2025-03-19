@@ -1,0 +1,5 @@
+# Normalize line endings, with Git deciding whether the file is text or binary.
+* text=auto
+
+# Explicitly set LF endings for shell scripts
+*.sh text eol=lf
