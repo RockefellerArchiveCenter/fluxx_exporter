@@ -39,6 +39,8 @@ Follow these steps to set up the Fluxx Exporter:
    additional steps must be taken to create a local environment in which the application can run. 
 
    **Using Docker**
+
+   Create an empty folder in the application root titled `fluxx_api_docs`.
    
    If you have [Docker](https://www.docker.com/products/docker-desktop/) installed, you can bring the application up by running:
    ```bash
@@ -77,7 +79,7 @@ Follow these steps to set up the Fluxx Exporter:
    ```
    Open your web browser and navigate to [http://localhost:8000](http://localhost:8000) to access the application.
 
-5. **Create a Superuser**  
+6. **Create a Superuser**  
    Create a superuser to access the Django admin interface.
 
    If you're using the Docker container, enter the following command in a new terminal window:
@@ -109,7 +111,6 @@ Follow these steps to set up the Fluxx Exporter:
 In order for the Fluxx Exporter tool to be able to access your Fluxx instance, you need to authorize the app and create a Client ID and Client Secret:
 
 1. Log into Fluxx and navigate to this page: {fluxx-instance-base-url}/oauth/applications/
-
 2. Click "New Application" in the Fluxx interface.
 3. Name the new application (e.g. Fluxx Exporter).
 3. Copy your Fluxx instance's base URL into the redirect URI.
@@ -133,18 +134,18 @@ The recommended approach to creating tables and fields is to use the built-in ma
 
 **You must have Fluxx administrator access to perform these steps.**
 
-Your Fluxx instance's built-in API documentation is available at {fluxx-instance-base-url}/api/rest/v2/doc. For each table you wish to export from Fluxx, download the documentation page to a local folder, using the table's normalized name as a filename. For example, the GrantRequest table docs, located at: {fluxx-instance-base-url}/api/rest/v2/GrantRequest/doc would be saved as `grant_request.html`. Save all downloaded docs in the same local folder.
+Your Fluxx instance's built-in API documentation is available at {fluxx-instance-base-url}/api/rest/v2/doc. For each table you wish to export from Fluxx, download the documentation page to a local folder, using the table's normalized name as a filename. For example, the GrantRequest table docs, located at: {fluxx-instance-base-url}/api/rest/v2/GrantRequest/doc would be saved as `grant_request.html`. Save all downloaded docs in the same local folder. **If you are using Docker**, save the files in the folder you previously created at `fluxx_exporter/fluxx_api_docs`.
 
 #### Running the management command
 
-In a terminal window, navigate to the application root. If you are running the application in a Docker container, execute the management command, targeting the running container:
+In a terminal window, navigate to the application root. If you are running the application in a Docker container, execute the management command, targeting the running container and the `fluxx_api_docs` folder before running `docker compose up`:
 ```bash
-docker compose exec web python manage.py import_html {/path/to/directory/with/html/files}
+docker compose exec web python manage.py import_html fluxx_api_docs
 ```
 
 If you are not using Docker, you can execute the command directly:
 ```bash
-python manage.py import_html {/path/to/directory/with/html/files}
+python manage.py import_html {/path/to/folder/with/html/files}
 ```
 
 #### Manually adding or editing tables and fields
