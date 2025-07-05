@@ -5,93 +5,15 @@ The Fluxx Exporter is an open-source tool that integrates with the grants manage
 
 Foundations use grants management systems (GMS) such as Fluxx to manage their grant making from the time a grantee begins an application, through the award process, and on to the grantees’ final reporting on activities. For most foundations, the GMS is the permanent system of record for all grant-related records. Foundation archivists have struggled to find scalable solutions for exporting closed grant records from these systems. This tool allows archivists to select and export grant information, for long-term preservation and researcher access. 
 
-## Prerequisites
-
-Before you begin, ensure you have the following installed on your system:
-
-1. **Python**: Python 3.11. You can download it from [python.org](https://www.python.org/downloads/).
-2. **Git**: Git must be installed. Download it from [git-scm.com](https://git-scm.com/downloads).
-
 ## Installation
 
-Follow these steps to set up the Fluxx Exporter:
+From the [releases page](https://github.com/RockefellerArchiveCenter/fluxx_exporter/releases), download the most recent release for your operating system (Windows, MacOS or Linux). Extract the downloaded ZIP file, and double-click the `fluxx_exporter` file in the folder you just extracted. 
 
-1. **Clone the Repository**  
-   Open your terminal and clone the repository using Git:
-   ```bash
-   git clone https://github.com/RockefellerArchiveCenter/fluxx_exporter.git
-   ```
+A terminal window will open, showing the application starting up. The first time you start the Fluxx Exporter, you will be prompted to enter a username and password for a superuser.
 
-2. **Navigate into the Cloned Directory**  
-   Change into the directory:
-   ```bash
-   cd fluxx_exporter
-   ```
+Your default web browser will open the Fluxx Exporter home page. You can also access this page in another web browser by going to [http://localhost:8000](http://localhost:8000).
 
-3. **Create Config File**  
-   Create a config file from the template:
-   ```bash
-   cp fluxx_exporter/config.py.example fluxx_exporter/config.py
-   ```
-
-4. **Start the application**
-   You can run the application using the supplied Docker container, which we recommend. If you are not able to use Docker, 
-   additional steps must be taken to create a local environment in which the application can run. 
-
-   **Using Docker**
-
-   Create an empty folder in the application root titled `fluxx_api_docs`.
-   
-   If you have [Docker](https://www.docker.com/products/docker-desktop/) installed, you can bring the application up by running:
-   ```bash
-   docker compose up
-   ```
-   Open your web browser and navigate to [http://localhost:8000](http://localhost:8000) to access the application.
-
-   **Using a local environment**
-   1. Create a virtual environment to manage dependencies:
-   ```bash
-   python -m venv venv
-   ```
-   2. Activate the virtual environment:
-   - On macOS/Linux:
-     ```bash
-     source venv/bin/activate
-     ```
-   - On Windows:
-     ```bash
-     venv\Scripts\activate
-     ```
-
-   3. Install the required Python packages using pip:
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-   4. Apply the database migrations to set up the database schema:
-   ```bash
-   python manage.py migrate
-   ```
-
-   5. Start the Django development server:
-   ```bash
-   python manage.py runserver
-   ```
-   Open your web browser and navigate to [http://localhost:8000](http://localhost:8000) to access the application.
-
-6. **Create a Superuser**  
-   Create a superuser to access the Django admin interface.
-
-   If you're using the Docker container, enter the following command in a new terminal window:
-   ```bash
-   docker compose exec web python manage.py createsuperuser
-   ```
-   
-   If you're running the application in your local environment, enter the following command
-   in a new terminal window from the application's root directory:
-   ```bash
-   python manage.py createsuperuser
-   ```
+When you are done, shut down the application by closing the terminal window that opened when you double-clicked on the application file.
 
    
 ## Configuration
