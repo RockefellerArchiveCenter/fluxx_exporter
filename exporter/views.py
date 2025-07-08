@@ -27,9 +27,7 @@ class ExportJobView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['include_related_tables'] = [
-            table for table in self.object.related_tables.all() if table.include_in_export
-        ]
+        context['include_related_tables'] = self.object.related_tables.filter(include_in_export=True)
         return context
 
 
