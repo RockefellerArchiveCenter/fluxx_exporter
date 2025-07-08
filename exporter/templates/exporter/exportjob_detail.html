@@ -54,12 +54,12 @@
 {% endif %}
 
 <h2>Connected Tables and Fields</h2>
-{% if included_related_tables %}
-    {% for table in included_related_tables %}
+{% if include_related_tables %}
+    {% for table in include_related_tables %}
         {% include 'exporter/includes/inline_table_card.html' with table=table %}
     {% endfor %}
 {% else %}
-    <p >No fields from connected tables were selected for this export.</p>
+    <p>No fields from connected tables were selected for this export.</p>
 {% endif %}
 
 <div class="flex exportjob-buttons__wrapper">
