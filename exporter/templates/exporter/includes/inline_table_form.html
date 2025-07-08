@@ -27,6 +27,7 @@
                     oninput="filterCheckboxes(this)">
             </div>
             <div tabindex="0" aria-describedby="legend" class="checkbox-list">
+                <a href="#" class="toc__skip-link toc__skip-link--orange">Skip to next section</a>
                 {% for field_form in table_form.nested.forms %}
                 <div class="input-group">
                     {{field_form.id}}

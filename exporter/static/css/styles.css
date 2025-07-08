@@ -45,3 +45,7 @@ h2 {
 .input-group label.checkbox--blue {
     overflow-wrap: anywhere;
 }
+
+.toc__skip-link--orange {
+    color: #F6F6F4 !important;
+}
