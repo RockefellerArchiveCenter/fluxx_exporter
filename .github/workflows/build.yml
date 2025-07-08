@@ -1,0 +1,45 @@
+name: build distributions
+on:
+  release:
+    types: [published]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  build-linux:
+    strategy:
+      matrix:
+        os: [ubuntu, macos, windows]
+    runs-on: ${{ matrix.os }}-latest
+    env:
+      DIST_NAME: fluxx_exporter-${{ github.ref }}-${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4.2.2
+        with:
+          token: ${{ secrets.ACCESS_TOKEN }}
+          ref: ${{ github.ref }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v5.6.0
+        with:
+          python-version: '3.11'
+          cache: pip
+
+      - name: Install pyinstaller
+        run: pip install pyinstaller
+
+      - name: Install requirements
+        run: pip install -r requirements.txt
+
+      - name: Build distribution
+        run: pyinstaller fluxx_exporter.spec --distpath build/${{ env.DIST_NAME }}
+
+      - name: Create zip file
+        run: |
+          zip -r ${{ env.DIST_NAME }}.zip ${{ env.DIST_NAME }}
+
+      - uses: softprops/action-gh-release@v2
+        if: github.ref_type == 'tag'
+        with:
+          files: ${{ env.DIST_NAME }}.zip

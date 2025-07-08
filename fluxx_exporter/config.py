@@ -1,0 +1,11 @@
+DJANGO_DEBUG = True  # run Django in debug mode, which outputs stack traces to the UI, set to False for production (boolean)
+DJANGO_SECRET_KEY = "django-insecure-+5^3v9my1&2zhcmle7ddyb3(_o_o7zl=-v&gtf_r8ai6egfkh1"  # used by Django to create hashes (string)
+DJANGO_ALLOWED_HOSTS = ["localhost"]  # hosts will respond to (list of strings)
+DJANGO_TIME_ZONE = 'UTC'
+
+SQL_ENGINE = "django.db.backends.sqlite3"  # the database engine (string, one of django.db.backends)
+SQL_DATABASE = "fluxx_exporter_db.sqlite3"  # name of the application database (string)
+
+LOG_FILE = 'export_tool.debug.log'  # path to debug log file
+FILE_LOG_LEVEL = 'DEBUG'  # log level for file logging, one of DEBUG, INFO, WARNING, ERROR or CRITICAL
+CONSOLE_LOG_LEVEL = 'INFO'  # log level for console logging, one of DEBUG, INFO, WARNING, ERROR or CRITICAL
