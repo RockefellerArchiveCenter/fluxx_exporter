@@ -6,12 +6,15 @@ Foundations use grants management systems (GMS) such as Fluxx to manage their gr
 
 ## Installation
 
-1. Download the installer for your operating system (Windows, MacOS or Linux) from the [releases page](https://github.com/RockefellerArchiveCenter/fluxx_exporter/releases). Choose the most recent release version.
+1. Download the package for your operating system (Windows, MacOS or Linux) from the [releases page](https://github.com/RockefellerArchiveCenter/fluxx_exporter/releases). Choose the most recent release version.
 2. Extract the downloaded ZIP file.
-3. Run the installer: double-click the `fluxx_exporter` file in the folder you just extracted, and a terminal window will open that shows the application starting.
+3. Run the application: double-click the `fluxx_exporter` file in the folder you just extracted, and a terminal window will open that shows the application starting.
 4. Follow the prompt in the terminal to enter a username and password for a superuser. You will **only** be prompted to create login credentials the **first time** you start Fluxx Exporter. Save the username and password for future logins.
 5. Access Fluxx Exporter in your browser. The Fluxx Exporter home page will automatically open in your default browser when the application starts, but you can access it in any browser at [http://localhost:8000](http://localhost:8000).
 6. To close the application, close the terminal window that opened when you double-clicked on the `fluxx_exporter` application file.
+
+You will notice that a file called `fluxx_exporter_db.sqlite3` is created in your home directory (`C:\Users\{username}` on Windows and `/Users/{username}` on Mac). This file stores all of the Fluxx configurations, users, fields, tables and export 
+jobs that you configure for the application, so do not delete it unless you want to wipe all that information. 
 
 ## Configuration
 
