@@ -80,7 +80,7 @@ WSGI_APPLICATION = 'fluxx_exporter.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': config.SQL_ENGINE,
-        'NAME': BASE_DIR / config.SQL_DATABASE,
+        'NAME': Path.home() / config.SQL_DATABASE,
     }
 }
 
