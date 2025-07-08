@@ -48,7 +48,7 @@
 	{% endfor %}
 
 	<h2>Connected Tables and Fields</h2>
-	<p>Select connected table/s and associated field/s to include in export job.</p>
+	<p>Select field/s from connected tables to include in export job.</p>
 		
 	{% for table_form in formset %}
 		{% if table_form.instance.name != 'grant_request' %}
