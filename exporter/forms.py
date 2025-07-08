@@ -1,3 +1,4 @@
+from django.forms import ClearableFileInput, FileField, Form
 from django.forms.models import (BaseInlineFormSet, ModelForm,
                                  inlineformset_factory)
 
@@ -92,3 +93,29 @@ class ExportJobForm(ModelForm):
             'filter_string': 'Filters which grant records are exported.',
             'grant_ids': 'Comma-separated list of Fluxx grant IDs to export.',
         }
+
+
+class MultipleFileInput(ClearableFileInput):
+    allow_multiple_selected = True
+
+
+class MultipleFileField(FileField):
+    """Overrides FileField to handle multiple files."""
+
+    def __init__(self, *args, **kwargs):
+        kwargs.setdefault("widget", MultipleFileInput())
+        super().__init__(*args, **kwargs)
+
+    def clean(self, data, initial=None):
+        single_file_clean = super().clean
+        if isinstance(data, (list, tuple)):
+            result = [single_file_clean(d, initial) for d in data]
+        else:
+            result = [single_file_clean(data, initial)]
+        return result
+
+
+class ImportTablesForm(Form):
+    """Form for importing tables and fields from API documentation."""
+    grant_request_file = FileField()
+    related_tables_files = MultipleFileField()

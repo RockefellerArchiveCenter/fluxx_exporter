@@ -1,11 +1,11 @@
 from django.contrib import messages
 from django.urls import reverse_lazy
 from django.utils.safestring import mark_safe
-from django.views.generic import DetailView, TemplateView
+from django.views.generic import DetailView, FormView, TemplateView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
 
 from .exporters import Exporter
-from .forms import ExportJobForm, ExportJobWithTables
+from .forms import ExportJobForm, ExportJobWithTables, ImportTablesForm
 from .models import ExportJob, Field, Table
 
 
@@ -100,3 +100,8 @@ class RunExportJobView(DetailView):
         else:
             messages.add_message(request, messages.ERROR, mark_safe(f'Export encountered an error.<br/><br/>{error}'))
         return super().get(request, *args, **kwargs)
+
+
+class ImportTablesView(FormView):
+    template_name = 'exporter/import_tables.html'
+    form_class = ImportTablesForm
