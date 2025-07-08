@@ -1,4 +1,3 @@
-
 # Fluxx Exporter
 
 The Fluxx Exporter is an open-source tool that integrates with the grants management system [Fluxx](https://www.fluxx.io/) for the purposes of automating exports of select elements of grant records. The tool is built on Python and Django, and uses the Fluxx API to export data from a configured Fluxx instance. It can export both structured data that is entered into fields and stored in the database as well as files that are uploaded and attached to the grant record.
@@ -7,19 +6,20 @@ Foundations use grants management systems (GMS) such as Fluxx to manage their gr
 
 ## Installation
 
-From the [releases page](https://github.com/RockefellerArchiveCenter/fluxx_exporter/releases), download the most recent release for your operating system (Windows, MacOS or Linux). Extract the downloaded ZIP file, and double-click the `fluxx_exporter` file in the folder you just extracted. 
+1. Download the package for your operating system (Windows, MacOS or Linux) from the [releases page](https://github.com/RockefellerArchiveCenter/fluxx_exporter/releases). Choose the most recent release version.
+2. Extract the downloaded ZIP file.
+3. Run the application: double-click the `fluxx_exporter` file in the folder you just extracted, and a terminal window will open that shows the application starting.
+4. Follow the prompt in the terminal to enter a username and password for a superuser. You will **only** be prompted to create login credentials the **first time** you start Fluxx Exporter. Save the username and password for future logins.
+5. Access Fluxx Exporter in your browser. The Fluxx Exporter home page will automatically open in your default browser when the application starts, but you can access it in any browser at [http://localhost:8000](http://localhost:8000).
+6. To close the application, close the terminal window that opened when you double-clicked on the `fluxx_exporter` application file.
 
-A terminal window will open, showing the application starting up. The first time you start the Fluxx Exporter, you will be prompted to enter a username and password for a superuser.
+You will notice that a file called `fluxx_exporter_db.sqlite3` is created in your home directory (`C:\Users\{username}` on Windows and `/Users/{username}` on Mac). This file stores all of the Fluxx configurations, users, fields, tables and export 
+jobs that you configure for the application, so do not delete it unless you want to wipe all that information. 
 
-Your default web browser will open the Fluxx Exporter home page. You can also access this page in another web browser by going to [http://localhost:8000](http://localhost:8000).
-
-When you are done, shut down the application by closing the terminal window that opened when you double-clicked on the application file.
-
-   
 ## Configuration
 
 1. Navigate to [http://localhost:8000/admin](http://localhost:8000/admin).
-2. Log in with the created superuser.
+2. Log in with the superuser username and password you created during installation.
 3. [Configure your Fluxx instance](#configuring-a-fluxx-instance)
 4. If desired, [add credentials for an Amazon S3 Bucket](#configuring-an-amazon-s3-bucket).
 5. Configure the app to [recognize the tables and fields in your Fluxx instance](#configuring-tables-and-fields).
@@ -35,9 +35,9 @@ In order for the Fluxx Exporter tool to be able to access your Fluxx instance, y
 1. Log into Fluxx and navigate to this page: {fluxx-instance-base-url}/oauth/applications/
 2. Click "New Application" in the Fluxx interface.
 3. Name the new application (e.g. Fluxx Exporter).
-3. Copy your Fluxx instance's base URL into the redirect URI.
-4. Leave Scopes field blank.
-5. Press "Submit." You should receive an application ID and secret on the following page. Save these in a safe place. 
+4. Copy your Fluxx instance's base URL into the redirect URI.
+5. Leave Scopes field blank.
+6. Press "Submit." You should receive an application ID and secret on the following page. Save these in a safe place.
 
 #### Creating a Fluxx Configuration
 
