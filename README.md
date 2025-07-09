@@ -50,25 +50,16 @@ On the Fluxx Exporter admin page, under "Site Administration", click on "Amazon 
 
 ### Configuring Tables and Fields
 
-The recommended approach to creating tables and fields is to use the built-in management command to import data from Fluxx API documentation.
+The recommended approach to creating tables and fields is to use the upload form to import data from Fluxx API documentation.
 
 #### Downloading API Documentation Pages
 
 **You must have Fluxx administrator access to perform these steps.**
 
-Your Fluxx instance's built-in API documentation is available at {fluxx-instance-base-url}/api/rest/v2/doc. For each table you wish to export from Fluxx, download the documentation page to a local folder, using the table's normalized name as a filename. For example, the GrantRequest table docs, located at: {fluxx-instance-base-url}/api/rest/v2/GrantRequest/doc would be saved as `grant_request.html`. Save all downloaded docs in the same local folder. **If you are using Docker**, save the files in the folder you previously created at `fluxx_exporter/fluxx_api_docs`.
+Your Fluxx instance's built-in API documentation is available at {fluxx-instance-base-url}/api/rest/v2/doc. For each table you wish to export from Fluxx, download the documentation page to a local folder.
 
-#### Running the management command
-
-In a terminal window, navigate to the application root. If you are running the application in a Docker container, execute the management command, targeting the running container and the `fluxx_api_docs` folder before running `docker compose up`:
-```bash
-docker compose exec web python manage.py import_html fluxx_api_docs
-```
-
-If you are not using Docker, you can execute the command directly:
-```bash
-python manage.py import_html {/path/to/folder/with/html/files}
-```
+#### Uploading pages
+In Fluxx Exporter, navigate to the [Import](http://localhost:8000/import/) page, and then upload all the documentation pages you want to import.
 
 #### Manually adding or editing tables and fields
 You can also manually add and/or edit your Fluxx tables and associate fields with their respective tables in the admin interface.
