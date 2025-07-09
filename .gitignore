@@ -5,8 +5,8 @@ __pycache__
 db.sqlite3
 media
 /venv
-
-
 *.DS_Store
 
-fluxx_exporter/config.py
+# Build artifacts
+/build
+/dist

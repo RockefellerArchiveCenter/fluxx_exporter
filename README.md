@@ -1,103 +1,25 @@
-
 # Fluxx Exporter
 
 The Fluxx Exporter is an open-source tool that integrates with the grants management system [Fluxx](https://www.fluxx.io/) for the purposes of automating exports of select elements of grant records. The tool is built on Python and Django, and uses the Fluxx API to export data from a configured Fluxx instance. It can export both structured data that is entered into fields and stored in the database as well as files that are uploaded and attached to the grant record.
 
 Foundations use grants management systems (GMS) such as Fluxx to manage their grant making from the time a grantee begins an application, through the award process, and on to the grantees’ final reporting on activities. For most foundations, the GMS is the permanent system of record for all grant-related records. Foundation archivists have struggled to find scalable solutions for exporting closed grant records from these systems. This tool allows archivists to select and export grant information, for long-term preservation and researcher access. 
 
-## Prerequisites
-
-Before you begin, ensure you have the following installed on your system:
-
-1. **Python**: Python 3.11. You can download it from [python.org](https://www.python.org/downloads/).
-2. **Git**: Git must be installed. Download it from [git-scm.com](https://git-scm.com/downloads).
-
 ## Installation
 
-Follow these steps to set up the Fluxx Exporter:
+1. Download the package for your operating system (Windows, MacOS or Linux) from the [releases page](https://github.com/RockefellerArchiveCenter/fluxx_exporter/releases). Choose the most recent release version.
+2. Extract the downloaded ZIP file.
+3. Run the application: double-click the `fluxx_exporter` file in the folder you just extracted, and a terminal window will open that shows the application starting.
+4. Follow the prompt in the terminal to enter a username and password for a superuser. You will **only** be prompted to create login credentials the **first time** you start Fluxx Exporter. Save the username and password for future logins.
+5. Access Fluxx Exporter in your browser. The Fluxx Exporter home page will automatically open in your default browser when the application starts, but you can access it in any browser at [http://localhost:8000](http://localhost:8000).
+6. To close the application, close the terminal window that opened when you double-clicked on the `fluxx_exporter` application file.
 
-1. **Clone the Repository**  
-   Open your terminal and clone the repository using Git:
-   ```bash
-   git clone https://github.com/RockefellerArchiveCenter/fluxx_exporter.git
-   ```
+You will notice that a file called `fluxx_exporter_db.sqlite3` is created in your home directory (`C:\Users\{username}` on Windows and `/Users/{username}` on Mac). This file stores all of the Fluxx configurations, users, fields, tables and export 
+jobs that you configure for the application, so do not delete it unless you want to wipe all that information. 
 
-2. **Navigate into the Cloned Directory**  
-   Change into the directory:
-   ```bash
-   cd fluxx_exporter
-   ```
-
-3. **Create Config File**  
-   Create a config file from the template:
-   ```bash
-   cp fluxx_exporter/config.py.example fluxx_exporter/config.py
-   ```
-
-4. **Start the application**
-   You can run the application using the supplied Docker container, which we recommend. If you are not able to use Docker, 
-   additional steps must be taken to create a local environment in which the application can run. 
-
-   **Using Docker**
-
-   Create an empty folder in the application root titled `fluxx_api_docs`.
-   
-   If you have [Docker](https://www.docker.com/products/docker-desktop/) installed, you can bring the application up by running:
-   ```bash
-   docker compose up
-   ```
-   Open your web browser and navigate to [http://localhost:8000](http://localhost:8000) to access the application.
-
-   **Using a local environment**
-   1. Create a virtual environment to manage dependencies:
-   ```bash
-   python -m venv venv
-   ```
-   2. Activate the virtual environment:
-   - On macOS/Linux:
-     ```bash
-     source venv/bin/activate
-     ```
-   - On Windows:
-     ```bash
-     venv\Scripts\activate
-     ```
-
-   3. Install the required Python packages using pip:
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-   4. Apply the database migrations to set up the database schema:
-   ```bash
-   python manage.py migrate
-   ```
-
-   5. Start the Django development server:
-   ```bash
-   python manage.py runserver
-   ```
-   Open your web browser and navigate to [http://localhost:8000](http://localhost:8000) to access the application.
-
-6. **Create a Superuser**  
-   Create a superuser to access the Django admin interface.
-
-   If you're using the Docker container, enter the following command in a new terminal window:
-   ```bash
-   docker compose exec web python manage.py createsuperuser
-   ```
-   
-   If you're running the application in your local environment, enter the following command
-   in a new terminal window from the application's root directory:
-   ```bash
-   python manage.py createsuperuser
-   ```
-
-   
 ## Configuration
 
 1. Navigate to [http://localhost:8000/admin](http://localhost:8000/admin).
-2. Log in with the created superuser.
+2. Log in with the superuser username and password you created during installation.
 3. [Configure your Fluxx instance](#configuring-a-fluxx-instance)
 4. If desired, [add credentials for an Amazon S3 Bucket](#configuring-an-amazon-s3-bucket).
 5. Configure the app to [recognize the tables and fields in your Fluxx instance](#configuring-tables-and-fields).
@@ -113,9 +35,9 @@ In order for the Fluxx Exporter tool to be able to access your Fluxx instance, y
 1. Log into Fluxx and navigate to this page: {fluxx-instance-base-url}/oauth/applications/
 2. Click "New Application" in the Fluxx interface.
 3. Name the new application (e.g. Fluxx Exporter).
-3. Copy your Fluxx instance's base URL into the redirect URI.
-4. Leave Scopes field blank.
-5. Press "Submit." You should receive an application ID and secret on the following page. Save these in a safe place. 
+4. Copy your Fluxx instance's base URL into the redirect URI.
+5. Leave Scopes field blank.
+6. Press "Submit." You should receive an application ID and secret on the following page. Save these in a safe place.
 
 #### Creating a Fluxx Configuration
 

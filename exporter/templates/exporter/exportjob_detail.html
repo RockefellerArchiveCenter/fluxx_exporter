@@ -46,14 +46,21 @@
 </dl>
 
 <h2>Grant Request Fields</h2>
-{% include 'exporter/includes/inline_table_card.html' with table=object.grant_request_table %}
+{% if object.grant_request_table %}
+    {% include 'exporter/includes/inline_table_card.html' with table=object.grant_request_table %}
+{% else %}
+    <p class="input__error">No grant request table is available. Before creating an export job, first configure your grant request
+			table to enable exports from Fluxx.</p>
+{% endif %}
 
 <h2>Connected Tables and Fields</h2>
-{% for table in object.related_tables.all %}
-    {% if table.include_in_export %}
+{% if include_related_tables %}
+    {% for table in include_related_tables %}
         {% include 'exporter/includes/inline_table_card.html' with table=table %}
-    {% endif %}
-{% endfor %}
+    {% endfor %}
+{% else %}
+    <p>No fields from connected tables were selected for this export.</p>
+{% endif %}
 
 <div class="flex exportjob-buttons__wrapper">
     <div>

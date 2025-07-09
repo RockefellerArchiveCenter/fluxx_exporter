@@ -25,6 +25,11 @@ class AboutView(TemplateView):
 class ExportJobView(DetailView):
     model = ExportJob
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['include_related_tables'] = self.object.related_tables.filter(include_in_export=True)
+        return context
+
 
 class CreateExportJobView(CreateView):
     model = ExportJob
@@ -34,6 +39,15 @@ class CreateExportJobView(CreateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['formset'] = ExportJobWithTables(**self.get_form_kwargs())
+        formset = context['formset']
+        context['grant_request_forms'] = [
+            table_form for table_form in formset
+            if getattr(table_form.instance, 'name', None) == 'grant_request'
+        ]
+        context['connected_table_forms'] = [
+            table_form for table_form in formset
+            if getattr(table_form.instance, 'name', None) != 'grant_request'
+        ]
         return context
 
     def form_valid(self, form):
@@ -72,6 +86,15 @@ class UpdateExportJobView(UpdateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['formset'] = ExportJobWithTables(**self.get_form_kwargs())
+        formset = context['formset']
+        context['grant_request_forms'] = [
+            table_form for table_form in formset
+            if getattr(table_form.instance, 'name', None) == 'grant_request'
+        ]
+        context['connected_table_forms'] = [
+            table_form for table_form in formset
+            if getattr(table_form.instance, 'name', None) != 'grant_request'
+        ]
         return context
 
     def form_valid(self, form):
