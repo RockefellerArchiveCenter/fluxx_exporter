@@ -2,8 +2,23 @@
     grid-column: 3 / span 8;
 }
 
+/* limits the group of checkboxes to a maximum height of 512px
+and adds a scrollbar if the content exceeds that height. */
+.checkbox-list {
+    max-height: 512px;
+    overflow: auto;
+}
+
 .exportjob-buttons__wrapper {
     justify-content: space-between;
+}
+
+.exportjob__fields-filter {
+    width: 100%;
+
+    @media screen and (min-width: 1024px) {
+        width: 50%;
+    }
 }
 
 h2 {
@@ -13,6 +28,7 @@ h2 {
 .card--container {
     padding: 10px;
     min-height: auto;
+    overflow: hidden;
 }
 
 .card h3 {
@@ -25,4 +41,12 @@ h2 {
 
 .footer-secondary .container.flex {
     justify-content: center;
+}
+
+.input-group label.checkbox--blue {
+    overflow-wrap: anywhere;
+}
+
+.toc__skip-link--orange {
+    color: #F6F6F4 !important;
 }
