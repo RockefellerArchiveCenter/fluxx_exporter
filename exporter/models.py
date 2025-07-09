@@ -44,7 +44,7 @@ class AmazonS3Config(models.Model):
 class ExportJob(models.Model):
     name = models.CharField(max_length=255)
     fluxx_config = models.ForeignKey(FluxxConfig, on_delete=models.CASCADE)
-    export_location = models.CharField(max_length=255)
+    export_location = models.FilePathField(path=('/'), match=r'^[^\.]', recursive=True, allow_files=False, allow_folders=True)
     export_format = models.CharField(max_length=10, choices=[('json', 'JSON'), ('xml', 'XML'), ('csv', 'CSV')])
     filter_string = models.CharField(max_length=1000, null=True, blank=True)
     grant_ids = models.TextField(null=True, blank=True)
