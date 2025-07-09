@@ -41,6 +41,7 @@
 	{% endfor %}
 
 	{% if grant_request_forms %}
+		<p>Select grant request field/s to include in export job.</p>
 		{% for table_form in grant_request_forms %}
 			{% include 'exporter/includes/inline_table_form.html' with table_form=table_form include_by_default='true' %}
 		{% endfor %}
@@ -51,6 +52,7 @@
 
 	<h2>Connected Tables and Fields</h2>
 	{% if connected_table_forms %}
+		<p>Select field/s from connected table/s to include in export job.</p>
 		{% for table_form in connected_table_forms %}
 			{% include 'exporter/includes/inline_table_form.html' with table_form=table_form %}
 		{% endfor %}
