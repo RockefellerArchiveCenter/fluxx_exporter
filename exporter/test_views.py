@@ -1,14 +1,16 @@
-from unittest.mock import patch
+from unittest.mock import ANY, patch
 
 from django.contrib.messages import ERROR, SUCCESS, get_messages
+from django.http import HttpRequest
 from django.test import TestCase
 from django.urls import reverse
 
 from .forms import ExportJobWithTables
 from .models import ExportJob, Field, Table
+from .views import ImportTablesView
 
 
-class ViewTests(TestCase):
+class ExportJobViewTests(TestCase):
 
     fixtures = ['initial.json']
 
@@ -91,3 +93,96 @@ class ViewTests(TestCase):
         self.assertEqual(len(error_messages), 1)
         self.assertEqual(error_messages[0].level, ERROR)
         self.assertIn(error, str(error_messages[0]))
+
+
+class ImportViewTests(TestCase):
+
+    def setUp(self):
+        class FormData(object):
+            pass
+
+        self.view = ImportTablesView(request=HttpRequest())
+        self.form_data = FormData()
+
+    @patch('exporter.views.ImportTablesView.handle_row')
+    @patch('exporter.views.ImportTablesView.get_table_data')
+    @patch('exporter.views.ImportTablesView.get_related_tables_dict')
+    @patch('django.contrib.messages.add_message')
+    def test_form_valid(self, mock_message, mock_related_tables_dict, mock_table_data, mock_handle_row):
+        """Assert args and resulting objects"""
+
+        mock_table_data.return_value = "grant_request", [
+            {'name': 'updated_by_id', 'description': 'This is the ID of the user who update the record last.', 'permission': '[:create, :update]', 'data_type': 'User', 'related_class': 'User', 'type': 'relation', 'groupable?': 'Yes'},
+            {'name': 'updated_at', 'description': "This is the date the record was last updated.  It is stored as UTC then formatted based on the current user's timezone.", 'permission': '[:create, :update]', 'data_type': 'datetime', 'related_class': '', 'type': 'column', 'groupable?': 'Yes'}
+        ]
+        mock_related_tables_dict.return_value = {}
+
+        self.form_data.cleaned_data = {
+            'grant_request_file': 'grant_request',
+            'related_tables_files': ['related_table']
+        }
+
+        self.view.form_valid(self.form_data)
+
+        mock_table_data.assert_called_once_with('grant_request')
+        self.assertEqual(mock_handle_row.call_count, 2)
+        self.assertTrue(Table.objects.get(name='grant_request'))
+        mock_related_tables_dict.assert_called_once_with(['related_table'])
+        mock_message.assert_called_once_with(ANY, SUCCESS, '2 tables imported successfully.')
+
+    def test_parse_related_table_name(self):
+        fixtures = [
+            ({'related_class': 'GrantRequest'}, 'grant_request'),
+            ({'related_class': 'User'}, 'user')]
+
+        for row, expected in fixtures:
+            output = self.view.parse_related_table_name(row)
+            self.assertEqual(output, expected)
+
+    def test_row_is_field(self):
+        fixtures = [
+            ({'type': ''}, False),
+            ({'type': 'relation'}, False),
+            ({'type': 'column'}, True)]
+
+        for row, expected in fixtures:
+            output = self.view.row_is_field(row)
+            self.assertEqual(output, expected)
+
+    def test_row_is_relation(self):
+        fixtures = [
+            ({'related_class': 'User', 'type': 'relation'}, True),
+            ({'related_class': '', 'type': 'relation'}, False),
+            ({'related_class': '', 'type': 'column'}, False)]
+
+        for row, expected in fixtures:
+            output = self.view.row_is_relation(row)
+            self.assertEqual(output, expected)
+
+    def test_get_table_data(self):
+        for filepath, expected_title, expected_data_len in [
+                ('exporter/fixtures/html/organization.html', 'organization', 230),
+                ('exporter/fixtures/html/user.html', 'user', 264),
+                ('exporter/fixtures/html/grant_request.html', 'grant_request', 352)]:
+            with open(filepath, 'r') as fp:
+                table_name, data = self.view.get_table_data(fp)
+                self.assertIsInstance(data, list)
+                self.assertEqual(table_name, expected_title)
+                self.assertEqual(len(data), expected_data_len)
+
+    @patch('exporter.views.ImportTablesView.get_table_data')
+    def test_get_related_tables_dict(self, mock_table_data):
+        mock_table_data.side_effect = [('related_file', []), ('another_related_file', [])]
+
+        output = self.view.get_related_tables_dict(['related_file', 'another_related_file'])
+
+        self.assertEqual(mock_table_data.call_count, 2)
+        self.assertEqual(output, {'related_file': [], 'another_related_file': []})
+
+    def test_get_normalized_title(self):
+        for raw_title, expected in [
+                ("GrantRequest", "grant_request"),
+                ("User", "user"),
+                ("ThreePartName", "three_part_name")]:
+            output = self.view.get_normalized_title(raw_title)
+            self.assertEqual(output, expected)
