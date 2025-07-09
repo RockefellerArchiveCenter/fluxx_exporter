@@ -60,7 +60,7 @@
 		<p>No connected tables are available. If needed, configure connected tables to enable their export from Fluxx.</p>
 	{% endif %}
 
-	<button id="submit-btn" class="btn btn--md btn--blue" type="submit">Submit</button>
+	<button id="submit-btn" class="btn btn--md btn--blue" type="submit">Save</button>
 	<a href="{% if object %}{% url 'exportjob_detail' pk=object.pk %}{% else %}{% url 'index' %}{% endif %}" class="btn btn--md btn--gray" type="cancel">Cancel</a>
 
 </form>
