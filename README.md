@@ -59,7 +59,7 @@ The recommended approach to creating tables and fields is to use the upload form
 Your Fluxx instance's built-in API documentation is available at {fluxx-instance-base-url}/api/rest/v2/doc. For each table you wish to export from Fluxx, download the documentation page to a local folder.
 
 #### Uploading pages
-In Fluxx Exporter, navigate to the Import page, and then upload all the documentation pages you want to import.
+In Fluxx Exporter, navigate to the [Import](http://localhost:8000/import/) page, and then upload all the documentation pages you want to import.
 
 #### Manually adding or editing tables and fields
 You can also manually add and/or edit your Fluxx tables and associate fields with their respective tables in the admin interface.
