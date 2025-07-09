@@ -118,4 +118,4 @@ class MultipleFileField(FileField):
 class ImportTablesForm(Form):
     """Form for importing tables and fields from API documentation."""
     grant_request_file = FileField()
-    related_tables_files = MultipleFileField()
+    related_tables_files = MultipleFileField(required=False)
