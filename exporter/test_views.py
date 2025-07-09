@@ -47,6 +47,8 @@ class ViewTests(TestCase):
         """Assert custom behavior in get_context_data and is_valid."""
         response = self.client.get(reverse('exportjob_create'))
         self.assertIsInstance(response.context['formset'], ExportJobWithTables)
+        self.assertIn('grant_request_forms', response.context)
+        self.assertIn('connected_table_forms', response.context)
 
         response = self.client.post(reverse('exportjob_create'), self.form_data)
         self.assertEqual(Table.objects.all().count(), 5)
@@ -58,6 +60,8 @@ class ViewTests(TestCase):
         export_job = ExportJob.objects.all().first()
         response = self.client.get(reverse('exportjob_update', kwargs={'pk': export_job.pk}))
         self.assertIsInstance(response.context['formset'], ExportJobWithTables)
+        self.assertIn('grant_request_forms', response.context)
+        self.assertIn('connected_table_forms', response.context)
 
         initial_tables = Table.objects.all().count()
         initial_fields = Field.objects.all().count()

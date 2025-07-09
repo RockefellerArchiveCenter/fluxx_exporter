@@ -34,28 +34,29 @@
 	{% endfor %}
 
 	<h2>Grant Request Fields</h2>
-	<p>Select grant request field/s to include in export job.</p>
 
 	{{formset.management_form}}
 	{% for error in formset.non_form_errors %}
 		<div class="input__error">{{error}}</div>
 	{% endfor %}
-		
-	{% for table_form in formset %}
-		{% if table_form.instance.name == 'grant_request' %}
+
+	{% if grant_request_forms %}
+		{% for table_form in grant_request_forms %}
 			{% include 'exporter/includes/inline_table_form.html' with table_form=table_form include_by_default='true' %}
-		{% endif %}
-	{% endfor %}
+		{% endfor %}
+	{% else %}
+		<p class="input__error">No grant request table is available. Before creating an export job, first configure your grant request 
+			table to enable exports from Fluxx.</p>
+	{% endif %}
 
 	<h2>Connected Tables and Fields</h2>
-	<p>Select connected table/s and associated field/s to include in export job.</p>
-		
-	{% for table_form in formset %}
-		{% if table_form.instance.name != 'grant_request' %}
+	{% if connected_table_forms %}
+		{% for table_form in connected_table_forms %}
 			{% include 'exporter/includes/inline_table_form.html' with table_form=table_form %}
-		{% endif %}
-	{% endfor %}
- 
+		{% endfor %}
+	{% else %}
+		<p>No connected tables are available. If needed, configure connected tables to enable their export from Fluxx.</p>
+	{% endif %}
 
 	<button class="btn btn--md btn--blue" type="submit">Submit</button>
 	<a href="{% if object %}{% url 'exportjob_detail' pk=object.pk %}{% else %}{% url 'index' %}{% endif %}" class="btn btn--md btn--gray" type="cancel">Cancel</a>
