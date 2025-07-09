@@ -126,9 +126,10 @@ class ImportTablesView(FormView):
                 self.request,
                 messages.SUCCESS,
                 f'{table_len} {"table" if table_len == 1 else "tables"} imported successfully.')
+            return super().form_valid(form)
         except Exception as e:
             messages.add_message(self.request, messages.ERROR, mark_safe(f'Import encountered an error.<br/><br/>{e}'))
-        return super().form_valid(form)
+            return super().form_invalid(form)
 
     def get_related_tables_dict(self, related_tables_files):
         related_tables_dict = {}
