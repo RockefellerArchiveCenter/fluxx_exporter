@@ -28,6 +28,7 @@ h2 {
 .card--container {
     padding: 10px;
     min-height: auto;
+    overflow: hidden;
 }
 
 .card h3 {
