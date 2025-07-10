@@ -37,7 +37,9 @@ In order for the Fluxx Exporter tool to be able to access your Fluxx instance, y
 3. Name the new application (e.g. Fluxx Exporter).
 4. Copy your Fluxx instance's base URL into the redirect URI.
 5. Leave Scopes field blank.
-6. Press "Submit." You should receive an application ID and secret on the following page. Save these in a safe place.
+6. Press "Submit."
+7. You should receive an application ID and secret on the following page. Save these in a safe place.
+8. Click "Authorize" to complete the creation of Fluxx API Credentials.
 
 #### Creating a Fluxx Configuration
 
