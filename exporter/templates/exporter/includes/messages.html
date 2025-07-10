@@ -1,19 +1,23 @@
+{% load static %}
 {% if messages %}
-    {% for message in messages %}
-        {% if message.tags == 'error' %}
-            <div class="alert alert--orange">
-                <span class="alert__icon" aria-hidden="true">error_outline</span>
-                <div>
-                    <p class="alert__text">{{message}}</p>
+    <div id="alert-message">
+        {% for message in messages %}
+            {% if message.tags == 'error' %}
+                <div tabindex="-1" class="alert alert--orange">
+                    <span class="alert__icon" aria-hidden="true">error_outline</span>
+                    <div>
+                        <p class="alert__text">{{message}}</p>
+                    </div>
                 </div>
-            </div>
-        {% else %}
-            <div class="alert alert--blue">
-                <span class="alert__icon" aria-hidden="true">check_circle_outline</span>
-                <div>
-                    <p class="alert__text">{{message}}</p>
+            {% else %}
+                <div class="alert alert--blue">
+                    <span class="alert__icon" aria-hidden="true">check_circle_outline</span>
+                    <div>
+                        <p class="alert__text">{{message}}</p>
+                    </div>
                 </div>
-            </div>
-        {% endif %}
-    {% endfor %}
+            {% endif %}
+        {% endfor %}
+    </div>
+    <script type="text/javascript" src="{% static 'js/alert-focus.js' %}"></script>
 {% endif %}

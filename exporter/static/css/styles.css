@@ -50,3 +50,10 @@ h2 {
 .toc__skip-link--orange {
     color: #F6F6F4 !important;
 }
+
+/* Set custom focus styles for alert div. When an error appears on page load, 
+focus is programmatically set to the alert. */
+.alert:focus {
+    outline: solid 2px #F6F6F4;
+    outline-offset: -10px;
+}
