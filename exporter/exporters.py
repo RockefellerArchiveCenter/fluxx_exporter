@@ -76,7 +76,7 @@ class Exporter(object):
                 for doc_id in record.get('model_documents', []):
                     logging.debug(f'Downloading document {doc_id}')
                     file_name, file_obj = fluxx_client.download_document(doc_id)
-                    sanitized_file_name = sanitize_filename(file_name)
+                    sanitized_file_name = sanitize_filename(str(file_name))
                     logging.debug(f'Saving document {doc_id} with file name {sanitized_file_name}')
                     self.save_document(sanitized_file_name, file_obj, record_path)
 
