@@ -4,7 +4,7 @@ from pathlib import Path
 
 import boto3
 import paramiko
-import requests
+from requests_ratelimiter import LimiterSession
 
 logging = logging.getLogger(__name__)
 
@@ -36,7 +36,7 @@ class FluxxClient(object):
         }
         logging.debug("OAuth params created")
 
-        self.session = requests.Session()
+        self.session = LimiterSession(per_minute=180)
         logging.debug("Session initiated")
 
         # obtain oauth token
