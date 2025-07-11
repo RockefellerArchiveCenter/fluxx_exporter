@@ -21,9 +21,12 @@
 		</div>
 
 		{% include 'exporter/includes/footer.html' %}
+		{% include 'exporter/includes/export_progress_modal.html' %}
 		<script type="text/javascript" src="{% static 'js/nav-toggle.js' %}"></script>
 		<script type="text/javascript" src="{% static 'js/field-selection.js' %}"></script>
 		<script type="text/javascript" src="{% static 'js/field-filter.js' %}"></script>
 		<script type="text/javascript" src="{% static 'js/skip-to-header.js' %}"></script>
+		<script src="https://unpkg.com/micromodal/dist/micromodal.min.js"></script>
+		<script type="text/javascript" src="{% static 'js/modals.js' %}"></script>
 	</body>
 </html>
