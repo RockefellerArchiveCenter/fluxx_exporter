@@ -6,6 +6,7 @@ import xml.etree.ElementTree as ET
 from pathlib import Path
 
 from django.core.exceptions import ObjectDoesNotExist
+from pathvalidate import sanitize_filename
 
 from .clients import AmazonS3Client, FluxxClient
 from .models import ExportJob
@@ -75,8 +76,9 @@ class Exporter(object):
                 for doc_id in record.get('model_documents', []):
                     logging.debug(f'Downloading document {doc_id}')
                     file_name, file_obj = fluxx_client.download_document(doc_id)
-                    logging.debug(f'Saving document {doc_id} with file name {file_name}')
-                    self.save_document(file_name, file_obj, record_path)
+                    sanitized_file_name = sanitize_filename(str(file_name))
+                    logging.debug(f'Saving document {doc_id} with file name {sanitized_file_name}')
+                    self.save_document(sanitized_file_name, file_obj, record_path)
 
                 if self.amazon_s3_config:
                     logging.info('Uploading to S3')
