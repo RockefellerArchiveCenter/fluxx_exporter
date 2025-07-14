@@ -89,7 +89,10 @@ class ExportJobForm(ModelForm):
         model = ExportJob
         exclude = ('sftp_config',)
         help_texts = {
-            'export_location': 'Directory in which exported records will be saved.',
+            'export_location': 'Enter a path to a directory in which exported records will be saved. \
+                This can be an absolute path, or a path relative to the Fluxx Exporter executable file. \
+                You must have write permissions for this location. \
+                If this directory does not exist, Fluxx Exporter will attempt to create it.',
             'filter_string': 'Filters which grant records are exported.',
             'grant_ids': 'Comma-separated list of Fluxx grant IDs to export.',
         }
