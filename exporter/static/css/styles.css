@@ -50,3 +50,90 @@ h2 {
 .toc__skip-link--orange {
     color: #F6F6F4 !important;
 }
+
+/* Set custom focus styles for alert div. When an error appears on page load, 
+focus is programmatically set to the alert. */
+.alert:focus {
+    outline: solid 2px #F6F6F4;
+    outline-offset: -10px;
+}
+
+/* Styles to enable micromodal.js */
+.modal__overlay {
+	display: none;
+}
+
+.modal__overlay.is-open {
+	display: block;
+}
+
+/**
+* Override default modal positioning for small centered modal.
+* 1. Change to fixed positioning for viewport centering.
+* 2. Override inset with transform for centering.
+**/
+.modal--small {
+    background: #E3E1DD;
+    position: fixed; /* 1 */
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%); /* 2 */
+    width: 90%;
+    max-width: 500px;
+    min-height: 150px;  
+    max-height: 90vh;
+    overflow-y: auto;
+
+    @media screen and (min-width: 1024px) {
+        padding: 20px;
+        width: 80%;
+        max-width: 600px;
+    }
+}
+
+/**
+* Layout adjustments to default modal styles to include spinner
+**/
+.modal__body {
+    display: block;
+    min-height: auto;
+
+    @media screen and (min-width: 1024px) {
+        display: flex;
+    }
+}
+
+.spinner-container {
+    width: 100%;
+    margin: 0 0 1em;
+    
+    @media screen and (min-width: 1024px) {
+        width: 20%;
+        margin-right: 2.5em;
+    }
+}
+
+/* Spinner styles adapted from rom https://getbootstrap.com/docs/5.0/components/spinners/#border-spinner */
+.spinner-border {
+    display: inline-block;
+    width: 2.0rem;
+    height: 2.0rem;
+    vertical-align: text-bottom;
+    border: 0.30em solid #182C48;
+    border-right-color: transparent;
+    border-radius: 50%;
+    animation: spinner-border 1.0s linear infinite;
+
+    @media screen and (min-width: 1024px) {
+        width: 4.0rem;
+        height: 4.0rem;
+    }
+  }
+  
+  @keyframes spinner-border {
+    to { transform: rotate(360deg); }
+  }
+
+  .modal__body p {
+        font-size: 20px;
+  }
