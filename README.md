@@ -88,16 +88,28 @@ There are two options available for filtering which records you want to export:
 - A filter that is applied to grant records (see [Filters](#filters) below.)
 
 #### Filters
-Fluxx API filters generally consist of three parts, for example:
+Fluxx API filters allow users to export only records that meet certain criteria. Filters in this app consist of three parts separated by a pipe character: a field name, a relator, and a value. For example:
 
-   - "grant_id eq R-2024-00003"  
-   - "project_title eq Test Project"
-   - "created_at last-n-months 5"
-   - "created_at this-year -"
+Grant ID equal to R-2024-00003 
+- "grant_id|eq|R-2024-00003"
 
-Note that in the last filter ('created_at this-year -'), the last input of the hyphen is not a typo. This is how the Fluxx API handles less than 3 raw inputs into the filter. 
+Project Title equal to Test Project
+- "project_title|eq|Test Project"
 
-Consult your Fluxx instance's built-in API pages at {fluxx-instance-base-url}/api/rest/v2/doc to see which filters will work for a given table. Official Fluxx API documentation, which is not publicly available, contains   more information is available in the "API Filter Examples" section.
+Grant record created in the last five months
+- "created_at|last-n-months|5"
+
+Grant record created in the last year
+- "created_at|this-year|-"
+Note that in this filter, the last input of the hyphen is not a typo. This is how the Fluxx API handles less than 3 raw inputs into the filter.
+
+Only closed grants
+- "state|eq|closed"
+
+Grants closed within a range of years 
+- "grant_closed_at|range-year-cal|2010-2024"
+
+Consult your Fluxx instance's built-in API pages at {fluxx-instance-base-url}/api/rest/v2/doc to see which filters will work for a given table. Official Fluxx API documentation, which is not publicly available, contains more information is available in the "API Filter Examples" section.
 
 ## Logging
 
