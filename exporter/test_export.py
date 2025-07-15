@@ -147,7 +147,7 @@ class ExportTests(TestCase):
         """Exception raised when there are not three filter components."""
         with self.assertRaises(Exception) as e:
             exporter.parse_filter("foo|eq")
-        self.assertIn("foo eq", str(e.exception))
+        self.assertIn("foo|eq", str(e.exception))
 
     def test_parse_grant_ids(self):
         """Assert grant IDs are parsed as expected"""
