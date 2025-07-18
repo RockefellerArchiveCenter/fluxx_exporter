@@ -92,7 +92,9 @@ class ExportJobForm(ModelForm):
             'export_location': 'Path to the directory where exported records will be saved. \
                 Path can be absolute, or relative to the Fluxx Exporter executable file. \
                 Directory will be created if it does not exist.',
-            'filter_string': 'Filters which grant records are exported.',
+            'filter_string': 'Filter which grant records are exported using the format \
+                "field name|relator|value". E.g. "grant_closed_at|range-year-cal|2010-2024". <br> \
+                <a href="https://github.com/RockefellerArchiveCenter/fluxx_exporter/tree/base?tab=readme-ov-file#filters">See filter documentation</a> for more information.',
             'grant_ids': 'Comma-separated list of Fluxx grant IDs to export.',
         }
 
