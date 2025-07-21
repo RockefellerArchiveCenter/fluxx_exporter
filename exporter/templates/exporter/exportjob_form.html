@@ -28,7 +28,7 @@
 						</div>
 				{% endif %}
 				<div id="{{field.auto_id}}_helptext" class="input__help-text">
-					{{field.help_text}}
+					{{field.help_text|safe}}
 				</div>
 		</div>
 	{% endfor %}

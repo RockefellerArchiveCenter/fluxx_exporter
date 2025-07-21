@@ -39,6 +39,11 @@ h2 {
     font-style: italic;
 }
 
+/* Adjust font size of links in help text to match surrounding size. */
+.input__help-text a {
+    font-size: inherit;
+}
+
 .footer-secondary .container.flex {
     justify-content: center;
 }

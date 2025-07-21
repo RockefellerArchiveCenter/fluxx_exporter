@@ -141,13 +141,13 @@ class ExportTests(TestCase):
         """Assert filter is parsed as expected."""
         export_job = ExportJob.objects.all().first()
         exporter = Exporter(export_job.pk)
-        result = exporter.parse_filter("foo eq bar")
+        result = exporter.parse_filter("foo|eq|bar")
         self.assertEqual(result, ['foo', 'eq', 'bar'])
 
         """Exception raised when there are not three filter components."""
         with self.assertRaises(Exception) as e:
-            exporter.parse_filter("foo eq")
-        self.assertIn("foo eq", str(e.exception))
+            exporter.parse_filter("foo|eq")
+        self.assertIn("foo|eq", str(e.exception))
 
     def test_parse_grant_ids(self):
         """Assert grant IDs are parsed as expected"""

@@ -115,7 +115,7 @@ class Exporter(object):
     def parse_filter(self, filter):
         """Split the filter string into components.
 
-        If the filter does not have exactly three parts it is not used.
+        If the filter does not have exactly three parts, separated by a pipe, it is not used.
 
         Args:
             filter (str): Filter string to be parsed.
@@ -127,7 +127,7 @@ class Exporter(object):
         filter_parts = None
         if filter:
             try:
-                filter_parts = filter.split(' ', 2)
+                filter_parts = filter.split('|', 2)
                 assert len(filter_parts) == 3
             except AssertionError:
                 logging.error(f"Could not parse filter value {filter}")

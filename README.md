@@ -88,16 +88,30 @@ There are two options available for filtering which records you want to export:
 - A filter that is applied to grant records (see [Filters](#filters) below.)
 
 #### Filters
-Fluxx API filters generally consist of three parts, for example:
+Fluxx API filters allow users to export only records that meet certain criteria. Filters in Fluxx Exporter consist of three parts separated by a pipe character (`|`): 
 
-   - "grant_id eq R-2024-00003"  
-   - "project_title eq Test Project"
-   - "created_at last-n-months 5"
-   - "created_at this-year -"
+1. Field name
+2. Relator
+3. Value
 
-Note that in the last filter ('created_at this-year -'), the last input of the hyphen is not a typo. This is how the Fluxx API handles less than 3 raw inputs into the filter. 
+Filter examples:
 
-Consult your Fluxx instance's built-in API pages at {fluxx-instance-base-url}/api/rest/v2/doc to see which filters will work for a given table. Official Fluxx API documentation, which is not publicly available, contains   more information is available in the "API Filter Examples" section.
+| Description                                  | Filter Syntax                                 |
+|----------------------------------------------|-----------------------------------------------|
+| Grant ID equal to `R-2024-00003`             | `grant_id\|eq\|R-2024-00003`                  |
+| Project Title equal to `Test Project`        | `project_title\|eq\|Test Project`             |
+| Grant record created in the last five months | `created_at\|last-n-months\|5`                |
+| Grant record created in the last year*       | `created_at\|this-year\|-`                    |
+| Only closed grants                           | `state\|eq\|closed`                           |
+| Grants closed within a range of years        | `\grant_closed_at\|range-year-cal\|2010-2024` |
+| Grants closed in a specific year             | `\grant_closed_at\|range\|01/01/2020-12/31/2020` |
+| Grants approved in a specific year           | `\grant_approved_at\|range\|01/01/2020-12/31/2020` |
+
+\* Note: In the filter `"created_at|this-year|-"`, the hyphen (`-`) is not a typo. This is how the Fluxx API handles filters with fewer than three raw inputs.
+
+For more information about filters:
+- Consult your Fluxx instance's built-in API pages at {fluxx-instance-base-url}/api/rest/v2/doc to see which filters will work for a given table. 
+- Consult the official Fluxx API documentation. This is not publicly available, but if your institution has access, it contains more information about filters in the "API Filter Examples" section.
 
 ## Logging
 
