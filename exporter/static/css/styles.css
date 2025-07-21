@@ -31,6 +31,12 @@ h2 {
     overflow: hidden;
 }
 
+.card-list {
+    @media screen and (min-width: 1024px) {
+        grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
 .card h3 {
     margin-top: 0px;
 }
