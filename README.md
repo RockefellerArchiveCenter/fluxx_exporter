@@ -101,9 +101,11 @@ Filter examples:
 | Grant ID equal to `R-2024-00003`             | `grant_id\|eq\|R-2024-00003`                  |
 | Project Title equal to `Test Project`        | `project_title\|eq\|Test Project`             |
 | Grant record created in the last five months | `created_at\|last-n-months\|5`                |
-| Grant record created in the last year*        | `created_at\|this-year\|-`                   |
+| Grant record created in the last year*       | `created_at\|this-year\|-`                    |
 | Only closed grants                           | `state\|eq\|closed`                           |
 | Grants closed within a range of years        | `\grant_closed_at\|range-year-cal\|2010-2024` |
+| Grants closed in a specific year             | `\grant_closed_at\|range\|01/01/2020-12/31/2020` |
+| Grants approved in a specific year           | `\grant_approved_at\|range\|01/01/2020-12/31/2020` |
 
 \* Note: In the filter `"created_at|this-year|-"`, the hyphen (`-`) is not a typo. This is how the Fluxx API handles filters with fewer than three raw inputs.
 
