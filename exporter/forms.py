@@ -94,7 +94,7 @@ class ExportJobForm(ModelForm):
                 Directory will be created if it does not exist.',
             'filter_string': 'Filter which grant records are exported using the format \
                 "field name|relator|value". E.g. "grant_closed_at|range-year-cal|2010-2024". <br> \
-                <a href="https://github.com/RockefellerArchiveCenter/fluxx_exporter/tree/base?tab=readme-ov-file#filters">See filter documentation</a> for more information.',
+                <a href="https://github.com/RockefellerArchiveCenter/fluxx_exporter/tree/base?tab=readme-ov-file#add-filters">See filter documentation</a> for more information.',
             'grant_ids': 'Comma-separated list of Fluxx grant IDs to export.',
         }
 
