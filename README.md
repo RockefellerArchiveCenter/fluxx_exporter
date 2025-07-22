@@ -63,14 +63,14 @@ You can configure multiple Fluxx instances as needed.
 
 ### Configure an Amazon S3 Bucket (Optional)
 
-1. Go to [Fluxx Exporter admin](http://localhost:8000/admin) > "Amazon s3 configs" > "Add Amazon s3 Configs"
+1. Go to [Fluxx Exporter admin](http://localhost:8000/admin) > "Amazon S3 configs" > "Add Amazon S3 configs"
 2. Enter a descriptive name, s3 bucket name, and AWS credentials
 
 You can configure additional S3 instances as needed.
 
 ### Configure Fluxx Tables and Fields
 
-Fluxx tables and fields are the backend database information that power Fluxx cards on the frontend. Fluxx Exporter uses these tables and their associated fields to allow you to customize what information you want to export. 
+Fluxx tables and fields are the backend database information that power Fluxx cards on the frontend. Fluxx Exporter uses these tables and their associated fields to allow you to customize what information to export. 
 
 #### Step 1: Download Fluxx Table API Documentation Pages
 
@@ -81,8 +81,10 @@ Fluxx tables and fields are the backend database information that power Fluxx ca
 3. Save this grant request table documentation webpage as an HTML file on your computer.
 4. Repeat this process for all Fluxx tables that contain data you would like to export, saving each HTML documentation file for use by Fluxx Exporter.
 
+Note: You can explore the existing tables and their associated fields in `{fluxx-instance-base-url}/api/rest/v2/doc` to determine what data and fields you want to be able to export from Fluxx.
+
 #### Step 2: Upload Fluxx Table API Documentation Pages
-Fluxx Exporter requires access to your backend table API documentation to complete exports. Follow these steps to import the HTML files you just downloaded from Fluxx.
+Fluxx Exporter requires information from your backend table API documentation to complete exports. Follow these steps to import the HTML files you just downloaded from Fluxx.
 
 ##### Option A: Use the Fluxx Exporter Interface (Preferred Method) 
 1. In Fluxx Exporter, navigate to the [Import page](http://localhost:8000/import/)
@@ -95,10 +97,12 @@ Fluxx Exporter requires access to your backend table API documentation to comple
 
 1. Go to [Fluxx Exporter admin](http://localhost:8000/admin) > "Tables" (or "Fields")
 2. Click "Add Table"/"Add Field" OR select a table or field to change.
-3. Add or edit entried manually.
+3. Manually add or edit entries.
 4. Configure related tables by selecting the option to relate the current table to the previous ones during setup. The table you are relating must already be initialized. 
 
-Notes: Any changes to tables or fields will appear immediately upon refreshing the Fluxx Exporter Tool. **No validation** occurs against the Fluxx API. Double-check field names using the the API documentation, or by exporting a table from the Fluxx UI and checking the CSV output header.
+Notes: 
+- Any changes to tables or fields will appear immediately when you refresh Fluxx Exporter.
+- **No validation** occurs against the Fluxx API. Double-check field names using the API documentation, or by exporting a table from the Fluxx UI and checking the CSV output header.
 
 ## Export Grant Records
 
