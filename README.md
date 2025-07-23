@@ -84,7 +84,7 @@ Fluxx tables and fields are the backend database information that power Fluxx ca
 Note: You can explore the existing tables and their associated fields in `{fluxx-instance-base-url}/api/rest/v2/doc` to determine what data and fields you want to be able to export from Fluxx.
 
 #### Step 2: Upload Fluxx Table API Documentation Pages
-Fluxx Exporter requires information from your backend table API documentation to complete exports. Follow these steps to import the HTML files you just downloaded from Fluxx.
+Fluxx Exporter requires information from your API documentation to configure tables and fields for export. Follow these steps to import the HTML files you just downloaded from Fluxx.
 
 ##### Option A: Use the Fluxx Exporter Interface (Preferred Method) 
 1. In Fluxx Exporter, navigate to the [Import page](http://localhost:8000/import/)
