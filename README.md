@@ -20,7 +20,7 @@
 ## Overview
 The Fluxx Exporter is an open-source tool that integrates with the grants management system [Fluxx](https://www.fluxx.io/) to automate exports of select elements of grant records. The tool is built with Python and Django, and uses the Fluxx API to export data from a configured Fluxx instance. It can export both structured data from Fluxx database fields and files that are attached to grant records.
 
-Foundations use grants management systems (GMS) such as Fluxx to manage their grant making from the time a grantee begins an application, through the award process, and on to the grantees’ final reporting on activities. For most foundations, the GMS is the permanent system of record for all grant-related records. This tool allows grants administrators, information managers, and archivists to select and export grant information for internal or external uses including for long-term preservation, researcher access, and organizational learning and evaluation.
+Foundations use grants management systems (GMS) such as Fluxx to manage their grant making from the time a grantee begins an application, through the award process, and on to the grantee's final reporting on activities. For most foundations, the GMS is the permanent system of record for all grant-related records. This tool allows grants administrators, information managers, and archivists to select and export grant information for internal or external uses including for long-term preservation, researcher access, and organizational learning and evaluation.
 
 ## Installation
 
