@@ -98,7 +98,7 @@ Fluxx Exporter requires information from your backend table API documentation to
 1. Go to [Fluxx Exporter admin](http://localhost:8000/admin) > "Tables" (or "Fields")
 2. Click "Add Table"/"Add Field" OR select a table or field to change.
 3. Manually add or edit entries.
-4. Configure related tables by selecting the option to relate the current table to the previous ones during setup. The table you are relating must already be initialized. 
+4. When adding a field, choose its associated table and, if applicable, related table. The tables you select must already be initialized. 
 
 Notes: 
 - Any changes to tables or fields will appear immediately when you refresh Fluxx Exporter.
