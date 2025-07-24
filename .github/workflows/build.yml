@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  build-linux:
+  build:
     strategy:
       matrix:
         os: [ubuntu, macos, windows]
@@ -37,7 +37,11 @@ jobs:
 
       - name: Create zip file
         run: |
-          zip -r ${{ env.DIST_NAME }}.zip ${{ env.DIST_NAME }}
+          if [ "${{ matrix.os }}" == "windows" ]; then
+            Compress-Archive -Path "${{ env.DIST_NAME }}" -DestinationPath "${{ env.DIST_NAME }}.zip"
+          else
+            zip -r ${{ env.DIST_NAME }}.zip ${{ env.DIST_NAME }}
+          fi
 
       - uses: softprops/action-gh-release@v2
         if: github.ref_type == 'tag'
