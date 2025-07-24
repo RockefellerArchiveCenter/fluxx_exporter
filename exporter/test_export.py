@@ -73,7 +73,7 @@ class ExportTests(TestCase):
         table = Table.objects.all().first()
         export_dir = Path(export_job.export_location, f"{table.name}_{record_id}")
         model_doc_id = "12345"
-        download_response = (1, 2)
+        download_response = ("1", "2")
         mock_fluxx.return_value = None
         mock_download_doc.return_value = download_response
         mock_s3_init.return_value = None
@@ -141,13 +141,13 @@ class ExportTests(TestCase):
         """Assert filter is parsed as expected."""
         export_job = ExportJob.objects.all().first()
         exporter = Exporter(export_job.pk)
-        result = exporter.parse_filter("foo eq bar")
+        result = exporter.parse_filter("foo|eq|bar")
         self.assertEqual(result, ['foo', 'eq', 'bar'])
 
         """Exception raised when there are not three filter components."""
         with self.assertRaises(Exception) as e:
-            exporter.parse_filter("foo eq")
-        self.assertIn("foo eq", str(e.exception))
+            exporter.parse_filter("foo|eq")
+        self.assertIn("foo|eq", str(e.exception))
 
     def test_parse_grant_ids(self):
         """Assert grant IDs are parsed as expected"""

@@ -1,6 +1,6 @@
 {% extends 'exporter/main.html' %}
 
-{% block title %}Fluxx Exporter - Confirm Deletion of {{object.name}}{% endblock %}
+{% block title %}Confirm Deletion of {{object.name}} - Fluxx Exporter{% endblock %}
 
 {% block content %}
 
@@ -8,8 +8,8 @@
     <h1>Confirm Delete</h1>
     <p>Are you sure you want to delete "{{ object.name }}"?</p>
     {{ form }}
-    <button class="btn btn--md btn--navy" type="submit">Confirm</button>
-    <a href="{% url 'exportjob_detail' pk=object.pk %}" class="btn btn--md btn--orange">Cancel</a>
+    <button class="btn btn--md btn--orange" type="submit">Delete</button>
+    <a href="{% url 'exportjob_detail' pk=object.pk %}" class="btn btn--md btn--gray">Cancel</a>
 </form>
 
 {% endblock %}

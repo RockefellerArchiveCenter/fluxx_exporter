@@ -6,7 +6,7 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<title>{% block title %}Fluxx Exporter{% endblock %}</title>
 		<link rel="icon" type="image/x-icon" href="https://assets.rockarch.org/assets/img/favicon.ico">
-		<link rel="stylesheet" type="text/css" href="https://assets.rockarch.org/v0.12.0/main.min.css">
+		<link rel="stylesheet" type="text/css" href="https://assets.rockarch.org/v1.0.4/main.min.css">
 		<link rel="stylesheet" type="text/css" href="{% static 'css/styles.css' %}">
 	</head>
 	<body>
@@ -21,7 +21,12 @@
 		</div>
 
 		{% include 'exporter/includes/footer.html' %}
+		{% include 'exporter/includes/export_progress_modal.html' %}
 		<script type="text/javascript" src="{% static 'js/nav-toggle.js' %}"></script>
 		<script type="text/javascript" src="{% static 'js/field-selection.js' %}"></script>
+		<script type="text/javascript" src="{% static 'js/field-filter.js' %}"></script>
+		<script type="text/javascript" src="{% static 'js/skip-to-header.js' %}"></script>
+		<script src="https://unpkg.com/micromodal/dist/micromodal.min.js"></script>
+		<script type="text/javascript" src="{% static 'js/modals.js' %}"></script>
 	</body>
 </html>

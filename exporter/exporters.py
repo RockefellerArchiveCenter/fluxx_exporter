@@ -6,6 +6,7 @@ import xml.etree.ElementTree as ET
 from pathlib import Path
 
 from django.core.exceptions import ObjectDoesNotExist
+from pathvalidate import sanitize_filename
 
 from .clients import AmazonS3Client, FluxxClient
 from .models import ExportJob
@@ -75,8 +76,9 @@ class Exporter(object):
                 for doc_id in record.get('model_documents', []):
                     logging.debug(f'Downloading document {doc_id}')
                     file_name, file_obj = fluxx_client.download_document(doc_id)
-                    logging.debug(f'Saving document {doc_id} with file name {file_name}')
-                    self.save_document(file_name, file_obj, record_path)
+                    sanitized_file_name = sanitize_filename(str(file_name))
+                    logging.debug(f'Saving document {doc_id} with file name {sanitized_file_name}')
+                    self.save_document(sanitized_file_name, file_obj, record_path)
 
                 if self.amazon_s3_config:
                     logging.info('Uploading to S3')
@@ -113,7 +115,7 @@ class Exporter(object):
     def parse_filter(self, filter):
         """Split the filter string into components.
 
-        If the filter does not have exactly three parts it is not used.
+        If the filter does not have exactly three parts, separated by a pipe, it is not used.
 
         Args:
             filter (str): Filter string to be parsed.
@@ -125,7 +127,7 @@ class Exporter(object):
         filter_parts = None
         if filter:
             try:
-                filter_parts = filter.split(' ', 2)
+                filter_parts = filter.split('|', 2)
                 assert len(filter_parts) == 3
             except AssertionError:
                 logging.error(f"Could not parse filter value {filter}")

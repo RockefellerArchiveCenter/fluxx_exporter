@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
+import sys
 from pathlib import Path
 
 from fluxx_exporter import config
@@ -80,7 +81,7 @@ WSGI_APPLICATION = 'fluxx_exporter.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': config.SQL_ENGINE,
-        'NAME': BASE_DIR / config.SQL_DATABASE,
+        'NAME': Path(sys.argv[0]).parent / config.SQL_DATABASE if getattr(sys, 'frozen', False) else config.SQL_DATABASE,
     }
 }
 
@@ -152,7 +153,7 @@ LOGGING = {
         "file": {
             "level": config.FILE_LOG_LEVEL,
             "class": "logging.FileHandler",
-            "filename": config.LOG_FILE,
+            "filename": Path(sys.argv[0]).parent / config.LOG_FILE if getattr(sys, 'frozen', False) else config.LOG_FILE,
             "formatter": "verbose",
         },
     },
@@ -165,4 +166,4 @@ LOGGING = {
     }
 }
 
-APP_VERSION_NUMBER = 1.1
+APP_VERSION_NUMBER = 2.0

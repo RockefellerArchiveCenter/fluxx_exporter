@@ -1,3 +1,4 @@
+from django.forms import ClearableFileInput, FileField, Form
 from django.forms.models import (BaseInlineFormSet, ModelForm,
                                  inlineformset_factory)
 
@@ -88,7 +89,37 @@ class ExportJobForm(ModelForm):
         model = ExportJob
         exclude = ('sftp_config',)
         help_texts = {
-            'export_location': 'Directory in which exported records will be saved.',
-            'filter_string': 'Filters which grant records are exported.',
+            'export_location': 'Path to the directory where exported records will be saved. \
+                Path can be absolute, or relative to the Fluxx Exporter executable file. \
+                Directory will be created if it does not exist.',
+            'filter_string': 'Filter which grant records are exported using the format \
+                "field name|relator|value". E.g. "grant_closed_at|range-year-cal|2010-2024". <br> \
+                <a href="https://github.com/RockefellerArchiveCenter/fluxx_exporter/tree/base?tab=readme-ov-file#add-filters">See filter documentation</a> for more information.',
             'grant_ids': 'Comma-separated list of Fluxx grant IDs to export.',
         }
+
+
+class MultipleFileInput(ClearableFileInput):
+    allow_multiple_selected = True
+
+
+class MultipleFileField(FileField):
+    """Overrides FileField to handle multiple files."""
+
+    def __init__(self, *args, **kwargs):
+        kwargs.setdefault("widget", MultipleFileInput())
+        super().__init__(*args, **kwargs)
+
+    def clean(self, data, initial=None):
+        single_file_clean = super().clean
+        if isinstance(data, (list, tuple)):
+            result = [single_file_clean(d, initial) for d in data]
+        else:
+            result = [single_file_clean(data, initial)]
+        return result
+
+
+class ImportTablesForm(Form):
+    """Form for importing tables and fields from API documentation."""
+    grant_request_file = FileField(label="Grant Request HTML file")
+    related_tables_files = MultipleFileField(label="Related Tables HTML files", required=False)

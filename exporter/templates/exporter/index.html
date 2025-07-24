@@ -5,20 +5,46 @@
 
     <h1>Fluxx Exporter</h1>
 
-    <div class="create-export-job">
-        <a href="{% url 'exportjob_create' %}" class="btn btn--lg btn--navy">Create New Export Job</a>
+    <div class="card-list">
+        <div class="card card--container p-20">
+            <div class="card__body">
+                <h2 class="card__title">Step 1. Configure Fluxx Instance</h2>
+                <p class="card__body-text">Sign into the admin interface to configure your Fluxx instance and enable exports.</p>
+            </div>
+            <div class="card__footer">
+                <a class="btn btn--md btn--blue btn--block mb-10" href="{% url 'admin:index' %}">Access Admin Console</a>
+            </div>
+        </div>
+        <div class="card card--container p-20">
+            <div class="card__body">
+                <h2 class="card__title">Step 2. Configure Tables and Fields</h2>
+                <p class="card__body-text">Import your downloaded Fluxx HTML API documentation pages to configure Fluxx tables and fields.</p>
+            </div>
+            <div class="card__footer">
+                <a class="btn btn--md btn--blue btn--block mb-10" href="{% url 'import' %}">Import API Files</a>
+            </div>
+        </div>
+        <div class="card card--container p-20">
+            <div class="card__body">
+                <h2 class="card__title">Step 3. Create a Custom Export</h2>
+                <p class="card__body-text">Create a new export job and run it to export specific grant records from Fluxx.</p>
+            </div>
+            <div class="card__footer">
+                <a class="btn btn--md btn--blue btn--block mb-10" href="{% url 'exportjob_create' %}">Create Export Job</a>
+            </div>
+        </div>
     </div>
 
-    <div class="export-job-list">
+    <div class="mt-50">
         {% if export_jobs %}
-            <h2 class="mt-20">Saved Export Jobs</h2>
-            <ul class="list--unstyled">
+            <h2>Saved Export Jobs</h2>
+            <ol>
                 {% for job in export_jobs %}
                     <li>
                         <a href="{% url 'exportjob_detail' pk=job.pk %}">{{job.name}}</a>
                     </li>
                 {% endfor %}
-            </ul>
+            </ol>
         {% endif %}
     </div>
 

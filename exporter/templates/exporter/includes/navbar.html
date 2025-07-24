@@ -18,8 +18,24 @@
           <li class="nav__item btn--navy">
             <a
               class="nav__link"
+              href="{% url 'import' %}"
+              id="import">
+              Import
+            </a>
+          </li>
+          <li class="nav__item btn--navy">
+            <a
+              class="nav__link"
+              href="{% url 'exportjob_create' %}"
+              id="create-export">
+              Create Export
+            </a>
+          </li>
+          <li class="nav__item btn--navy">
+            <a
+              class="nav__link"
               href="{% url 'about' %}"
-              id="raccess">
+              id="about">
               About
             </a>
           </li>
@@ -41,6 +57,22 @@
                 href="{% url 'admin:index' %}"
                 tabindex="-1">
                 Admin
+              </a>
+            </li>
+            <li>
+              <a
+                class="btn btn--navy dropdown__btn dropdown__btn--mobile"
+                href="{% url 'import' %}"
+                tabindex="-1">
+                Import
+              </a>
+            </li>
+            <li>
+              <a
+                class="btn btn--navy dropdown__btn dropdown__btn--mobile"
+                href="{% url 'exportjob_create' %}"
+                tabindex="-1">
+                Create Export
               </a>
             </li>
             <li>
