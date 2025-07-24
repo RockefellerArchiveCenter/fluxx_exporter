@@ -35,13 +35,15 @@ jobs:
       - name: Build distribution
         run: pyinstaller fluxx_exporter.spec --distpath ${{ env.DIST_NAME }}
 
-      - name: Create zip file
+      - name: Create zip file (linux)
+        if: matrix.os != 'windows'
         run: |
-          if [ "${{ matrix.os }}" == "windows" ]; then
-            Compress-Archive -Path "${{ env.DIST_NAME }}" -DestinationPath "${{ env.DIST_NAME }}.zip"
-          else
             zip -r ${{ env.DIST_NAME }}.zip ${{ env.DIST_NAME }}
-          fi
+
+      - name: Create zip file (windows)
+        if: matrix.os == 'windows'
+        run: |
+          Compress-Archive -Path "${{ env.DIST_NAME }}" -DestinationPath "${{ env.DIST_NAME }}.zip"
 
       - uses: softprops/action-gh-release@v2
         if: github.ref_type == 'tag'
