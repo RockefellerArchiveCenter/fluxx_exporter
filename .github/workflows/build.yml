@@ -12,6 +12,8 @@ jobs:
       matrix:
         os: [ubuntu, macos, windows]
     runs-on: ${{ matrix.os }}-latest
+    permissions:
+      contents: write
     env:
       DIST_NAME: fluxx_exporter-${{ github.ref_name }}-${{ matrix.os }}
     steps:
