@@ -7,13 +7,13 @@ on:
   workflow_dispatch:
 
 jobs:
-  build-linux:
+  build:
     strategy:
       matrix:
         os: [ubuntu, macos, windows]
     runs-on: ${{ matrix.os }}-latest
     env:
-      DIST_NAME: fluxx_exporter-${{ github.ref }}-${{ matrix.os }}
+      DIST_NAME: fluxx_exporter-${{ github.ref_name }}-${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4.2.2
         with:
@@ -33,11 +33,17 @@ jobs:
         run: pip install -r requirements.txt
 
       - name: Build distribution
-        run: pyinstaller fluxx_exporter.spec --distpath build/${{ env.DIST_NAME }}
+        run: pyinstaller fluxx_exporter.spec --distpath ${{ env.DIST_NAME }}
 
-      - name: Create zip file
+      - name: Create zip file (linux)
+        if: matrix.os != 'windows'
         run: |
-          zip -r ${{ env.DIST_NAME }}.zip ${{ env.DIST_NAME }}
+            zip -r ${{ env.DIST_NAME }}.zip ${{ env.DIST_NAME }}
+
+      - name: Create zip file (windows)
+        if: matrix.os == 'windows'
+        run: |
+          Compress-Archive -Path "${{ env.DIST_NAME }}" -DestinationPath "${{ env.DIST_NAME }}.zip"
 
       - uses: softprops/action-gh-release@v2
         if: github.ref_type == 'tag'
