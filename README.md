@@ -31,7 +31,10 @@ Foundations use grants management systems (GMS) such as Fluxx to manage their gr
 5. The app will open automatically in your browser at [http://localhost:8000](http://localhost:8000).
 6. To close, exit the terminal window.
 
-Note: A file called `fluxx_exporter_db.sqlite3` is created in your home directory (`C:\Users\{username}` on Windows and `/Users/{username}` on Mac). This file stores the Fluxx configurations, users, fields, tables, and export jobs that you configure for the application, so do not delete it unless you want to remove that information. 
+Note: Two files are created as siblings of the `fluxx_exporter` file. The file called `fluxx_exporter_db.sqlite3` stores 
+the Fluxx configurations, users, fields, tables, and export jobs that you configure for the application, so do not delete it unless you want to remove that information. The file called `fluxx_exporter.debug.log` contains a detailed log of system
+activity and is useful for in-depth troubleshooting. If you move the `fluxx_exporter` file to a new location, you should 
+move these files to that same location.
 
 ## Configuration
 
@@ -149,8 +152,9 @@ For more information about filters:
 
 ## Logging
 
-This application logs to the console (stdout) as well as a file. Logging level and log file location can be configured
-with the `LOG_FILE`, `FILE_LOG_LEVEL` and `CONSOLE_LOG_LEVEL` settings in `config.py`.
+This application logs to the console (stdout) as well as a file. By default, messages in the console are logged at the
+`INFO` level, while file logging logs all messages included in the `DEBUG` level to a file called `fluxx_exporter.debug.log`
+that is a sibling of the application executable. The logging level and log file name can be configured with the `FILE_LOG_LEVEL`, `CONSOLE_LOG_LEVEL` and `LOG_FILE` settings in `config.py`.
 
 ## User Management
 
