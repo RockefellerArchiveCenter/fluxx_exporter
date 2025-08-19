@@ -24,6 +24,8 @@ Foundations use grants management systems (GMS) such as Fluxx to manage their gr
 
 ## Installation
 
+**Warning messages will appear when the current version of Fluxx Exporter (2.0) is run on Windows or MacOS. Speak to your local system administrator for information about how to resolve these warnings.**
+
 1. [Download the latest release](https://github.com/RockefellerArchiveCenter/fluxx_exporter/releases) for your operating system (Windows, MacOS or Linux).
 2. Extract the downloaded ZIP file.
 3. Run the application: double-click the `fluxx_exporter` file in the folder you just extracted, and a terminal window will open that shows the application starting.
