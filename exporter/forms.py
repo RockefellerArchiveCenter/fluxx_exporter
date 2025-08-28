@@ -2,7 +2,7 @@ from django.forms import ClearableFileInput, FileField, Form
 from django.forms.models import (BaseInlineFormSet, ModelForm,
                                  inlineformset_factory)
 
-from .models import ExportJob, Field, Table
+from .models import ExportJob, Field, Filter, Table
 
 
 class TableFieldFormset(inlineformset_factory(
@@ -81,6 +81,20 @@ ExportJobWithTables = inlineformset_factory(
     fields=('id', 'include_in_export',),
     extra=0,
     can_delete=False
+)
+
+
+class FilterForm(ModelForm):
+    class Meta:
+        model = Filter
+        fields = '__all__'
+
+
+ExportJobWithFilters = inlineformset_factory(
+    ExportJob,
+    Filter,
+    form=FilterForm,
+    extra=1
 )
 
 
