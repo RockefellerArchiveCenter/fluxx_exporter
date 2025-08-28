@@ -46,7 +46,6 @@ class ExportJob(models.Model):
     fluxx_config = models.ForeignKey(FluxxConfig, on_delete=models.CASCADE)
     export_location = models.CharField(max_length=255)
     export_format = models.CharField(max_length=10, choices=[('json', 'JSON'), ('xml', 'XML'), ('csv', 'CSV')])
-    filter_string = models.CharField(max_length=1000, null=True, blank=True)
     grant_ids = models.TextField(null=True, blank=True)
     amazon_s3_config = models.ForeignKey(AmazonS3Config, on_delete=models.SET_NULL, null=True, blank=True)
     sftp_config = models.ForeignKey(SFTPConfig, on_delete=models.SET_NULL, null=True, blank=True)
@@ -95,3 +94,16 @@ class Field(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class Filter(models.Model):
+    export_job = models.ForeignKey(
+        ExportJob,
+        on_delete=models.CASCADE,
+        related_name='filters')
+    field_name = models.CharField(max_length=255)
+    relator = models.CharField(max_length=255)
+    value = models.CharField(max_length=255)
+
+    def __str__(self):
+        return f'{self.field_name} {self.relator} {self.value}'
