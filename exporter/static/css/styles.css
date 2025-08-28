@@ -21,6 +21,11 @@ and adds a scrollbar if the content exceeds that height. */
     }
 }
 
+.exportjob__filter {
+    display: flex;
+    gap: 20px;
+}
+
 h2 {
     margin-top: 30px;
 }

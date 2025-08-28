@@ -33,6 +33,26 @@
 		</div>
 	{% endfor %}
 
+	{{ filters.management_form }}
+	{% for error in filters.non_form_errors %}
+		<div class="input__error">{{error}}</div>
+	{% endfor %}
+
+	{% for field in filters %}
+		<div class="input exportjob__filter">
+			{{ field.label_tag }}
+				{{ field }}
+				{% if field.errors %}
+						<div id="{{field.auto_id}}-error" class="input__error">
+								{{ field.errors }}
+						</div>
+				{% endif %}
+				<div id="{{field.auto_id}}_helptext" class="input__help-text">
+					{{field.help_text|safe}}
+				</div>
+		</div>
+	{% endfor %}
+
 	<h2>Grant Request Fields</h2>
 
 	{{formset.management_form}}
