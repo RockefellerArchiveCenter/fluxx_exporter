@@ -5,7 +5,7 @@ from django.http import HttpRequest
 from django.test import TestCase
 from django.urls import reverse
 
-from .forms import ExportJobWithTables
+from .forms import ExportJobWithFilters, ExportJobWithTables
 from .models import ExportJob, Field, Table
 from .views import ImportTablesView
 
@@ -20,9 +20,10 @@ class ExportJobViewTests(TestCase):
             'fluxx_config': '1',
             'export_location': '/tmp/exports',
             'export_format': 'json',
-            'filter_string': '',
             'grant_ids': '1,2,3,4',
             'amazon_s3_config': '1',
+            'filters-TOTAL_FORMS': '0',
+            'filters-INITIAL_FORMS': '1',
             'table_set-TOTAL_FORMS': '2',
             'table_set-INITIAL_FORMS': '2',
             'table_set-MIN_NUM_FORMS': '0',
@@ -49,6 +50,7 @@ class ExportJobViewTests(TestCase):
         """Assert custom behavior in get_context_data and is_valid."""
         response = self.client.get(reverse('exportjob_create'))
         self.assertIsInstance(response.context['formset'], ExportJobWithTables)
+        self.assertIsInstance(response.context['filters'], ExportJobWithFilters)
         self.assertIn('grant_request_forms', response.context)
         self.assertIn('connected_table_forms', response.context)
 
@@ -62,6 +64,7 @@ class ExportJobViewTests(TestCase):
         export_job = ExportJob.objects.all().first()
         response = self.client.get(reverse('exportjob_update', kwargs={'pk': export_job.pk}))
         self.assertIsInstance(response.context['formset'], ExportJobWithTables)
+        self.assertIsInstance(response.context['filters'], ExportJobWithFilters)
         self.assertIn('grant_request_forms', response.context)
         self.assertIn('connected_table_forms', response.context)
 

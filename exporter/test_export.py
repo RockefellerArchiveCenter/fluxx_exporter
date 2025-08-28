@@ -7,7 +7,8 @@ import responses
 from django.test import TestCase
 
 from .exporters import Exporter
-from .models import AmazonS3Config, ExportJob, Field, FluxxConfig, Table
+from .models import (AmazonS3Config, ExportJob, Field, Filter, FluxxConfig,
+                     Table)
 
 
 class ExportTests(TestCase):
@@ -28,7 +29,6 @@ class ExportTests(TestCase):
         export_job = ExportJob.objects.all().first()
         exporter = Exporter(export_job.pk)
         self.assertEqual(exporter.fluxx_config, export_job.fluxx_config)
-        self.assertEqual(exporter.filter_string, export_job.filter_string)
         self.assertEqual(exporter.grant_ids, export_job.grant_ids)
         self.assertEqual(exporter.export_format, export_job.export_format)
         self.assertEqual(exporter.export_location, export_job.export_location)
@@ -87,7 +87,7 @@ class ExportTests(TestCase):
             fluxx_config.base_url,
             fluxx_config.client_id,
             fluxx_config.client_secret)
-        mock_parse_filter.assert_called_once_with(export_job.filter_string)
+        mock_parse_filter.assert_called_once()
         mock_parse_ids.assert_called_once_with(export_job.grant_ids)
         mock_parse_fields.assert_called_once()
         mock_parse_related.assert_called_once()
@@ -138,16 +138,17 @@ class ExportTests(TestCase):
         self.assertEqual(result, {})
 
     def test_parse_filter(self):
-        """Assert filter is parsed as expected."""
+        """Assert one filter is parsed as expected."""
         export_job = ExportJob.objects.all().first()
         exporter = Exporter(export_job.pk)
-        result = exporter.parse_filter("foo|eq|bar")
+        Filter.objects.create(export_job=export_job, field_name='foo', relator='eq', value='bar')
+        result = exporter.parse_filter(Filter.objects.all())
         self.assertEqual(result, ['foo', 'eq', 'bar'])
 
-        """Exception raised when there are not three filter components."""
-        with self.assertRaises(Exception) as e:
-            exporter.parse_filter("foo|eq")
-        self.assertIn("foo|eq", str(e.exception))
+        """Assert multiple filters parsed as expected."""
+        Filter.objects.create(export_job=export_job, field_name='baz', relator='gt', value='biz')
+        result = exporter.parse_filter(Filter.objects.all())
+        self.assertEqual(result, {'group_type': 'and', 'conditions': [['foo', 'eq', 'bar'], ['baz', 'gt', 'biz']]})
 
     def test_parse_grant_ids(self):
         """Assert grant IDs are parsed as expected"""
