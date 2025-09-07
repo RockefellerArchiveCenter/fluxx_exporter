@@ -3,6 +3,8 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 from django.urls import reverse
 
+from .clients import FluxxClient
+
 
 class User(AbstractUser):
     pass
@@ -16,6 +18,22 @@ class FluxxConfig(models.Model):
 
     def __str__(self):
         return self.name
+
+    def save(self):
+        """Adds custom logic to fetch document types for Fluxx instance."""
+        client = FluxxClient(
+            self.base_url,
+            self.client_id,
+            self.client_secret)
+        document_types = client.list_rows('model_document_type', field_names=['name', 'id'])  # TODO check this
+
+        DocumentType.objects.all().delete()
+        for document_type in document_types:
+            DocumentType.objects.create(
+                fluxx_config=self,
+                name=document_type['name'],
+                document_id=document_type['id'])
+        return super().save()
 
 
 class SFTPConfig(models.Model):
@@ -107,3 +125,11 @@ class Filter(models.Model):
 
     def __str__(self):
         return f'{self.field_name} {self.relator} {self.value}'
+
+
+class DocumentType(models.Model):
+    name = models.CharField(max_length=255)
+    document_id = models.IntegerField()
+
+    def __str__(self):
+        return self.name
