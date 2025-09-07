@@ -94,7 +94,7 @@ ExportJobWithFilters = inlineformset_factory(
     ExportJob,
     Filter,
     form=FilterForm,
-    extra=1
+    extra=2
 )
 
 
