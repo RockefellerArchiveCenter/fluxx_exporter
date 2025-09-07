@@ -1,3 +1,4 @@
+from django.core.exceptions import ValidationError
 from django.forms import ClearableFileInput, FileField, Form
 from django.forms.models import (BaseInlineFormSet, ModelForm,
                                  inlineformset_factory)
@@ -88,6 +89,17 @@ class FilterForm(ModelForm):
     class Meta:
         model = Filter
         fields = '__all__'
+
+    def clean_field_name(self):
+        """Ensure field name is in grant_request table."""
+        data = self.cleaned_data['field_name']
+        grant_request_table = Table.objects.get(name='grant_request')
+        grant_requested_fields = [field.name for field in Field.objects.filter(table=grant_request_table)]
+
+        if data not in grant_requested_fields:
+            raise ValidationError(f'{self.form.instance.field_name} is not a field in the grant_request table.')
+
+        return data
 
 
 ExportJobWithFilters = inlineformset_factory(
