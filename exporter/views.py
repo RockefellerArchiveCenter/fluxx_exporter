@@ -145,7 +145,7 @@ class RunExportJobView(DetailView):
 class ImportTablesView(FormView):
     template_name = 'exporter/import_form.html'
     form_class = ImportTablesForm
-    success_url = reverse_lazy('index')  # TODO
+    success_url = reverse_lazy('index')
 
     def form_valid(self, form):
         try:
