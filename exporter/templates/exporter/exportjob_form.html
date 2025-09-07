@@ -38,6 +38,7 @@
 		<div class="input__error">{{error}}</div>
 	{% endfor %}
 
+	<label>Filters:</label>
 	{% for field in filters %}
 		<div class="input exportjob__filter">
 			{{ field.label_tag }}
@@ -77,7 +78,7 @@
 			{% include 'exporter/includes/inline_table_form.html' with table_form=table_form %}
 		{% endfor %}
 	{% else %}
-		<p>No connected tables are available. If needed, configure connected tables to enable their export from Fluxx.</p>
+		<p class="input__error">No connected tables are available. If needed, configure connected tables to enable their export from Fluxx.</p>
 	{% endif %}
 
 	<button id="submit-btn" class="btn btn--md btn--blue" type="submit">Save</button>
