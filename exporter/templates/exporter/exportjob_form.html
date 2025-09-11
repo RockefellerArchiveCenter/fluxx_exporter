@@ -42,7 +42,7 @@
 	<p>Add filter/s to limit the data that is exported.</p>
 
 	{% for form in filters %}
-		<fieldset class="exportjob__filter card card--container card--blue mb-10 pt-10">
+		<fieldset class="exportjob__filter card card--container card--blue mb-10">
 			<legend>Filter {{ forloop.counter }}</legend>
 
 			{% for field in form.visible_fields %}
