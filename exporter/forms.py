@@ -97,7 +97,7 @@ class FilterForm(ModelForm):
         grant_requested_fields = [field.name for field in Field.objects.filter(table=grant_request_table)]
 
         if data not in grant_requested_fields:
-            raise ValidationError(f'{self.form.instance.field_name} is not a field in the grant_request table.')
+            raise ValidationError(f'"{data}" is not a field in the grant_request table.')
 
         return data
 
