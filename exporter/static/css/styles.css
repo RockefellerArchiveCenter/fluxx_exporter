@@ -22,8 +22,12 @@ and adds a scrollbar if the content exceeds that height. */
 }
 
 .exportjob__filter {
-    display: flex;
     gap: 20px;
+}
+
+.exportjob__filter legend {
+    background-color: #FFFFFF;
+    padding: 0 3px;
 }
 
 h2 {
