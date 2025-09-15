@@ -61,13 +61,7 @@ class CreateExportJobView(CreateView):
         filters_formset = context['filters']
         tables_formset = context['formset']
 
-        if filters_formset.is_valid():
-            filters_formset.save()
-        else:
-            print(filters_formset.errors)
-            return super().form_invalid(form)
-
-        if tables_formset.is_valid():
+        if tables_formset.is_valid() and filters_formset.is_valid():
             response = super().form_valid(form)
             for form in tables_formset:
                 new_table, _ = Table.objects.get_or_create(
@@ -116,12 +110,14 @@ class UpdateExportJobView(UpdateView):
         context = self.get_context_data(form=form)
         tables_formset = context['formset']
         filters_formset = context['filters']
-        for formset in [tables_formset, filters_formset]:
-            if not formset.is_valid():
-                return super().form_invalid(form)
-            else:
+
+        if tables_formset.is_valid() and filters_formset.is_valid():
+            response = super().form_valid(form)
+            for formset in [tables_formset, filters_formset]:
                 formset.save()
-        return super().form_valid(form)
+            return response
+        else:
+            return super().form_invalid(form)
 
 
 class DeleteExportJobView(DeleteView):
