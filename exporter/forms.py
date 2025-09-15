@@ -93,7 +93,8 @@ class FilterForm(ModelForm):
     def clean_field_name(self):
         """Ensure field name is in grant_request table."""
         data = self.cleaned_data['field_name']
-        grant_request_table = Table.objects.get(name='grant_request')
+        export_job = self.cleaned_data['export_job']
+        grant_request_table = Table.objects.get(name='grant_request', export_job=export_job)
         grant_requested_fields = [field.name for field in Field.objects.filter(table=grant_request_table)]
 
         if data not in grant_requested_fields:
