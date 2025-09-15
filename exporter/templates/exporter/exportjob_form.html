@@ -45,6 +45,11 @@
 		<fieldset class="exportjob__filter card card--container card--blue mb-10">
 			<legend>Filter {{ forloop.counter }}</legend>
 
+			{% for hidden_field in form.hidden_fields %}
+				{{ hidden_field.errors }}
+				{{ hidden_field }}
+			{% endfor %}
+
 			{% for field in form.visible_fields %}
 				<div class="input">	
 					{{ field.label_tag }}
