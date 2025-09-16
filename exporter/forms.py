@@ -1,8 +1,8 @@
-from django.forms import ClearableFileInput, FileField, Form
+from django.forms import ClearableFileInput, FileField, Form, PasswordInput
 from django.forms.models import (BaseInlineFormSet, ModelForm,
                                  inlineformset_factory)
 
-from .models import ExportJob, Field, Filter, Table
+from .models import ExportJob, Field, Filter, FluxxConfig, Table
 
 
 class TableFieldFormset(inlineformset_factory(
@@ -137,3 +137,18 @@ class ImportTablesForm(Form):
     """Form for importing tables and fields from API documentation."""
     grant_request_file = FileField(label="Grant Request HTML file")
     related_tables_files = MultipleFileField(label="Related Tables HTML files", required=False)
+
+
+class FluxxConfigForm(ModelForm):
+    class Meta:
+        model = FluxxConfig
+        fields = '__all__'
+        help_texts = {
+            'base_url': 'The base URL for the Fluxx instance.',
+            'client_id': 'An identifier for a Fluxx OAuth client authorized to access the API of the Fluxx instance.',
+            'client_secret': 'The secret key associated with your OAuth client.',
+        }
+        widgets = {
+            'client_id': PasswordInput(),
+            'client_secret': PasswordInput(),
+        }
