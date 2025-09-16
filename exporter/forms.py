@@ -46,10 +46,6 @@ class BaseTablesWithFields(BaseInlineFormSet):
                 if hasattr(form, "nested"):
                     if not any([c.instance.include_in_export for c in form.nested]):
                         form.add_error(None, 'You must add at least one field to this table.')
-            else:
-                if hasattr(form, "nested"):
-                    if any([c.instance.include_in_export for c in form.nested]):
-                        form.add_error(None, 'You cannot export fields without also exporting the parent table.')
 
     def is_valid(self):
         """Validate the nested formsets."""
