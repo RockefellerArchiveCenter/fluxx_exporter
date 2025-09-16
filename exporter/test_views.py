@@ -6,7 +6,7 @@ from django.test import TestCase
 from django.urls import reverse
 
 from .forms import ExportJobWithFilters, ExportJobWithTables
-from .models import ExportJob, Field, FluxxConfig, Table
+from .models import AmazonS3Config, ExportJob, Field, FluxxConfig, Table
 from .views import ImportTablesView
 
 
@@ -18,8 +18,19 @@ class IndexViewTests(TestCase):
         """Assert additional context."""
         response = self.client.get(reverse('index'))
         self.assertEqual(len(response.context['export_jobs']), 1)
-        self.assertEqual(len(response.context['fluxx_configs']), 1)
         self.assertTrue(all([isinstance(i, ExportJob) for i in response.context['export_jobs']]))
+
+
+class ConfigurationViewTests(TestCase):
+
+    fixtures = ['initial.json']
+
+    def test_index_view(self):
+        """Assert additional context."""
+        response = self.client.get(reverse('configurations_list'))
+        self.assertEqual(len(response.context['amazon_s3_configs']), 1)
+        self.assertEqual(len(response.context['fluxx_configs']), 1)
+        self.assertTrue(all([isinstance(i, AmazonS3Config) for i in response.context['amazon_s3_configs']]))
         self.assertTrue(all([isinstance(i, FluxxConfig) for i in response.context['fluxx_configs']]))
 
 
