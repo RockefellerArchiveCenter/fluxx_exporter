@@ -19,6 +19,9 @@ class FluxxConfig(models.Model):
     def __str__(self):
         return self.name
 
+    def get_absolute_url(self):
+        return reverse('fluxxconfig_detail', kwargs={'pk': self.pk})
+
     def save(self):
         """Adds custom logic to fetch document types for Fluxx instance."""
         client = FluxxClient(
