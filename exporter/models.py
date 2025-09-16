@@ -40,7 +40,7 @@ class FluxxConfig(models.Model):
 
 
 class SFTPConfig(models.Model):
-    name = models.CharField(max_length=100, default='SFTP Config')
+    name = models.CharField(max_length=100)
     host = models.CharField(max_length=100)
     port = models.IntegerField(default=22)
     username = models.CharField(max_length=100)
@@ -52,7 +52,7 @@ class SFTPConfig(models.Model):
 
 
 class AmazonS3Config(models.Model):
-    name = models.CharField(max_length=100, default='S3 Config')
+    name = models.CharField(max_length=100)
     bucket = models.CharField(max_length=100)
     access_key_id = models.CharField(max_length=100)
     secret_key = models.CharField(max_length=100)
@@ -60,6 +60,9 @@ class AmazonS3Config(models.Model):
 
     def __str__(self):
         return self.name
+
+    def get_absolute_url(self):
+        return reverse('amazons3config_detail', kwargs={'pk': self.pk})
 
 
 class ExportJob(models.Model):
