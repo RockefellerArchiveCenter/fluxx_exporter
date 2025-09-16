@@ -8,9 +8,9 @@ from django.views.generic import DetailView, FormView, TemplateView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
 
 from .exporters import Exporter
-from .forms import (ExportJobForm, ExportJobWithFilters, ExportJobWithTables,
-                    FluxxConfigForm, ImportTablesForm)
-from .models import ExportJob, Field, FluxxConfig, Table
+from .forms import (AmazonS3ConfigForm, ExportJobForm, ExportJobWithFilters,
+                    ExportJobWithTables, FluxxConfigForm, ImportTablesForm)
+from .models import AmazonS3Config, ExportJob, Field, FluxxConfig, Table
 
 
 class IndexView(TemplateView):
@@ -19,7 +19,6 @@ class IndexView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["export_jobs"] = ExportJob.objects.all()
-        context["fluxx_configs"] = FluxxConfig.objects.all()
         return context
 
 
@@ -265,6 +264,16 @@ class ImportTablesView(FormView):
             Field.objects.get_or_create(name=row['name'], table=table)
 
 
+class ConfigurationsListView(TemplateView):
+    template_name = 'exporter/configurations_list.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['amazon_s3_configs'] = AmazonS3Config.objects.all()
+        context['fluxx_configs'] = FluxxConfig.objects.all()
+        return context
+
+
 class FluxxConfigView(DetailView):
     model = FluxxConfig
 
@@ -283,4 +292,25 @@ class FluxxConfigUpdateView(UpdateView):
 
 class FluxxConfigDeleteView(DeleteView):
     model = FluxxConfig
-    success_url = reverse_lazy('index')
+    success_url = reverse_lazy('configurations_list')
+
+
+class AmazonS3ConfigView(DetailView):
+    model = AmazonS3Config
+
+
+class AmazonS3ConfigCreateView(CreateView):
+    model = AmazonS3Config
+    template_name = 'exporter/amazons3config_form.html'
+    form_class = AmazonS3ConfigForm
+
+
+class AmazonS3ConfigUpdateView(UpdateView):
+    model = AmazonS3Config
+    template_name = 'exporter/amazons3config_form.html'
+    form_class = AmazonS3ConfigForm
+
+
+class AmazonS3ConfigDeleteView(DeleteView):
+    model = AmazonS3Config
+    success_url = reverse_lazy('configurations_list')
