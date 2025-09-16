@@ -9,8 +9,8 @@ from django.views.generic.edit import CreateView, DeleteView, UpdateView
 
 from .exporters import Exporter
 from .forms import (ExportJobForm, ExportJobWithFilters, ExportJobWithTables,
-                    ImportTablesForm)
-from .models import ExportJob, Field, Table
+                    FluxxConfigForm, ImportTablesForm)
+from .models import ExportJob, Field, FluxxConfig, Table
 
 
 class IndexView(TemplateView):
@@ -19,6 +19,7 @@ class IndexView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["export_jobs"] = ExportJob.objects.all()
+        context["fluxx_configs"] = FluxxConfig.objects.all()
         return context
 
 
@@ -262,3 +263,24 @@ class ImportTablesView(FormView):
                     self.handle_row(row, related_table, related_tables, resolve=False)  # Relations are only resolved one level deep
         elif self.row_is_field(row):
             Field.objects.get_or_create(name=row['name'], table=table)
+
+
+class FluxxConfigView(DetailView):
+    model = FluxxConfig
+
+
+class FluxxConfigCreateView(CreateView):
+    model = FluxxConfig
+    template_name = 'exporter/fluxxconfig_form.html'
+    form_class = FluxxConfigForm
+
+
+class FluxxConfigUpdateView(UpdateView):
+    model = FluxxConfig
+    template_name = 'exporter/fluxxconfig_form.html'
+    form_class = FluxxConfigForm
+
+
+class FluxxConfigDeleteView(DeleteView):
+    model = FluxxConfig
+    success_url = reverse_lazy('index')
