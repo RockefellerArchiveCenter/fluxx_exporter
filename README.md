@@ -61,7 +61,7 @@ In order for the Fluxx Exporter tool to be able to access your Fluxx instance, y
 
 #### Step 2: Add API Credentials in Fluxx Exporter
 
-1. Go to [Fluxx Exporter admin](http://localhost:8000/admin) > "Fluxx configs" > "Add Fluxx Config"
+1. In Fluxx Exporter, navigate to the [Create Fluxx Config page](http://localhost:8000/fluxx_config/)
 2. Enter a descriptive name and the credentials you created in Fluxx
 
 You can configure multiple Fluxx instances as needed.
