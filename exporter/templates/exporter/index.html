@@ -9,10 +9,10 @@
         <div class="card card--container p-20">
             <div class="card__body">
                 <h2 class="card__title">Step 1. Configure Fluxx Instance</h2>
-                <p class="card__body-text">Sign into the admin interface to configure your Fluxx instance and enable exports.</p>
+                <p class="card__body-text">Configure your Fluxx instance and enable exports.</p>
             </div>
             <div class="card__footer">
-                <a class="btn btn--md btn--blue btn--block mb-10" href="{% url 'admin:index' %}">Access Admin Console</a>
+                <a class="btn btn--md btn--blue btn--block mb-10" href="{% url 'fluxxconfig_create' %}">Create Fluxx Config</a>
             </div>
         </div>
         <div class="card card--container p-20">
@@ -42,6 +42,16 @@
                 {% for job in export_jobs %}
                     <li>
                         <a href="{% url 'exportjob_detail' pk=job.pk %}">{{job.name}}</a>
+                    </li>
+                {% endfor %}
+            </ol>
+        {% endif %}
+        {% if fluxx_configs %}
+            <h2>Configured Fluxx Instances</h2>
+            <ol>
+                {% for config in fluxx_configs %}
+                    <li>
+                        <a href="{% url 'fluxxconfig_detail' pk=config.pk %}">{{config.name}}</a>
                     </li>
                 {% endfor %}
             </ol>
