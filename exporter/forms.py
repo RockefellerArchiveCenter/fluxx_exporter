@@ -2,7 +2,8 @@ from django.forms import ClearableFileInput, FileField, Form, PasswordInput
 from django.forms.models import (BaseInlineFormSet, ModelForm,
                                  inlineformset_factory)
 
-from .models import ExportJob, Field, Filter, FluxxConfig, Table
+from .models import (AmazonS3Config, ExportJob, Field, Filter, FluxxConfig,
+                     Table)
 
 
 class TableFieldFormset(inlineformset_factory(
@@ -151,4 +152,14 @@ class FluxxConfigForm(ModelForm):
         widgets = {
             'client_id': PasswordInput(),
             'client_secret': PasswordInput(),
+        }
+
+
+class AmazonS3ConfigForm(ModelForm):
+    class Meta:
+        model = AmazonS3Config
+        fields = '__all__'
+        widgets = {
+            'access_key_id': PasswordInput(),
+            'secret_key': PasswordInput(),
         }
