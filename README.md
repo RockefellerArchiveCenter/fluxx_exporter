@@ -40,8 +40,6 @@ move these files to that same location.
 
 ## Configuration
 
-Access the admin console at http://localhost:8000/admin and log in with your superuser credentials.
-
 ### Configure a Fluxx Instance
 
 #### Step 1: Get Fluxx API Credentials
@@ -61,19 +59,19 @@ In order for the Fluxx Exporter tool to be able to access your Fluxx instance, y
 
 #### Step 2: Add API Credentials in Fluxx Exporter
 
-1. In Fluxx Exporter, navigate to the [Create Fluxx Config page](http://localhost:8000/fluxx_config/)
+1. In Fluxx Exporter, navigate to the [Configurations page](http://localhost:8000/configurations/) and select the option to create a new Fluxx Configuration
 2. Enter a descriptive name and the credentials you created in Fluxx
 
 You can configure multiple Fluxx instances as needed.
 
 ### Configure an Amazon S3 Bucket (Optional)
 
-1. Go to [Fluxx Exporter admin](http://localhost:8000/admin) > "Amazon S3 configs" > "Add Amazon S3 configs"
-2. Enter a descriptive name, s3 bucket name, and AWS credentials
+1. In Fluxx Exporter, navigate to the [Configurations page](http://localhost:8000/configurations/) and select the option to create a new Amazon S3 Configuration
+2. Enter a descriptive name, S3 bucket name, and AWS credentials
 
 You can configure additional S3 instances as needed.
 
-### Configure Fluxx Tables and Fields
+### Import Fluxx Tables and Fields
 
 Fluxx tables and fields are the backend database information that power Fluxx cards on the frontend. Fluxx Exporter uses these tables and their associated fields to allow you to customize what information to export. 
 
@@ -91,23 +89,9 @@ Note: You can explore the existing tables and their associated fields in `{fluxx
 #### Step 2: Upload Fluxx Table API Documentation Pages
 Fluxx Exporter requires information from your API documentation to configure tables and fields for export. Follow these steps to import the HTML files you just downloaded from Fluxx.
 
-##### Option A: Use the Fluxx Exporter Interface (Preferred Method) 
 1. In Fluxx Exporter, navigate to the [Import page](http://localhost:8000/import/)
 2. Use the form to select the grant request HTML file that you downloaded from Fluxx (required), and any other table documentation files you downloaded.
 3. Click "Upload" to import these files.
-
-##### Option B: Manually Add or Edit Tables and Fields (Advanced Method)
-
-**Fluxx administrator access is required.**
-
-1. Go to [Fluxx Exporter admin](http://localhost:8000/admin) > "Tables" (or "Fields")
-2. Click "Add Table"/"Add Field" OR select a table or field to change.
-3. Manually add or edit entries.
-4. When adding a field, choose its associated table and, if applicable, related table. The tables you select must already be initialized. 
-
-Notes: 
-- Any changes to tables or fields will appear immediately when you refresh Fluxx Exporter.
-- **No validation** occurs against the Fluxx API. Double-check field names using the API documentation, or by exporting a table from the Fluxx UI and checking the CSV output header.
 
 ## Export Grant Records
 
@@ -157,10 +141,6 @@ For more information about filters:
 This application logs to the console (stdout) as well as a file. By default, messages in the console are logged at the
 `INFO` level, while file logging logs all messages included in the `DEBUG` level to a file called `fluxx_exporter.debug.log`
 that is a sibling of the application executable. The logging level and log file name can be configured with the `FILE_LOG_LEVEL`, `CONSOLE_LOG_LEVEL` and `LOG_FILE` settings in `config.py`.
-
-## User Management
-
-This application currently does not require authentication, however the [Django Administration interface](http://localhost:8000/admin) (which allows configuration of Fluxx instances and S3 buckets) requires a login from a user with admin access. In the steps above, the superuser account that is created will provide access to this interface.
 
 ## Contributing
 
