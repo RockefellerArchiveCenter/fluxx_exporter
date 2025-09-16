@@ -8,16 +8,16 @@
     <div class="card-list">
         <div class="card card--container p-20">
             <div class="card__body">
-                <h2 class="card__title">Step 1. Configure Fluxx Instance</h2>
-                <p class="card__body-text">Configure your Fluxx instance and enable exports.</p>
+                <h2 class="card__title">Step 1. Configure Systems</h2>
+                <p class="card__body-text">Configure your Fluxx instance and export locations.</p>
             </div>
             <div class="card__footer">
-                <a class="btn btn--md btn--blue btn--block mb-10" href="{% url 'fluxxconfig_create' %}">Create Fluxx Config</a>
+                <a class="btn btn--md btn--blue btn--block mb-10" href="{% url 'configurations_list' %}">Create Configurations</a>
             </div>
         </div>
         <div class="card card--container p-20">
             <div class="card__body">
-                <h2 class="card__title">Step 2. Configure Tables and Fields</h2>
+                <h2 class="card__title">Step 2. Import Tables and Fields</h2>
                 <p class="card__body-text">Import your downloaded Fluxx HTML API documentation pages to configure Fluxx tables and fields.</p>
             </div>
             <div class="card__footer">
@@ -26,7 +26,7 @@
         </div>
         <div class="card card--container p-20">
             <div class="card__body">
-                <h2 class="card__title">Step 3. Create a Custom Export</h2>
+                <h2 class="card__title">Step 3. Export Data</h2>
                 <p class="card__body-text">Create a new export job and run it to export specific grant records from Fluxx.</p>
             </div>
             <div class="card__footer">
@@ -42,16 +42,6 @@
                 {% for job in export_jobs %}
                     <li>
                         <a href="{% url 'exportjob_detail' pk=job.pk %}">{{job.name}}</a>
-                    </li>
-                {% endfor %}
-            </ol>
-        {% endif %}
-        {% if fluxx_configs %}
-            <h2>Configured Fluxx Instances</h2>
-            <ol>
-                {% for config in fluxx_configs %}
-                    <li>
-                        <a href="{% url 'fluxxconfig_detail' pk=config.pk %}">{{config.name}}</a>
                     </li>
                 {% endfor %}
             </ol>

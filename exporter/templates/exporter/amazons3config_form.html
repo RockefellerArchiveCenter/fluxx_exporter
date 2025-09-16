@@ -1,0 +1,41 @@
+{% extends 'exporter/main.html' %}
+
+{% block title %}{% if form.instance.id %}Edit {{form.instance.name}}{% else %}Create New Fluxx Config{% endif %} - Fluxx Exporter{% endblock %}
+
+{% block content %}
+
+<h1>{% if form.instance.id %}Edit {{object.name}}{% else %}Create New Fluxx Config{% endif %}</h1>
+
+<form method="post" enctype="multipart/form-data">
+    {% for hidden_field in form.hidden_fields %}
+		{{ hidden_field.errors }}
+		{{ hidden_field }}
+	{% endfor %}
+		
+	{% csrf_token %}
+		
+	{{ form.management_form }}
+	{{ form.non_form_errors }}
+
+	{% for field in form %}
+		<div class="input mb-10">
+			{{ field.label_tag }}{% if field.field.required %} *{%endif%}
+				{{ field }}
+				{% if field.errors %}
+						<div id="{{field.auto_id}}-error" class="input__error">
+								{{ field.errors }}
+						</div>
+				{% endif %}
+				<div id="{{field.auto_id}}_helptext" class="input__help-text">
+					{{field.help_text}}
+				</div>
+		</div>
+	{% endfor %}
+
+    <button class="btn btn--blue btn--md" type="submit">Save</button>
+    <a href="{% if form.instance.id %}{% url 'fluxxconfig_detail' pk=form.instance.id %}{% else %}{% url 'index' %}{% endif %}" class="btn btn--md btn--gray" type="cancel">Cancel</a>
+
+</form>
+
+
+{% endblock %}
