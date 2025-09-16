@@ -6,8 +6,21 @@ from django.test import TestCase
 from django.urls import reverse
 
 from .forms import ExportJobWithFilters, ExportJobWithTables
-from .models import ExportJob, Field, Table
+from .models import ExportJob, Field, FluxxConfig, Table
 from .views import ImportTablesView
+
+
+class IndexViewTests(TestCase):
+
+    fixtures = ['initial.json']
+
+    def test_index_view(self):
+        """Assert additional context."""
+        response = self.client.get(reverse('index'))
+        self.assertEqual(len(response.context['export_jobs']), 1)
+        self.assertEqual(len(response.context['fluxx_configs']), 1)
+        self.assertTrue(all([isinstance(i, ExportJob) for i in response.context['export_jobs']]))
+        self.assertTrue(all([isinstance(i, FluxxConfig) for i in response.context['fluxx_configs']]))
 
 
 class ExportJobViewTests(TestCase):
