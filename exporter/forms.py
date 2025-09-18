@@ -1,8 +1,9 @@
+from django.core.exceptions import ValidationError
 from django.forms import ClearableFileInput, FileField, Form
 from django.forms.models import (BaseInlineFormSet, ModelForm,
                                  inlineformset_factory)
 
-from .models import ExportJob, Field, Table
+from .models import ExportJob, Field, Filter, Table
 
 
 class TableFieldFormset(inlineformset_factory(
@@ -45,10 +46,6 @@ class BaseTablesWithFields(BaseInlineFormSet):
                 if hasattr(form, "nested"):
                     if not any([c.instance.include_in_export for c in form.nested]):
                         form.add_error(None, 'You must add at least one field to this table.')
-            else:
-                if hasattr(form, "nested"):
-                    if any([c.instance.include_in_export for c in form.nested]):
-                        form.add_error(None, 'You cannot export fields without also exporting the parent table.')
 
     def is_valid(self):
         """Validate the nested formsets."""
@@ -81,6 +78,32 @@ ExportJobWithTables = inlineformset_factory(
     fields=('id', 'include_in_export',),
     extra=0,
     can_delete=False
+)
+
+
+class FilterForm(ModelForm):
+    class Meta:
+        model = Filter
+        fields = '__all__'
+
+    def clean_field_name(self):
+        """Ensure field name is in grant_request table."""
+        data = self.cleaned_data['field_name']
+        export_job = self.cleaned_data['export_job']
+        grant_request_table = Table.objects.get(name='grant_request', export_job=export_job)
+        grant_requested_fields = [field.name for field in Field.objects.filter(table=grant_request_table)]
+
+        if data not in grant_requested_fields:
+            raise ValidationError(f'"{data}" is not a field in the grant_request table.')
+
+        return data
+
+
+ExportJobWithFilters = inlineformset_factory(
+    ExportJob,
+    Filter,
+    form=FilterForm,
+    extra=2
 )
 
 

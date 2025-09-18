@@ -26,7 +26,7 @@ class Exporter(object):
         try:
             export_job = ExportJob.objects.get(pk=export_job_id)
             self.fluxx_config = export_job.fluxx_config
-            self.filter_string = export_job.filter_string
+            self.filters = export_job.filters.all()
             self.grant_ids = export_job.grant_ids
             self.export_format = export_job.export_format
             self.export_location = export_job.export_location
@@ -51,7 +51,7 @@ class Exporter(object):
 
             logging.debug('Exporting data for grant_request table')
 
-            filter_value = self.parse_filter(self.filter_string)
+            filter_value = self.parse_filter(self.filters)
             grant_ids = self.parse_grant_ids(self.grant_ids)
             field_names = self.parse_field_names(self.grant_request_table)
             relations = self.parse_related_fields(self.grant_request_table)
@@ -112,29 +112,28 @@ class Exporter(object):
         default_fields = ['model_documents']
         return default_fields + [c.name for c in table.fields.filter(include_in_export=True)]
 
-    def parse_filter(self, filter):
-        """Split the filter string into components.
-
-        If the filter does not have exactly three parts, separated by a pipe, it is not used.
+    def parse_filter(self, filters):
+        """Formats filters.
 
         Args:
-            filter (str): Filter string to be parsed.
+            filter (list): Filter objects.
 
         Returns:
-            filter_parts (list): parsed filter.
+            filter_parts (list or dict): parsed filter.
         """
-        logging.debug(f'Parsing filter {filter}')
-        filter_parts = None
-        if filter:
-            try:
-                filter_parts = filter.split('|', 2)
-                assert len(filter_parts) == 3
-            except AssertionError:
-                logging.error(f"Could not parse filter value {filter}")
-                raise Exception(f"Could not parse filter value {filter}")
+        logging.debug(f'Parsing filters {filters}')
+        filter_value = None
+        if filters:
+            filter_list = []
+            for f in filters:
+                filter_list.append([f.field_name, f.relator, f.value])
+            if len(filter_list) > 1:
+                filter_value = {"group_type": "and", "conditions": filter_list}
+            else:
+                filter_value = filter_list[0]
 
-        logging.debug(f'Filter {filter} parsed into parts {filter_parts}')
-        return filter_parts
+        logging.debug(f'Filter {filters} parsed into parts {filter_value}')
+        return filter_value
 
     def parse_grant_ids(self, grant_ids):
         """Split a string of Grant IDs into a list.

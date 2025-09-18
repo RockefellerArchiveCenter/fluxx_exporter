@@ -8,7 +8,8 @@ from django.views.generic import DetailView, FormView, TemplateView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
 
 from .exporters import Exporter
-from .forms import ExportJobForm, ExportJobWithTables, ImportTablesForm
+from .forms import (ExportJobForm, ExportJobWithFilters, ExportJobWithTables,
+                    ImportTablesForm)
 from .models import ExportJob, Field, Table
 
 
@@ -41,6 +42,7 @@ class CreateExportJobView(CreateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        context['filters'] = ExportJobWithFilters(**self.get_form_kwargs())
         context['formset'] = ExportJobWithTables(**self.get_form_kwargs())
         formset = context['formset']
         context['grant_request_forms'] = [
@@ -56,7 +58,9 @@ class CreateExportJobView(CreateView):
     def form_valid(self, form):
         """Creates Table objects and associates them with the export job."""
         context = self.get_context_data(form=form)
+        filters_formset = context['filters']
         tables_formset = context['formset']
+
         if tables_formset.is_valid():
             response = super().form_valid(form)
             for form in tables_formset:
@@ -70,14 +74,17 @@ class CreateExportJobView(CreateView):
                     if field.instance.related_table:
                         related_table, _ = Table.objects.get_or_create(
                             name=field.instance.related_table.name,
-                            export_job=self.object
-                        )
+                            export_job=self.object)
                     Field.objects.create(
                         name=field.instance.name,
                         include_in_export=field.instance.include_in_export,
                         related_table=related_table,
                         table=new_table)
-            return response
+
+            filters_formset.instance = self.object
+            if filters_formset.is_valid():
+                filters_formset.save()
+                return response
         else:
             return super().form_invalid(form)
 
@@ -89,6 +96,7 @@ class UpdateExportJobView(UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        context['filters'] = ExportJobWithFilters(**self.get_form_kwargs())
         context['formset'] = ExportJobWithTables(**self.get_form_kwargs())
         formset = context['formset']
         context['grant_request_forms'] = [
@@ -104,9 +112,13 @@ class UpdateExportJobView(UpdateView):
     def form_valid(self, form):
         context = self.get_context_data(form=form)
         tables_formset = context['formset']
-        if tables_formset.is_valid():
-            tables_formset.save()
-            return super().form_valid(form)
+        filters_formset = context['filters']
+
+        if tables_formset.is_valid() and filters_formset.is_valid():
+            response = super().form_valid(form)
+            for formset in [tables_formset, filters_formset]:
+                formset.save()
+            return response
         else:
             return super().form_invalid(form)
 

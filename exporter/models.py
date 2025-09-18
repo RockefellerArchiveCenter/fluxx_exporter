@@ -46,7 +46,6 @@ class ExportJob(models.Model):
     fluxx_config = models.ForeignKey(FluxxConfig, on_delete=models.CASCADE)
     export_location = models.CharField(max_length=255)
     export_format = models.CharField(max_length=10, choices=[('json', 'JSON'), ('xml', 'XML'), ('csv', 'CSV')])
-    filter_string = models.CharField(max_length=1000, null=True, blank=True)
     grant_ids = models.TextField(null=True, blank=True)
     amazon_s3_config = models.ForeignKey(AmazonS3Config, on_delete=models.SET_NULL, null=True, blank=True)
     sftp_config = models.ForeignKey(SFTPConfig, on_delete=models.SET_NULL, null=True, blank=True)
@@ -95,3 +94,58 @@ class Field(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class Filter(models.Model):
+    RELATORS = [
+        ("eq", "Equals"),
+        ("not-eq", "Is Not Equal"),
+        ("lt", "Less Than"),
+        ("lte", "Less Than or Equal"),
+        ("gt", "Greater Than"),
+        ("gte", "Greater Than or Equal"),
+        ("null", "Is Null"),
+        ("not-null", "Is Not Null"),
+        ("range", "Between"),
+        ("range-year-cal", "Between Calendar Years"),
+        ("yesterday", "Yesterday"),
+        ("today", "Today"),
+        ("tomorrow", "Tomorrow"),
+        ("last-n-days", "Last N Days"),
+        ("next-n-days", "Next N Days"),
+        ("days-n-ago", "N Days Ago"),
+        ("last-week", "Last Week"),
+        ("this-week", "This Week"),
+        ("next-week", "Next Week"),
+        ("last-n-weeks", "Last N Weeks"),
+        ("next-n-weeks", "Next N Weeks"),
+        ("weeks-n-ago", "N Weeks Ago"),
+        ("last-month", "Last Month"),
+        ("this-month", "This Month"),
+        ("next-month", "Next Month"),
+        ("last-n-months", "Last N Months"),
+        ("next-n-months", "Next N Months"),
+        ("months-n-ago", "N Months Ago"),
+        ("last-quarter", "Last Quarter"),
+        ("this-quarter", "This Quarter"),
+        ("next-quarter", "Next Quarter"),
+        ("last-n-quarters", "Last N Quarters"),
+        ("next-n-quarters", "Next N Quarters"),
+        ("quarters-n-ago", "N Quarters Ago"),
+        ("last-year", "Last Year"),
+        ("this-year", "This Year"),
+        ("next-year", "Next Year"),
+        ("last-n-years", "Last N Years"),
+        ("next-n-years", "Next N Years"),
+        ("years-n-ago", "N Years Ago"),
+    ]
+    export_job = models.ForeignKey(
+        ExportJob,
+        on_delete=models.CASCADE,
+        related_name='filters')
+    field_name = models.CharField(max_length=255)
+    relator = models.CharField(max_length=255, choices=RELATORS)
+    value = models.CharField(max_length=255)
+
+    def __str__(self):
+        return f'{self.field_name} {self.relator} {self.value}'
