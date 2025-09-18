@@ -61,12 +61,6 @@ class CreateExportJobView(CreateView):
         filters_formset = context['filters']
         tables_formset = context['formset']
 
-        if filters_formset.is_valid():
-            filters_formset.save()
-        else:
-            print(filters_formset.errors)
-            return super().form_invalid(form)
-
         if tables_formset.is_valid():
             response = super().form_valid(form)
             for form in tables_formset:
@@ -80,14 +74,17 @@ class CreateExportJobView(CreateView):
                     if field.instance.related_table:
                         related_table, _ = Table.objects.get_or_create(
                             name=field.instance.related_table.name,
-                            export_job=self.object
-                        )
+                            export_job=self.object)
                     Field.objects.create(
                         name=field.instance.name,
                         include_in_export=field.instance.include_in_export,
                         related_table=related_table,
                         table=new_table)
-            return response
+
+            filters_formset.instance = self.object
+            if filters_formset.is_valid():
+                filters_formset.save()
+                return response
         else:
             return super().form_invalid(form)
 
@@ -116,12 +113,14 @@ class UpdateExportJobView(UpdateView):
         context = self.get_context_data(form=form)
         tables_formset = context['formset']
         filters_formset = context['filters']
-        for formset in [tables_formset, filters_formset]:
-            if not formset.is_valid():
-                return super().form_invalid(form)
-            else:
+
+        if tables_formset.is_valid() and filters_formset.is_valid():
+            response = super().form_valid(form)
+            for formset in [tables_formset, filters_formset]:
                 formset.save()
-        return super().form_valid(form)
+            return response
+        else:
+            return super().form_invalid(form)
 
 
 class DeleteExportJobView(DeleteView):

@@ -7,6 +7,7 @@ and adds a scrollbar if the content exceeds that height. */
 .checkbox-list {
     max-height: 512px;
     overflow: auto;
+    position: relative;
 }
 
 .exportjob-buttons__wrapper {
@@ -22,8 +23,12 @@ and adds a scrollbar if the content exceeds that height. */
 }
 
 .exportjob__filter {
-    display: flex;
     gap: 20px;
+}
+
+.exportjob__filter legend {
+    background-color: #FFFFFF;
+    padding: 0 3px;
 }
 
 h2 {
