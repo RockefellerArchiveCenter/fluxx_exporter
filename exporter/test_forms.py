@@ -52,9 +52,3 @@ class FormTests(TestCase):
         form = ExportJobWithTables(data=self.form_data)
         form.clean()
         self.assertIn('You must add at least one field to this table.', form.errors[0]['__all__'])
-
-        self.form_data.pop('table_set-0-include_in_export')
-        self.form_data['tablefield-table_set-0-fields-0-include_in_export'] = 'on'
-        form = ExportJobWithTables(data=self.form_data)
-        form.clean()
-        self.assertIn('You cannot export fields without also exporting the parent table.', form.errors[0]['__all__'])

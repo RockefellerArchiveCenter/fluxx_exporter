@@ -19,10 +19,10 @@
         <dt class="summary-list__key">Export Format</dt>
         <dd class="summary-list__value">{{ object.export_format }}</dd>
     </div>
-    {% if object.filter_string %}
+    {% if object.filters %}
     <div class="summary-list__row">
-        <dt class="summary-list__key">Filter String</dt>
-        <dd class="summary-list__value">{{ object.filter_string }}</dd>
+        <dt class="summary-list__key">Filters</dt>
+        <dd class="summary-list__value">{% for filter in object.filters.all %}{{filter}}{% if not forloop.last %}<br />{% endif %}{% endfor %}</dd>
     </div>
     {% endif %}
     {% if object.grant_ids %}
