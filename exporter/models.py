@@ -24,11 +24,12 @@ class FluxxConfig(models.Model):
 
     def save(self):
         """Adds custom logic to fetch document types for Fluxx instance."""
+        response = super().save()
         client = FluxxClient(
             self.base_url,
             self.client_id,
             self.client_secret)
-        document_types = client.list_rows('model_document_type', field_names=['name', 'id'])  # TODO check this
+        document_types = client.list_rows('model_document_type', field_names=['name', 'id'])
 
         DocumentType.objects.all().delete()
         for document_type in document_types:
@@ -36,7 +37,7 @@ class FluxxConfig(models.Model):
                 fluxx_config=self,
                 name=document_type['name'],
                 document_id=document_type['id'])
-        return super().save()
+        return response
 
 
 class SFTPConfig(models.Model):
@@ -178,6 +179,7 @@ class Filter(models.Model):
 class DocumentType(models.Model):
     name = models.CharField(max_length=255)
     document_id = models.IntegerField()
+    fluxx_config = models.ForeignKey(FluxxConfig, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.name
