@@ -13,8 +13,6 @@ class FluxxClient(object):
     """Client for working with the Fluxx API"""
 
     def __init__(self, base_url, client_id, client_secret):
-        # Optional style parameter, generally best kept as 'Full'
-        # style = 'full'
         version = 'v2'
         base_url = base_url
         self.authenticate(
