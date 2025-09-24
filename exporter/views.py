@@ -8,9 +8,11 @@ from django.views.generic import DetailView, FormView, TemplateView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
 
 from .exporters import Exporter
-from .forms import (AmazonS3ConfigForm, ExportJobForm, ExportJobWithFilters,
+from .forms import (AmazonS3ConfigForm, ExportJobForm,
+                    ExportJobWithDocumentTypes, ExportJobWithFilters,
                     ExportJobWithTables, FluxxConfigForm, ImportTablesForm)
-from .models import AmazonS3Config, ExportJob, Field, FluxxConfig, Table
+from .models import (AmazonS3Config, DocumentType, ExportJob, Field,
+                     FluxxConfig, Table)
 
 
 class IndexView(TemplateView):
@@ -43,6 +45,7 @@ class CreateExportJobView(CreateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['filters'] = ExportJobWithFilters(**self.get_form_kwargs())
+        context['document_types'] = ExportJobWithDocumentTypes(**self.get_form_kwargs())
         context['formset'] = ExportJobWithTables(**self.get_form_kwargs())
         formset = context['formset']
         context['grant_request_forms'] = [
@@ -60,6 +63,7 @@ class CreateExportJobView(CreateView):
         context = self.get_context_data(form=form)
         filters_formset = context['filters']
         tables_formset = context['formset']
+        document_types_formset = context['document_types']
 
         if tables_formset.is_valid():
             response = super().form_valid(form)
@@ -81,6 +85,15 @@ class CreateExportJobView(CreateView):
                         related_table=related_table,
                         table=new_table)
 
+            for form in document_types_formset:
+                new_document_type, _ = DocumentType.objects.get_or_create(
+                    name=form.instance.name,
+                    document_id=form.instance.document_id,
+                    fluxx_config=form.instance.fluxx_config,
+                    export_job=self.object)
+                new_document_type.include_in_export = form.instance.include_in_export
+                new_document_type.save()
+
             filters_formset.instance = self.object
             if filters_formset.is_valid():
                 filters_formset.save()
@@ -97,6 +110,7 @@ class UpdateExportJobView(UpdateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['filters'] = ExportJobWithFilters(**self.get_form_kwargs())
+        context['document_types'] = ExportJobWithDocumentTypes(**self.get_form_kwargs())
         context['formset'] = ExportJobWithTables(**self.get_form_kwargs())
         formset = context['formset']
         context['grant_request_forms'] = [
@@ -113,10 +127,11 @@ class UpdateExportJobView(UpdateView):
         context = self.get_context_data(form=form)
         tables_formset = context['formset']
         filters_formset = context['filters']
+        document_types_formset = context['document_types']
 
-        if tables_formset.is_valid() and filters_formset.is_valid():
+        if tables_formset.is_valid() and filters_formset.is_valid() and document_types_formset.is_valid():
             response = super().form_valid(form)
-            for formset in [tables_formset, filters_formset]:
+            for formset in [tables_formset, filters_formset, document_types_formset]:
                 formset.save()
             return response
         else:
