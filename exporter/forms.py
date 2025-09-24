@@ -4,8 +4,8 @@ from django.forms import ClearableFileInput, FileField, Form, PasswordInput
 from django.forms.models import (BaseInlineFormSet, ModelForm,
                                  inlineformset_factory)
 
-from .models import (AmazonS3Config, ExportJob, Field, Filter, FluxxConfig,
-                     Table)
+from .models import (AmazonS3Config, DocumentType, ExportJob, Field, Filter,
+                     FluxxConfig, Table)
 
 
 class TableFieldFormset(inlineformset_factory(
@@ -122,6 +122,27 @@ class ExportJobForm(ModelForm):
                 <a href="https://github.com/RockefellerArchiveCenter/fluxx_exporter/tree/base?tab=readme-ov-file#add-filters">See filter documentation</a> for more information.',
             'grant_ids': 'Comma-separated list of Fluxx grant IDs to export.',
         }
+
+
+class DocumentTypeForm(ModelForm):
+    class Meta:
+        model = DocumentType
+        fields = '__all__'
+
+
+class ExportJobWithDocumentTypes(inlineformset_factory(
+        ExportJob,
+        DocumentType,
+        fields='__all__',
+        extra=0,
+        can_delete=False)):
+
+    def get_queryset(self, *args, **kwargs):
+        if self.instance.id:
+            queryset = DocumentType.objects.filter(export_job=self.instance)
+        else:
+            queryset = DocumentType.objects.filter(export_job__isnull=True)
+        return queryset
 
 
 class MultipleFileInput(ClearableFileInput):
