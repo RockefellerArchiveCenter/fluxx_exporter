@@ -72,6 +72,7 @@ class ExportJob(models.Model):
     export_location = models.CharField(max_length=255)
     export_format = models.CharField(max_length=10, choices=[('json', 'JSON'), ('xml', 'XML'), ('csv', 'CSV')])
     grant_ids = models.TextField(null=True, blank=True)
+    download_all_file_versions = models.BooleanField(default=False)
     amazon_s3_config = models.ForeignKey(AmazonS3Config, on_delete=models.SET_NULL, null=True, blank=True)
     sftp_config = models.ForeignKey(SFTPConfig, on_delete=models.SET_NULL, null=True, blank=True)
 
@@ -180,6 +181,12 @@ class DocumentType(models.Model):
     name = models.CharField(max_length=255)
     document_id = models.IntegerField()
     fluxx_config = models.ForeignKey(FluxxConfig, on_delete=models.CASCADE)
+    include_in_export = models.BooleanField(default=False)
+    export_job = models.ForeignKey(
+        ExportJob,
+        null=True,
+        blank=True,
+        on_delete=models.CASCADE)
 
     def __str__(self):
         return self.name
