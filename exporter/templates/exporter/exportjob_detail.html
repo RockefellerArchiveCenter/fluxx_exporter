@@ -19,7 +19,7 @@
         <dt class="summary-list__key">Export Format</dt>
         <dd class="summary-list__value">{{ object.export_format }}</dd>
     </div>
-    {% if object.filters %}
+    {% if object.filters.all %}
     <div class="summary-list__row">
         <dt class="summary-list__key">Filters</dt>
         <dd class="summary-list__value">{% for filter in object.filters.all %}{{filter}}{% if not forloop.last %}<br />{% endif %}{% endfor %}</dd>
@@ -44,6 +44,23 @@
     </div>
     {% endif %}
 </dl>
+
+<h2>Document Types</h2>
+{% if object.documenttype_set.all %}
+    {% if object.download_all_file_versions %}
+        <p>All document versions will be downloaded.</p>
+    {% else %}
+        <p>Only the most recent version of a document will be downloaded.</p>
+    {% endif %}
+    <p>The following document types will be downloaded:</p>
+    <ul>
+        {% for document_type in object.documenttype_set.all %}
+            <li>{{document_type.name}}</li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>No document types were selected for this export.</p>
+{% endif %}
 
 <h2>Grant Request Fields</h2>
 {% if object.grant_request_table %}

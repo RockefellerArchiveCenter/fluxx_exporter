@@ -19,6 +19,7 @@
 	{{ form.non_form_errors }}
 
 	{% for field in form %}
+		{% if field.name != 'download_all_file_versions' %}
 		<div class="input mb-10">
 			{{ field.label_tag }}
 				{{ field }}
@@ -31,6 +32,7 @@
 					{{field.help_text|safe}}
 				</div>
 		</div>
+		{% endif %}
 	{% endfor %}
 
 	{{ filters.management_form }}
@@ -63,6 +65,26 @@
 			{% endfor %}
 		</fieldset>
 	{% endfor %}
+
+	<h2>Select Document Types</h2>
+	{% for field in form %}
+		{% if field.name == 'download_all_file_versions' %}
+		<div class="input-group mb-10">
+			<input
+                type="checkbox"
+                class="checkbox checkbox--blue"
+                id="{{ field.auto_id }}"
+                name="{{ field.html_name }}"
+                {% if form.download_all_file_versions.value %}checked="checked"{% endif %}
+            />
+            <label for="{{ field.id_for_label }}" class="checkbox--blue">
+                {{field.label}}
+            </label>
+        </div>
+		{% endif %}
+	{% endfor %}
+	<p>Select document type/s to include in export job.</p>
+	{% include 'exporter/includes/inline_document_type_form.html' with form=document_types %}
 
 	<h2>Grant Request Fields</h2>
 

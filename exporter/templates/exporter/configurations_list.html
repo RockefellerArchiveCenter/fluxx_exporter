@@ -14,7 +14,7 @@
             <ol>
                 {% for config in fluxx_configs %}
                     <li>
-                        <a href="{% url 'exportjob_detail' pk=config.pk %}">{{config.name}}</a>
+                        <a href="{% url 'fluxxconfig_detail' pk=config.pk %}">{{config.name}}</a>
                     </li>
                 {% endfor %}
             </ol>
@@ -26,7 +26,7 @@
             <ol>
                 {% for config in amazon_s3_configs %}
                     <li>
-                        <a href="{% url 'exportjob_detail' pk=config.pk %}">{{config.name}}</a>
+                        <a href="{% url 'amazons3config_detail' pk=config.pk %}">{{config.name}}</a>
                     </li>
                 {% endfor %}
             </ol>

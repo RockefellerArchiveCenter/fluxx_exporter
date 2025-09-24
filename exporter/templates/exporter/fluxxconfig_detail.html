@@ -13,6 +13,15 @@
     </div>
 </dl>
 
+{% if object.documenttype_set.all %}
+<h2>Associated Document Types</h2>
+<ol>
+    {% for document_type in object.documenttype_set.all %}
+        <li>{{document_type}}</li>
+    {% endfor %}
+</ol>
+{% endif %}
+
 <div class="flex exportjob-buttons__wrapper">
     <div>
         <a class="btn btn--md btn--light-blue" href="{% url 'fluxxconfig_update' pk=object.pk %}">Edit</a>
