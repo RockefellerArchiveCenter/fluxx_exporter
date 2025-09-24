@@ -18,7 +18,7 @@
                         name="{{ field.include_in_export.html_name }}"
                         {% if field.include_in_export.value %}checked="checked"{% endif %}
                 />
-                <label for="{{ field.name.id_for_label }}" class="checkbox--blue">
+                <label for="{{ field.include_in_export.auto_id }}" class="checkbox--blue">
                     {{field.name.value}}
                 </label>
                 <input type="hidden" name="{{field.export_job.html_name}}" value={{field.export_job.value}} id="{{field.export_job.auto_id}}">
