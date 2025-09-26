@@ -127,13 +127,13 @@ class ExportJobForm(ModelForm):
 class DocumentTypeForm(ModelForm):
     class Meta:
         model = DocumentType
-        fields = '__all__'
+        fields = ('id', 'include_in_export')
 
 
 class ExportJobWithDocumentTypes(inlineformset_factory(
         ExportJob,
         DocumentType,
-        fields='__all__',
+        fields=('id', 'include_in_export'),
         extra=0,
         can_delete=False)):
 

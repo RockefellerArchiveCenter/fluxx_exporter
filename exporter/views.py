@@ -34,6 +34,7 @@ class ExportJobView(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['include_related_tables'] = self.object.related_tables.filter(include_in_export=True)
+        context['include_document_types'] = self.object.documenttype_set.filter(include_in_export=True)
         return context
 
 
@@ -85,14 +86,15 @@ class CreateExportJobView(CreateView):
                         related_table=related_table,
                         table=new_table)
 
-            for form in document_types_formset:
-                new_document_type, _ = DocumentType.objects.get_or_create(
-                    name=form.instance.name,
-                    document_id=form.instance.document_id,
-                    fluxx_config=form.instance.fluxx_config,
-                    export_job=self.object)
-                new_document_type.include_in_export = form.instance.include_in_export
-                new_document_type.save()
+            if document_types_formset.is_valid():
+                for form in document_types_formset:
+                    new_document_type, _ = DocumentType.objects.get_or_create(
+                        name=form.instance.name,
+                        document_id=form.instance.document_id,
+                        fluxx_config=form.instance.fluxx_config,
+                        export_job=self.object)
+                    new_document_type.include_in_export = form.instance.include_in_export
+                    new_document_type.save()
 
             filters_formset.instance = self.object
             if filters_formset.is_valid():

@@ -46,7 +46,7 @@
 </dl>
 
 <h2>Document Types</h2>
-{% if object.documenttype_set.all %}
+{% if include_document_types %}
     {% if object.download_all_file_versions %}
         <p>All document versions will be downloaded.</p>
     {% else %}
@@ -54,7 +54,7 @@
     {% endif %}
     <p>The following document types will be downloaded:</p>
     <ul>
-        {% for document_type in object.documenttype_set.all %}
+        {% for document_type in include_document_types %}
             <li>{{document_type.name}}</li>
         {% endfor %}
     </ul>
