@@ -5,7 +5,8 @@ from django.http import HttpRequest
 from django.test import TestCase
 from django.urls import reverse
 
-from .forms import ExportJobWithFilters, ExportJobWithTables
+from .forms import (ExportJobWithDocumentTypes, ExportJobWithFilters,
+                    ExportJobWithTables)
 from .models import AmazonS3Config, ExportJob, Field, FluxxConfig, Table
 from .views import ImportTablesView
 
@@ -34,7 +35,7 @@ class ConfigurationViewTests(TestCase):
         self.assertTrue(all([isinstance(i, FluxxConfig) for i in response.context['fluxx_configs']]))
 
 
-class ExportJobViewTests(TestCase):
+class ExportJobViewTests(TestCase):  # TODO update these tests
 
     fixtures = ['initial.json']
 
@@ -48,6 +49,8 @@ class ExportJobViewTests(TestCase):
             'amazon_s3_config': '1',
             'filters-TOTAL_FORMS': '0',
             'filters-INITIAL_FORMS': '1',
+            'documenttype_set-TOTAL_FORMS': '0',
+            'documenttype_set-INITIAL_FORMS': '2',
             'table_set-TOTAL_FORMS': '2',
             'table_set-INITIAL_FORMS': '2',
             'table_set-MIN_NUM_FORMS': '0',
@@ -75,6 +78,7 @@ class ExportJobViewTests(TestCase):
         response = self.client.get(reverse('exportjob_create'))
         self.assertIsInstance(response.context['formset'], ExportJobWithTables)
         self.assertIsInstance(response.context['filters'], ExportJobWithFilters)
+        self.assertIsInstance(response.context['document_types'], ExportJobWithDocumentTypes)
         self.assertIn('grant_request_forms', response.context)
         self.assertIn('connected_table_forms', response.context)
 
@@ -89,6 +93,7 @@ class ExportJobViewTests(TestCase):
         response = self.client.get(reverse('exportjob_update', kwargs={'pk': export_job.pk}))
         self.assertIsInstance(response.context['formset'], ExportJobWithTables)
         self.assertIsInstance(response.context['filters'], ExportJobWithFilters)
+        self.assertIsInstance(response.context['document_types'], ExportJobWithDocumentTypes)
         self.assertIn('grant_request_forms', response.context)
         self.assertIn('connected_table_forms', response.context)
 

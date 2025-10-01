@@ -46,8 +46,10 @@ class ExportTests(TestCase):
     @patch('exporter.exporters.Exporter.parse_related_fields')
     @patch('exporter.exporters.Exporter.save_data')
     @patch('exporter.exporters.Exporter.save_document')
+    @patch('exporter.exporters.Exporter.downloadable_grant_docs')
     @patch('exporter.clients.FluxxClient.__init__')
     @patch('exporter.clients.FluxxClient.list_rows')
+    @patch('exporter.clients.FluxxClient.get_document_info')
     @patch('exporter.clients.FluxxClient.download_document')
     @patch('exporter.clients.AmazonS3Client.__init__')
     @patch('exporter.clients.AmazonS3Client.upload_directory')
@@ -56,8 +58,10 @@ class ExportTests(TestCase):
             mock_s3_upload,
             mock_s3_init,
             mock_download_doc,
+            mock_document_info,
             mock_list_rows,
             mock_fluxx,
+            mock_downloadable_docs,
             mock_save_document,
             mock_save_data,
             mock_parse_related,
@@ -70,14 +74,19 @@ class ExportTests(TestCase):
         export_job = ExportJob.objects.all().first()
         fluxx_config = FluxxConfig.objects.all().first()
         s3_config = s3_config = AmazonS3Config.objects.all().first()
-        table = Table.objects.all().first()
+        table = Table.objects.get(pk=1)
         export_dir = Path(export_job.export_location, f"{table.name}_{record_id}")
         model_doc_id = "12345"
-        download_response = ("1", "2")
+        document_file_name = "Cover Letter.docx"
+        download_response = "download response"
         mock_fluxx.return_value = None
         mock_download_doc.return_value = download_response
+        document_info = {"id": model_doc_id, "document_file_name": document_file_name}
+        mock_document_info.return_value = document_info
+        mock_downloadable_docs.return_value = [{"id": model_doc_id, "document_file_name": document_file_name}]
         mock_s3_init.return_value = None
         mock_list_rows.return_value = [{"id": record_id, 'model_documents': [model_doc_id]}]
+        mock_parse_fields.return_value = ['program_organization_id']
 
         output = Exporter(export_job.pk).fluxx_export()
 
@@ -104,9 +113,9 @@ class ExportTests(TestCase):
             export_job.export_format,
             export_dir)
 
-        mock_save_document.assert_called_once_with(*download_response, export_dir)
-
+        mock_downloadable_docs.assert_called_once_with([document_info])
         mock_download_doc.assert_called_once_with(model_doc_id)
+        mock_save_document.assert_called_once_with(document_file_name, download_response, export_dir)
 
         mock_s3_init.assert_called_once_with(
             s3_config.bucket,
@@ -125,13 +134,10 @@ class ExportTests(TestCase):
     def test_parse_related_fields(self):
         """"Assert related fields are parsed as expected."""
         export_job = ExportJob.objects.all().first()
-        table = Table.objects.all().first()
-        # field = Field.objects.all().first()
-        # TODO update fixture
-        # Add another entity, set as related, add fields that have include_in_export flag
+        table = Table.objects.get(pk=1)
         exporter = Exporter(export_job.pk)
         result = exporter.parse_related_fields(table)
-        self.assertEqual(result, {})
+        self.assertEqual(result, {'program_organization_id': ['name']})
 
         Field.objects.all().delete()
         result = exporter.parse_related_fields(table)
@@ -202,26 +208,60 @@ class ExportTests(TestCase):
         exporter.save_document(doc_name, response, Path(exporter.export_location))
         self.assertTrue(Path(exporter.export_location, doc_name).is_file())
 
+    def test_downloadable_grant_docs(self):
+        export_job = ExportJob.objects.all().first()
+        exporter = Exporter(export_job.pk)
+        input = [{"id": 1, "model_document_master_id": 1, "seq_number": 1},
+                 {"id": 2, "model_document_master_id": 1, "seq_number": 2},
+                 {"id": 3, "model_document_master_id": 2, "seq_number": 1},
+                 {"id": 4, "model_document_master_id": 3, "seq_number": 1},]
+        expected = [{"id": 2, "model_document_master_id": 1, "seq_number": 2},
+                    {"id": 3, "model_document_master_id": 2, "seq_number": 1},]
+        output = exporter.downloadable_grant_docs(input)
+        self.assertEqual(output, expected)
+
+        exporter.download_all_file_versions = True
+        input = [{"id": 1, "model_document_master_id": 1, "seq_number": 1},
+                 {"id": 2, "model_document_master_id": 1, "seq_number": 2},
+                 {"id": 3, "model_document_master_id": 2, "seq_number": 1},
+                 {"id": 4, "model_document_master_id": 3, "seq_number": 1},]
+        expected = [{"id": 1, "model_document_master_id": 1, "seq_number": 1},
+                    {"id": 2, "model_document_master_id": 1, "seq_number": 2},
+                    {"id": 3, "model_document_master_id": 2, "seq_number": 1},]
+        output = exporter.downloadable_grant_docs(input)
+        self.assertEqual(output, expected)
+
+    def test_document_is_latest_version(self):
+        export_job = ExportJob.objects.all().first()
+        exporter = Exporter(export_job.pk)
+        grant_docs = [{"id": 1, "model_document_master_id": 1, "seq_number": 1},
+                      {"id": 2, "model_document_master_id": 1, "seq_number": 2},
+                      {"id": 3, "model_document_master_id": 2, "seq_number": 1},
+                      {"id": 4, "model_document_master_id": 3, "seq_number": 1},]
+        for input, expected in [
+                ({"id": 2, "model_document_master_id": 1, "seq_number": 2}, True),
+                ({"id": 1, "model_document_master_id": 1, "seq_number": 1}, False),
+                ({"id": 4, "model_document_master_id": 3, "seq_number": 1}, True)]:
+            output = exporter.document_is_lastest_version(input, grant_docs)
+            self.assertEqual(output, expected)
+
     def test_write_csv(self):
         export_job = ExportJob.objects.all().first()
         exporter = Exporter(export_job.pk)
         exporter.write_csv(self.record, exporter.export_location)
         self.assertTrue(Path(exporter.export_location, f'{self.record["id"]}.csv').is_file())
-        # TODO assert content?
 
     def test_write_json(self):
         export_job = ExportJob.objects.all().first()
         exporter = Exporter(export_job.pk)
         exporter.write_json(self.record, exporter.export_location)
         self.assertTrue(Path(exporter.export_location, f'{self.record["id"]}.json').is_file())
-        # TODO assert content?
 
     def test_write_xml(self):
         export_job = ExportJob.objects.all().first()
         exporter = Exporter(export_job.pk)
         exporter.write_xml(self.record, exporter.export_location)
         self.assertTrue(Path(exporter.export_location, f'{self.record["id"]}.xml').is_file())
-        # TODO assert content?
 
     def tearDown(self):
         rmtree('/tmp/exports/', ignore_errors=True)

@@ -138,9 +138,21 @@ class FluxxClientTests(SimpleTestCase):
 
     @patch('requests.Session.post')
     @patch('requests.Session.get')
-    @patch('exporter.clients.FluxxClient.get')
-    def test_download_document(self, mock_client_get, mock_get, mock_post):
+    def test_download_document(self, mock_get, mock_post):
         """Asserts calls to Fluxx API and correct return from function."""
+
+        mock_post.return_value.json.return_value = {"access_token": self.access_token}
+        client = FluxxClient(self.base_url, self.client_id, self.client_secret)
+
+        document_id = 11218402
+        client.download_document(document_id)
+        mock_get.called_once_with(
+            f'{self.base_url}/api/rest/v2/model_document_download/{document_id}',
+            stream=True)
+
+    @patch('requests.Session.post')
+    @patch('exporter.clients.FluxxClient.get')
+    def test_get_document_info(self, mock_client_get, mock_post):
 
         mock_post.return_value.json.return_value = {"access_token": self.access_token}
         client = FluxxClient(self.base_url, self.client_id, self.client_secret)
@@ -148,16 +160,11 @@ class FluxxClientTests(SimpleTestCase):
         document_id = 11218402
         file_name = 'TestLineItems.csv'
         mock_client_get.return_value = {'model_document': {'id': document_id, 'document_file_name': file_name}}
-        doc = client.download_document(document_id)
+        resp = client.get_document_info(document_id)
         mock_client_get.assert_called_once_with(
             f'https://fluxx.io/api/rest/v2/model_document/{document_id}',
-            params={'cols': '["document_file_name"]'})
-        mock_get.called_once_with(
-            f'{self.base_url}/api/rest/v2/model_document_download/{document_id}',
-            stream=True)
-        self.assertIsInstance(doc, tuple)
-        self.assertEqual(len(doc), 2)
-        self.assertEqual(doc[0], file_name)
+            params={'cols': '["document_file_name", "model_document_master_id", "seq_number"]'})
+        self.assertEqual(resp, {'id': document_id, 'document_file_name': file_name})
 
 
 class AmazonS3ClientTests(SimpleTestCase):
