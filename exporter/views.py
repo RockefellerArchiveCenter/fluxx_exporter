@@ -34,7 +34,7 @@ class ExportJobView(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['include_related_tables'] = self.object.related_tables.filter(include_in_export=True)
-        context['include_document_types'] = self.object.documenttype_set.filter(include_in_export=True)
+        context['include_document_types'] = self.object.document_types.filter(include_in_export=True)
         return context
 
 

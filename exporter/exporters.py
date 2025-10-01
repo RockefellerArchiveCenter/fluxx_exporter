@@ -32,7 +32,7 @@ class Exporter(object):
             self.export_location = export_job.export_location
             self.amazon_s3_config = export_job.amazon_s3_config
             self.sftp_config = export_job.sftp_config
-            self.document_types = export_job.documenttype_set.filter(include_in_export=True)
+            self.document_types = export_job.document_types.filter(include_in_export=True)
             self.download_all_file_versions = export_job.download_all_file_versions
             self.grant_request_table = export_job.grant_request_table
         except ObjectDoesNotExist:

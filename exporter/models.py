@@ -186,7 +186,8 @@ class DocumentType(models.Model):
         ExportJob,
         null=True,
         blank=True,
-        on_delete=models.CASCADE)
+        on_delete=models.CASCADE,
+        related_name='document_types')
 
     def __str__(self):
         return self.name

@@ -13,10 +13,10 @@
     </div>
 </dl>
 
-{% if object.documenttype_set.all %}
+{% if object.document_types.all %}
 <h2>Associated Document Types</h2>
 <ol>
-    {% for document_type in object.documenttype_set.all %}
+    {% for document_type in object.document_types.all %}
         <li>{{document_type}}</li>
     {% endfor %}
 </ol>
