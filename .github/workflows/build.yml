@@ -23,7 +23,7 @@ jobs:
           ref: ${{ github.ref }}
 
       - name: Set up Python
-        uses: actions/setup-python@v5.6.0
+        uses: actions/setup-python@v6.0.0
         with:
           python-version: '3.11'
           cache: pip
@@ -47,7 +47,7 @@ jobs:
         run: |
           Compress-Archive -Path "${{ env.DIST_NAME }}" -DestinationPath "${{ env.DIST_NAME }}.zip"
 
-      - uses: softprops/action-gh-release@v2.3.2
+      - uses: softprops/action-gh-release@v2.3.3
         if: github.ref_type == 'tag'
         with:
           files: ${{ env.DIST_NAME }}.zip
