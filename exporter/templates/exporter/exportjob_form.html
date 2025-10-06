@@ -83,7 +83,7 @@
         </div>
 		{% endif %}
 	{% endfor %}
-	<p>Select document type/s to include in export job.</p>
+	<p>Select document type/s to include in export job. Only documents matching selected document types will be downloaded.</p>
 	{% include 'exporter/includes/document_type_form.html' with form=document_types %}
 
 	<h2>Grant Request Fields</h2>
