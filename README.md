@@ -109,6 +109,8 @@ Optionally, include:
 - A comma-separated list of specific grant IDs to export
 - A filter that limits which grant records to export (see [Add Filters](#add-filters) below)
 - Amazon S3 configuration
+- An indication of which document versions to download
+- Selected document types you wish to download
 
 #### Add Filters
 Fluxx API filters allow users to export only records that meet certain criteria. Filters in Fluxx Exporter consist of three parts: 
