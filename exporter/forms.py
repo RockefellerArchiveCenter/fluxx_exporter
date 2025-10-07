@@ -1,9 +1,11 @@
+
 from django.core.exceptions import ValidationError
-from django.forms import ClearableFileInput, FileField, Form
+from django.forms import ClearableFileInput, FileField, Form, PasswordInput
 from django.forms.models import (BaseInlineFormSet, ModelForm,
                                  inlineformset_factory)
 
-from .models import ExportJob, Field, Filter, Table
+from .models import (AmazonS3Config, DocumentType, ExportJob, Field, Filter,
+                     FluxxConfig, Table)
 
 
 class TableFieldFormset(inlineformset_factory(
@@ -119,7 +121,29 @@ class ExportJobForm(ModelForm):
                 "field name|relator|value". E.g. "grant_closed_at|range-year-cal|2010-2024". <br> \
                 <a href="https://github.com/RockefellerArchiveCenter/fluxx_exporter/tree/base?tab=readme-ov-file#add-filters">See filter documentation</a> for more information.',
             'grant_ids': 'Comma-separated list of Fluxx grant IDs to export.',
+            'download_all_file_versions': 'If left unchecked, only the latest version of selected documents will be downloaded.',
         }
+
+
+class DocumentTypeForm(ModelForm):
+    class Meta:
+        model = DocumentType
+        fields = ('id', 'include_in_export')
+
+
+class ExportJobWithDocumentTypes(inlineformset_factory(
+        ExportJob,
+        DocumentType,
+        fields=('id', 'include_in_export'),
+        extra=0,
+        can_delete=False)):
+
+    def get_queryset(self, *args, **kwargs):
+        if self.instance.id:
+            queryset = DocumentType.objects.filter(export_job=self.instance)
+        else:
+            queryset = DocumentType.objects.filter(export_job__isnull=True)
+        return queryset
 
 
 class MultipleFileInput(ClearableFileInput):
@@ -146,3 +170,28 @@ class ImportTablesForm(Form):
     """Form for importing tables and fields from API documentation."""
     grant_request_file = FileField(label="Grant Request HTML file")
     related_tables_files = MultipleFileField(label="Related Tables HTML files", required=False)
+
+
+class FluxxConfigForm(ModelForm):
+    class Meta:
+        model = FluxxConfig
+        fields = '__all__'
+        help_texts = {
+            'base_url': 'The base URL for the Fluxx instance.',
+            'client_id': 'An identifier for a Fluxx OAuth client authorized to access the API of the Fluxx instance.',
+            'client_secret': 'The secret key associated with your OAuth client.',
+        }
+        widgets = {
+            'client_id': PasswordInput(),
+            'client_secret': PasswordInput(),
+        }
+
+
+class AmazonS3ConfigForm(ModelForm):
+    class Meta:
+        model = AmazonS3Config
+        fields = '__all__'
+        widgets = {
+            'access_key_id': PasswordInput(),
+            'secret_key': PasswordInput(),
+        }

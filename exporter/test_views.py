@@ -5,12 +5,37 @@ from django.http import HttpRequest
 from django.test import TestCase
 from django.urls import reverse
 
-from .forms import ExportJobWithFilters, ExportJobWithTables
-from .models import ExportJob, Field, Table
+from .forms import (ExportJobWithDocumentTypes, ExportJobWithFilters,
+                    ExportJobWithTables)
+from .models import AmazonS3Config, ExportJob, Field, FluxxConfig, Table
 from .views import ImportTablesView
 
 
-class ExportJobViewTests(TestCase):
+class IndexViewTests(TestCase):
+
+    fixtures = ['initial.json']
+
+    def test_index_view(self):
+        """Assert additional context."""
+        response = self.client.get(reverse('index'))
+        self.assertEqual(len(response.context['export_jobs']), 1)
+        self.assertTrue(all([isinstance(i, ExportJob) for i in response.context['export_jobs']]))
+
+
+class ConfigurationViewTests(TestCase):
+
+    fixtures = ['initial.json']
+
+    def test_index_view(self):
+        """Assert additional context."""
+        response = self.client.get(reverse('configurations_list'))
+        self.assertEqual(len(response.context['amazon_s3_configs']), 1)
+        self.assertEqual(len(response.context['fluxx_configs']), 1)
+        self.assertTrue(all([isinstance(i, AmazonS3Config) for i in response.context['amazon_s3_configs']]))
+        self.assertTrue(all([isinstance(i, FluxxConfig) for i in response.context['fluxx_configs']]))
+
+
+class ExportJobViewTests(TestCase):  # TODO update these tests
 
     fixtures = ['initial.json']
 
@@ -24,6 +49,8 @@ class ExportJobViewTests(TestCase):
             'amazon_s3_config': '1',
             'filters-TOTAL_FORMS': '0',
             'filters-INITIAL_FORMS': '1',
+            'document_types-TOTAL_FORMS': '0',
+            'document_types-INITIAL_FORMS': '2',
             'table_set-TOTAL_FORMS': '2',
             'table_set-INITIAL_FORMS': '2',
             'table_set-MIN_NUM_FORMS': '0',
@@ -51,6 +78,7 @@ class ExportJobViewTests(TestCase):
         response = self.client.get(reverse('exportjob_create'))
         self.assertIsInstance(response.context['formset'], ExportJobWithTables)
         self.assertIsInstance(response.context['filters'], ExportJobWithFilters)
+        self.assertIsInstance(response.context['document_types'], ExportJobWithDocumentTypes)
         self.assertIn('grant_request_forms', response.context)
         self.assertIn('connected_table_forms', response.context)
 
@@ -65,6 +93,7 @@ class ExportJobViewTests(TestCase):
         response = self.client.get(reverse('exportjob_update', kwargs={'pk': export_job.pk}))
         self.assertIsInstance(response.context['formset'], ExportJobWithTables)
         self.assertIsInstance(response.context['filters'], ExportJobWithFilters)
+        self.assertIsInstance(response.context['document_types'], ExportJobWithDocumentTypes)
         self.assertIn('grant_request_forms', response.context)
         self.assertIn('connected_table_forms', response.context)
 
@@ -86,16 +115,24 @@ class ExportJobViewTests(TestCase):
         resp = self.client.get(reverse('exportjob_run', kwargs={'pk': export_job.pk}))
         mock_init.assert_called_once_with(export_job.pk)
         mock_export.assert_called_once_with()
-        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp.status_code, 302)
         success_messages = list(get_messages(resp.wsgi_request))
         self.assertEqual(len(success_messages), 1)
         self.assertEqual(success_messages[0].level, SUCCESS)
         self.assertEqual(str(success_messages[0]), 'Export completed successfully.')
+        print(list(get_messages(resp.wsgi_request)))
 
+    @patch('exporter.exporters.Exporter.fluxx_export')
+    @patch('exporter.exporters.Exporter.__init__')
+    def test_run_export_job_view_with_error(self, mock_init, mock_export):
+        """Assert view calls Exporter class and fluxx_export method with correct arguments for error."""
+
+        mock_init.return_value = None
+        export_job = ExportJob.objects.all().first()
         error = 'This is a detailed error message'
         mock_export.return_value = False, error
         resp = self.client.get(reverse('exportjob_run', kwargs={'pk': export_job.pk}))
-        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp.status_code, 302)
         error_messages = list(get_messages(resp.wsgi_request))
         self.assertEqual(len(error_messages), 1)
         self.assertEqual(error_messages[0].level, ERROR)

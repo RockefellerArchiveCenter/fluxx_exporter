@@ -13,8 +13,6 @@ class FluxxClient(object):
     """Client for working with the Fluxx API"""
 
     def __init__(self, base_url, client_id, client_secret):
-        # Optional style parameter, generally best kept as 'Full'
-        # style = 'full'
         version = 'v2'
         base_url = base_url
         self.authenticate(
@@ -123,28 +121,34 @@ class FluxxClient(object):
             logging.debug(f'Params: {params}')
             yield from self.list(f"{self.api_url}{table_name}", params=params)
 
-    def download_document(self, document_id):
-        """Downloads documents by ID.
+    def get_document_info(self, document_id):
+        """Gets information for a document by ID.
 
         Args:
             document_id (str): ID for a document
 
         Returns:
-            document_name, file (str, streaming file): document name and a streaming file object.
+            document_info (dict): Information about the specified document
         """
-        logging.debug(f'Fetching document {document_id}')
+        logging.debug(f'Fetching document information for {document_id}')
         document_id = str(document_id)
-        download_params = {'cols': json.dumps(["document_file_name"])}
+        params = {'cols': json.dumps(["document_file_name", "model_document_master_id", "seq_number"])}
 
-        # Get the filename
-        document_info = self.get(f"{self.api_url}model_document/{document_id}", params=download_params)
-        document_name = document_info['model_document']['document_file_name']
+        return self.get(f"{self.api_url}model_document/{document_id}", params=params)['model_document']
 
-        # Get the file object
+    def download_document(self, document_id,):
+        """Downloads a document by ID.
+
+        Args:
+            document_id (str): ID for a document
+
+        Returns:
+            file (streaming file): streaming file object.
+        """
         document_download_url = f"{self.api_url}model_document_download/{document_id}"
         logging.debug(document_download_url)
 
-        return document_name, self.session.get(document_download_url, stream=True)
+        return self.session.get(document_download_url, stream=True)
 
 
 class SFTPClient(object):

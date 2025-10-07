@@ -3,6 +3,8 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 from django.urls import reverse
 
+from .clients import FluxxClient
+
 
 class User(AbstractUser):
     pass
@@ -17,9 +19,29 @@ class FluxxConfig(models.Model):
     def __str__(self):
         return self.name
 
+    def get_absolute_url(self):
+        return reverse('fluxxconfig_detail', kwargs={'pk': self.pk})
+
+    def save(self):
+        """Adds custom logic to fetch document types for Fluxx instance."""
+        response = super().save()
+        client = FluxxClient(
+            self.base_url,
+            self.client_id,
+            self.client_secret)
+        document_types = client.list_rows('model_document_type', field_names=['name', 'id'])
+
+        DocumentType.objects.all().delete()
+        for document_type in document_types:
+            DocumentType.objects.create(
+                fluxx_config=self,
+                name=document_type['name'],
+                document_id=document_type['id'])
+        return response
+
 
 class SFTPConfig(models.Model):
-    name = models.CharField(max_length=100, default='SFTP Config')
+    name = models.CharField(max_length=100)
     host = models.CharField(max_length=100)
     port = models.IntegerField(default=22)
     username = models.CharField(max_length=100)
@@ -31,7 +53,7 @@ class SFTPConfig(models.Model):
 
 
 class AmazonS3Config(models.Model):
-    name = models.CharField(max_length=100, default='S3 Config')
+    name = models.CharField(max_length=100)
     bucket = models.CharField(max_length=100)
     access_key_id = models.CharField(max_length=100)
     secret_key = models.CharField(max_length=100)
@@ -40,6 +62,9 @@ class AmazonS3Config(models.Model):
     def __str__(self):
         return self.name
 
+    def get_absolute_url(self):
+        return reverse('amazons3config_detail', kwargs={'pk': self.pk})
+
 
 class ExportJob(models.Model):
     name = models.CharField(max_length=255)
@@ -47,6 +72,7 @@ class ExportJob(models.Model):
     export_location = models.CharField(max_length=255)
     export_format = models.CharField(max_length=10, choices=[('json', 'JSON'), ('xml', 'XML'), ('csv', 'CSV')])
     grant_ids = models.TextField(null=True, blank=True)
+    download_all_file_versions = models.BooleanField(default=False)
     amazon_s3_config = models.ForeignKey(AmazonS3Config, on_delete=models.SET_NULL, null=True, blank=True)
     sftp_config = models.ForeignKey(SFTPConfig, on_delete=models.SET_NULL, null=True, blank=True)
 
@@ -149,3 +175,22 @@ class Filter(models.Model):
 
     def __str__(self):
         return f'{self.field_name} {self.relator} {self.value}'
+
+
+class DocumentType(models.Model):
+    name = models.CharField(max_length=255)
+    document_id = models.IntegerField()
+    fluxx_config = models.ForeignKey(FluxxConfig, on_delete=models.CASCADE)
+    include_in_export = models.BooleanField(default=False)
+    export_job = models.ForeignKey(
+        ExportJob,
+        null=True,
+        blank=True,
+        on_delete=models.CASCADE,
+        related_name='document_types')
+
+    class Meta:
+        ordering = ['name']
+
+    def __str__(self):
+        return self.name

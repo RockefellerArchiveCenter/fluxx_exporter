@@ -10,9 +10,9 @@
           <li class="nav__item btn--navy">
             <a
               class="nav__link"
-              href="{% url 'admin:index' %}"
+              href="{% url 'configurations_list' %}"
               id="admin">
-              Admin
+              Configure
             </a>
           </li>
           <li class="nav__item btn--navy">
@@ -28,7 +28,7 @@
               class="nav__link"
               href="{% url 'exportjob_create' %}"
               id="create-export">
-              Create Export
+              Export
             </a>
           </li>
           <li class="nav__item btn--navy">
@@ -54,9 +54,9 @@
             <li>
               <a
                 class="btn btn--navy dropdown__btn dropdown__btn--mobile"
-                href="{% url 'admin:index' %}"
+                href="{% url 'configurations_list' %}"
                 tabindex="-1">
-                Admin
+                Configure
               </a>
             </li>
             <li>
@@ -72,7 +72,7 @@
                 class="btn btn--navy dropdown__btn dropdown__btn--mobile"
                 href="{% url 'exportjob_create' %}"
                 tabindex="-1">
-                Create Export
+                Export
               </a>
             </li>
             <li>

@@ -32,6 +32,8 @@ class Exporter(object):
             self.export_location = export_job.export_location
             self.amazon_s3_config = export_job.amazon_s3_config
             self.sftp_config = export_job.sftp_config
+            self.document_types = export_job.document_types.filter(include_in_export=True)
+            self.download_all_file_versions = export_job.download_all_file_versions
             self.grant_request_table = export_job.grant_request_table
         except ObjectDoesNotExist:
             logging.error(f"Could not find export job configuration for id {export_job_id}.")
@@ -73,11 +75,13 @@ class Exporter(object):
                 except Exception as e:
                     logging.error(f'Error exporting {self.export_format} to {str(record_path)}: {e}')
                     raise Exception(f'Error exporting {self.export_format} to {str(record_path)}: {e}')
-                for doc_id in record.get('model_documents', []):
-                    logging.debug(f'Downloading document {doc_id}')
-                    file_name, file_obj = fluxx_client.download_document(doc_id)
-                    sanitized_file_name = sanitize_filename(str(file_name))
-                    logging.debug(f'Saving document {doc_id} with file name {sanitized_file_name}')
+                grant_docs = [fluxx_client.get_document_info(doc_id) for doc_id in record.get('model_documents', [])]
+                grant_docs_to_download = self.downloadable_grant_docs(grant_docs)
+                for doc_info in grant_docs_to_download:
+                    logging.debug(f'Downloading document {doc_info["id"]}')
+                    file_obj = fluxx_client.download_document(doc_info['id'])
+                    sanitized_file_name = sanitize_filename(doc_info['document_file_name'])
+                    logging.debug(f'Saving document {doc_info["id"]} with file name {sanitized_file_name}')
                     self.save_document(sanitized_file_name, file_obj, record_path)
 
                 if self.amazon_s3_config:
@@ -173,6 +177,39 @@ class Exporter(object):
             export_location (pathlib.Path): location in which data should be saved.
         """
         getattr(self, f"write_{export_format}")(json_data, export_location)
+
+    def downloadable_grant_docs(self, doc_list):
+        """Gets all documents for a grant that should be downloaded.
+
+        Args:
+            doc_list (list of dicts): Information about all documents associated with a grant.
+
+        Returns:
+            to_download (list of dicts): Information about documents associated
+            with a grant that should be downloaded.
+        """
+        for doc_info in doc_list:
+            if doc_info['model_document_master_id'] not in [d.document_id for d in self.document_types]:
+                logging.debug(f"{doc_info} not found in desired document types and removed from export.")
+                doc_list.remove(doc_info)
+            elif (not self.download_all_file_versions) and (not self.document_is_lastest_version(doc_info, doc_list)):
+                logging.debug(f"{doc_info} is not latest version and removed from export.")
+                doc_list.remove(doc_info)
+        return doc_list
+
+    def document_is_lastest_version(self, doc, grant_docs):
+        """Determines if document is latest version.
+
+        Args:
+            doc (dict): Information about a document.
+            grant_docs (list of dicts): Information about all documents associated with a grant.
+
+        Returns:
+            (bool): Whether or not the document is the latest version
+        """
+        versions = [d for d in grant_docs if d['model_document_master_id'] == doc['model_document_master_id']]
+        sorted_versions = sorted(versions, key=lambda x: x['seq_number'])
+        return doc['seq_number'] == sorted_versions[-1]['seq_number']
 
     def save_document(self, file_name, file_stream, export_location):
         """Saves document as binary file.
