@@ -640,6 +640,39 @@
         }
     },
     {
+        "model": "exporter.documenttype",
+        "pk": 1,
+        "fields": {
+            "name": "Grant Application",
+            "document_id": 1,
+            "fluxx_config": 1,
+            "include_in_export": true,
+            "export_job": 1
+        }
+    },
+    {
+        "model": "exporter.documenttype",
+        "pk": 2,
+        "fields": {
+            "name": "Cover Letter",
+            "document_id": 2,
+            "fluxx_config": 1,
+            "include_in_export": true,
+            "export_job": 1
+        }
+    },
+    {
+        "model": "exporter.documenttype",
+        "pk": 3,
+        "fields": {
+            "name": "Financial report",
+            "document_id": 3,
+            "fluxx_config": 1,
+            "include_in_export": false,
+            "export_job": 1
+        }
+    },
+    {
         "model": "exporter.table",
         "pk": 1,
         "fields": {
@@ -680,7 +713,7 @@
         "fields": {
             "table": 1,
             "name": "program_organization_id",
-            "include_in_export": false,
+            "include_in_export": true,
             "related_table": 3
         }
     },

@@ -13,10 +13,6 @@ def migrate_db():
     execute_from_command_line(["manage.py", "migrate"])
 
 
-def create_superuser():
-    execute_from_command_line(["manage.py", "create_new_superuser"])
-
-
 def run_server():
     execute_from_command_line(["manage.py", "runserver", "--noreload"])
 
@@ -24,6 +20,5 @@ def run_server():
 if __name__ == "__main__":
     print("Starting Fluxx Exporter")
     migrate_db()
-    create_superuser()
     webbrowser.open("http://localhost:8000")
     run_server()

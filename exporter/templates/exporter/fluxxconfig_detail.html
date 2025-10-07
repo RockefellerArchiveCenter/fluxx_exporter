@@ -1,0 +1,32 @@
+{% extends 'exporter/main.html' %}
+
+{% block title %}{{object.name}} - Fluxx Exporter{% endblock %}
+
+{% block content %}
+
+<h1>{{object.name}}</h1>
+
+<dl class="summary-list">
+    <div class="summary-list__row">
+        <dt class="summary-list__key">Base URL</dt>
+        <dd class="summary-list__value">{{ object.base_url }}</dd>
+    </div>
+</dl>
+
+{% if object.document_types.all %}
+<h2>Associated Document Types</h2>
+<ol>
+    {% for document_type in object.document_types.all %}
+        <li>{{document_type}}</li>
+    {% endfor %}
+</ol>
+{% endif %}
+
+<div class="flex exportjob-buttons__wrapper">
+    <div>
+        <a class="btn btn--md btn--light-blue" href="{% url 'fluxxconfig_update' pk=object.pk %}">Edit</a>
+        <a class="btn btn--md btn--orange" href="{% url 'fluxxconfig_delete' pk=object.pk %}">Delete</a>
+    </div>
+</div>
+
+{% endblock %}

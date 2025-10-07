@@ -1,0 +1,37 @@
+{% extends 'exporter/main.html' %}
+
+{% block content %}
+
+    <h1>Configurations</h1>
+
+    <a href="{% url 'fluxxconfig_create' %}" class="btn btn--lg btn--blue">Create New Fluxx Config</a>
+    <a href="{% url 'amazons3config_create' %}" class="btn btn--lg btn--blue">Create New Amazon S3 Config</a>
+
+    <div class="flex">
+        {% if fluxx_configs %}
+        <div class="mr-50">
+            <h2>Configured Fluxx Instances</h2>
+            <ol>
+                {% for config in fluxx_configs %}
+                    <li>
+                        <a href="{% url 'fluxxconfig_detail' pk=config.pk %}">{{config.name}}</a>
+                    </li>
+                {% endfor %}
+            </ol>
+        </div>
+    {% endif %}
+    {% if amazon_s3_configs %}
+        <div>
+            <h2>Amazon S3 Export Locations</h2>
+            <ol>
+                {% for config in amazon_s3_configs %}
+                    <li>
+                        <a href="{% url 'amazons3config_detail' pk=config.pk %}">{{config.name}}</a>
+                    </li>
+                {% endfor %}
+            </ol>
+        </div>
+    {% endif %}
+    </div>
+
+{% endblock %}
