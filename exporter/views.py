@@ -2,6 +2,7 @@ import re
 
 from bs4 import BeautifulSoup
 from django.contrib import messages
+from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.utils.safestring import mark_safe
 from django.views.generic import DetailView, FormView, TemplateView
@@ -155,7 +156,7 @@ class RunExportJobView(DetailView):
             messages.add_message(request, messages.SUCCESS, 'Export completed successfully.')
         else:
             messages.add_message(request, messages.ERROR, mark_safe(f'Export encountered an error.<br/><br/>{error}'))
-        return super().get(request, *args, **kwargs)
+        return redirect('exportjob_detail', pk=export_job_id)
 
 
 class ImportTablesView(FormView):

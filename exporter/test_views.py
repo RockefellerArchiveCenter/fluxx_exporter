@@ -115,16 +115,24 @@ class ExportJobViewTests(TestCase):  # TODO update these tests
         resp = self.client.get(reverse('exportjob_run', kwargs={'pk': export_job.pk}))
         mock_init.assert_called_once_with(export_job.pk)
         mock_export.assert_called_once_with()
-        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp.status_code, 302)
         success_messages = list(get_messages(resp.wsgi_request))
         self.assertEqual(len(success_messages), 1)
         self.assertEqual(success_messages[0].level, SUCCESS)
         self.assertEqual(str(success_messages[0]), 'Export completed successfully.')
+        print(list(get_messages(resp.wsgi_request)))
 
+    @patch('exporter.exporters.Exporter.fluxx_export')
+    @patch('exporter.exporters.Exporter.__init__')
+    def test_run_export_job_view_with_error(self, mock_init, mock_export):
+        """Assert view calls Exporter class and fluxx_export method with correct arguments for error."""
+
+        mock_init.return_value = None
+        export_job = ExportJob.objects.all().first()
         error = 'This is a detailed error message'
         mock_export.return_value = False, error
         resp = self.client.get(reverse('exportjob_run', kwargs={'pk': export_job.pk}))
-        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp.status_code, 302)
         error_messages = list(get_messages(resp.wsgi_request))
         self.assertEqual(len(error_messages), 1)
         self.assertEqual(error_messages[0].level, ERROR)
