@@ -189,5 +189,8 @@ class DocumentType(models.Model):
         on_delete=models.CASCADE,
         related_name='document_types')
 
+    class Meta:
+        ordering = ['name']
+
     def __str__(self):
         return self.name
