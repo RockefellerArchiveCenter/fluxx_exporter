@@ -26,7 +26,7 @@ cryptography==46.0.2
     # via
     #   moto
     #   paramiko
-django==5.2.6
+django==5.2.7
     # via -r requirements.in
 idna==3.10
     # via requests
