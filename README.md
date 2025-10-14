@@ -154,6 +154,24 @@ This is an open source project and we welcome contributions! If you want to fix 
 
 This repository contains a configuration file for git [pre-commit](https://pre-commit.com/) hooks which help ensure that code is linted before it is checked into version control. It is strongly recommended that you install these hooks locally by installing pre-commit and running `pre-commit install`.
 
+## Local Development
+
+In order to support local development, a Dockerfile and Docker Compose file are included. To use these, install [git](https://git-scm.com/) and [Docker](https://www.docker.com/get-started/), and then follow the instructions below.
+
+Open your terminal and clone the repository using git:
+
+    $ git clone git@github.com:RockefellerArchiveCenter/fluxx_exporter
+
+Move to the root directory of the repository:
+
+    cd fluxx_exporter
+
+Start the app with Docker Compose:
+
+    $ docker compose up
+
+Once the application starts successfully, you should be able to access it in your browser at `http://localhost`
+
 ## License
 
 This code is released under an MIT License. See `LICENSE` for more information.
