@@ -1,34 +1,34 @@
-asgiref==3.9.2
+asgiref==3.10.0
     # via django
 bcrypt==5.0.0
     # via paramiko
 beautifulsoup4==4.14.2
     # via -r requirements.in
-boto3==1.40.42
+boto3==1.40.52
     # via
     #   -r requirements.in
     #   moto
-botocore==1.40.42
+botocore==1.40.52
     # via
     #   -r requirements.in
     #   boto3
     #   moto
     #   s3transfer
-certifi==2025.8.3
+certifi==2025.10.5
     # via requests
 cffi==2.0.0
     # via
     #   cryptography
     #   pynacl
-charset-normalizer==3.4.3
+charset-normalizer==3.4.4
     # via requests
 cryptography==46.0.2
     # via
     #   moto
     #   paramiko
-django==5.2.6
+django==5.2.7
     # via -r requirements.in
-idna==3.10
+idna==3.11
     # via requests
 jinja2==3.1.6
     # via moto
@@ -40,7 +40,7 @@ markupsafe==3.0.3
     # via
     #   jinja2
     #   werkzeug
-moto==5.1.13
+moto==5.1.14
     # via -r requirements.in
 paramiko==3.5.1
     # via
