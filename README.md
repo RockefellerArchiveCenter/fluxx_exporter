@@ -170,7 +170,7 @@ Start the app with Docker Compose:
 
     $ docker compose up
 
-Once the application starts successfully, you should be able to access it in your browser at `http://localhost`
+Once the application starts successfully, you should be able to access it in your browser at `http://localhost:8000`
 
 ## License
 
