@@ -146,7 +146,7 @@ class FluxxClientTests(SimpleTestCase):
 
         document_id = 11218402
         client.download_document(document_id)
-        mock_get.called_once_with(
+        mock_get.assert_called_once_with(
             f'{self.base_url}/api/rest/v2/model_document_download/{document_id}',
             stream=True)
 
