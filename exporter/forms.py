@@ -120,7 +120,7 @@ class ExportJobForm(ModelForm):
             'filter_string': 'Filter which grant records are exported using the format \
                 "field name|relator|value". E.g. "grant_closed_at|range-year-cal|2010-2024". <br> \
                 <a href="https://github.com/RockefellerArchiveCenter/fluxx_exporter/tree/base?tab=readme-ov-file#add-filters">See filter documentation</a> for more information.',
-            'grant_ids': 'Comma-separated list of numeric Fluxx grant IDs to export. These IDs are available via the data download feature from cards.',
+            'grant_ids': 'Comma-separated list of numeric Fluxx grant IDs to export. These are the grant_id values from your Fluxx database',
             'download_all_file_versions': 'If left unchecked, only the latest version of selected documents will be downloaded.',
         }
 
