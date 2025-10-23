@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 # Apply database migrations
 echo "Creating config file"
