@@ -50,11 +50,6 @@ jobs:
         if: always()
         run: rm -f changes.patch
 
-      - name: Debug git auth headers
-        run: |
-          echo "---- extraheader entries ----"
-          git config --show-origin -l | grep -i extraheader || true
-
       - name: Create Pull Request
         if: always()
         uses: peter-evans/create-pull-request@v7.0.7
