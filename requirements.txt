@@ -4,17 +4,17 @@ bcrypt==5.0.0
     # via paramiko
 beautifulsoup4==4.14.3
     # via -r requirements.in
-boto3==1.41.5
+boto3==1.42.39
     # via
     #   -r requirements.in
     #   moto
-botocore==1.41.5
+botocore==1.42.39
     # via
     #   -r requirements.in
     #   boto3
     #   moto
     #   s3transfer
-certifi==2025.11.12
+certifi==2026.1.4
     # via requests
 cffi==2.0.0
     # via
@@ -22,17 +22,17 @@ cffi==2.0.0
     #   pynacl
 charset-normalizer==3.4.4
     # via requests
-cryptography==46.0.3
+cryptography==46.0.4
     # via
     #   moto
     #   paramiko
-django==5.2.8
+django==5.2.10
     # via -r requirements.in
 idna==3.11
     # via requests
 jinja2==3.1.6
     # via moto
-jmespath==1.0.1
+jmespath==1.1.0
     # via
     #   boto3
     #   botocore
@@ -40,7 +40,7 @@ markupsafe==3.0.3
     # via
     #   jinja2
     #   werkzeug
-moto==5.1.18
+moto==5.1.20
     # via -r requirements.in
 paramiko==3.5.1
     # via
@@ -48,9 +48,9 @@ paramiko==3.5.1
     #   pysftp
 pathvalidate==3.3.1
     # via -r requirements.in
-pycparser==2.23
+pycparser==3.0
     # via cffi
-pynacl==1.6.1
+pynacl==1.6.2
     # via paramiko
 pyrate-limiter==2.10.0
     # via requests-ratelimiter
@@ -68,28 +68,28 @@ requests==2.32.5
     #   moto
     #   requests-ratelimiter
     #   responses
-requests-ratelimiter==0.7.0
+requests-ratelimiter==0.8.0
     # via -r requirements.in
 responses==0.25.8
     # via
     #   -r requirements.in
     #   moto
-s3transfer==0.15.0
+s3transfer==0.16.0
     # via boto3
 six==1.17.0
     # via python-dateutil
-soupsieve==2.8
+soupsieve==2.8.3
     # via beautifulsoup4
-sqlparse==0.5.4
+sqlparse==0.5.5
     # via django
 typing-extensions==4.15.0
     # via beautifulsoup4
-urllib3==2.5.0
+urllib3==2.6.3
     # via
     #   botocore
     #   requests
     #   responses
-werkzeug==3.1.4
+werkzeug==3.1.5
     # via moto
 xmltodict==1.0.2
     # via moto
