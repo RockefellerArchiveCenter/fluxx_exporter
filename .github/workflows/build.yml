@@ -17,13 +17,13 @@ jobs:
     env:
       DIST_NAME: fluxx_exporter-${{ github.ref_name }}-${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v6.0.0
+      - uses: actions/checkout@v6.0.2
         with:
           token: ${{ secrets.ACCESS_TOKEN }}
           ref: ${{ github.ref }}
 
       - name: Set up Python
-        uses: actions/setup-python@v6.1.0
+        uses: actions/setup-python@v6.2.0
         with:
           python-version: '3.12'
           cache: pip
@@ -47,7 +47,7 @@ jobs:
         run: |
           Compress-Archive -Path "${{ env.DIST_NAME }}" -DestinationPath "${{ env.DIST_NAME }}.zip"
 
-      - uses: softprops/action-gh-release@v2.4.2
+      - uses: softprops/action-gh-release@v2.5.0
         if: github.ref_type == 'tag'
         with:
           files: ${{ env.DIST_NAME }}.zip
