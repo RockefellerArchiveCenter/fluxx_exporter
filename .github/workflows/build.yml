@@ -49,7 +49,7 @@ jobs:
           file_path: ${{ env.DIST_NAME }}/fluxx_exporter.exe
           output_path: ${{ env.DIST_NAME }}/${{ env.DIST_NAME}}.exe
           override: false
-          malware_block: false
+          malware_block: true
           clean_logs: true
 
       - name: Create zip file (windows)
