@@ -63,11 +63,11 @@ jobs:
             zip -r ${{ env.DIST_NAME }}.zip ${{ env.DIST_NAME }}
 
       - uses: softprops/action-gh-release@v2.5.0
-        if: github.ref_type == 'tag'
-        with:
-          files: ${{ env.DIST_NAME }}.zip
-
-      - uses: softprops/action-gh-release@v2.5.0
         if: github.ref_type == 'tag' && matrix.os == 'windows'
         with:
           files: ${{ env.DIST_NAME }}/${{ env.DIST_NAME }}.exe
+
+      - uses: softprops/action-gh-release@v2.5.0
+        if: github.ref_type == 'tag'
+        with:
+          files: ${{ env.DIST_NAME }}.zip
