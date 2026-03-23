@@ -54,10 +54,13 @@ jobs:
 
       - name: Create zip file (windows)
         if: matrix.os == 'windows'
+        shell: pwsh
         run: |
-          move signed\fluxx_exporter.exe ${{ env.DIST_NAME }}\fluxx_exporter.exe
-          rmdir /s /q signed
-          Compress-Archive -Path "${{ env.DIST_NAME }}\fluxx_exporter.exe" -DestinationPath "${{ env.DIST_NAME }}.zip"
+          Move-Item -Path "signed\fluxx_exporter.exe" -Destination "${{ env.DIST_NAME }}\fluxx_exporter.exe" -Force
+          Remove-Item -Path "signed" -Recurse -Force
+          Push-Location "${{ env.DIST_NAME }}"
+          Compress-Archive -Path "fluxx_exporter.exe" -DestinationPath "..\${{ env.DIST_NAME }}.zip" -Force
+          Pop-Location
 
       - name: Create zip file (linux)
         if: matrix.os != 'windows'
