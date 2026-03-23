@@ -57,7 +57,7 @@ jobs:
         run: |
           move signed\fluxx_exporter.exe ${{ env.DIST_NAME }}\fluxx_exporter.exe
           rmdir /s /q signed
-          Compress-Archive -Path "${{ env.DIST_NAME }}" -DestinationPath "${{ env.DIST_NAME }}.zip"
+          Compress-Archive -Path "${{ env.DIST_NAME }}\fluxx_exporter.exe" -DestinationPath "${{ env.DIST_NAME }}.zip"
 
       - name: Create zip file (linux)
         if: matrix.os != 'windows'
