@@ -37,15 +37,35 @@ jobs:
       - name: Build distribution
         run: pyinstaller fluxx_exporter.spec --distpath ${{ env.DIST_NAME }}
 
-      - name: Create zip file (linux)
-        if: matrix.os != 'windows'
-        run: |
-            zip -r ${{ env.DIST_NAME }}.zip ${{ env.DIST_NAME }}
+      - name: Sign Windows exe
+        if: matrix.os == 'windows'
+        uses: sslcom/esigner-codesign@v1.3.2
+        with:
+          command: sign
+          username: ${{ secrets.ES_USERNAME }}
+          password: ${{ secrets.ES_PASSWORD }}
+          credential_id: ${{ secrets.ES_CREDENTIAL_ID }}
+          totp_secret: ${{ secrets.ES_TOTP_SECRET }}
+          file_path: ${{ env.DIST_NAME }}/fluxx_exporter.exe
+          output_path: ${{ env.DIST_NAME }}/${{ env.DIST_NAME}}.exe
+          override: false
+          malware_block: true
+          clean_logs: true
 
       - name: Create zip file (windows)
         if: matrix.os == 'windows'
         run: |
           Compress-Archive -Path "${{ env.DIST_NAME }}" -DestinationPath "${{ env.DIST_NAME }}.zip"
+
+      - name: Create zip file (linux)
+        if: matrix.os != 'windows'
+        run: |
+            zip -r ${{ env.DIST_NAME }}.zip ${{ env.DIST_NAME }}
+
+      - uses: softprops/action-gh-release@v2.5.0
+        if: github.ref_type == 'tag' && matrix.os == 'windows'
+        with:
+          files: ${{ env.DIST_NAME }}/${{ env.DIST_NAME }}.exe
 
       - uses: softprops/action-gh-release@v2.5.0
         if: github.ref_type == 'tag'
