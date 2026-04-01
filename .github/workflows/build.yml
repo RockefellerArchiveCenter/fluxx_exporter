@@ -116,11 +116,23 @@ jobs:
             --team-id "$APPLE_TEAM_ID" \
             --wait
 
-      - name: Validate notarized macOS artifact
+      - name: Validate signed macOS binary
         if: matrix.os == 'macos'
         run: |
           unzip -q "${{ env.DIST_NAME }}.zip" -d notarization-check
-          spctl -a -t exec -vv "notarization-check/${{ env.DIST_NAME }}/fluxx_exporter"
+          codesign --verify --deep --strict --verbose=2 "notarization-check/${{ env.DIST_NAME }}/fluxx_exporter"
+
+      - name: Check notarization history
+        if: matrix.os == 'macos'
+        env:
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_APP_PASSWORD: ${{ secrets.APPLE_APP_PASSWORD }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+        run: |
+          xcrun notarytool history \
+            --apple-id "$APPLE_ID" \
+            --password "$APPLE_APP_PASSWORD" \
+            --team-id "$APPLE_TEAM_ID"
 
       - name: Cleanup Apple keychain files
         if: matrix.os == 'macos'
@@ -128,9 +140,6 @@ jobs:
           rm -f certificate.p12
           security delete-keychain build.keychain || true
 
-      # ----------------------------
-      # LINUX PACKAGING
-      # ----------------------------
       - name: Create zip file (linux)
         if: matrix.os == 'ubuntu'
         run: |
