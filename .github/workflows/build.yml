@@ -67,7 +67,7 @@ jobs:
         run: |
             zip -r ${{ env.DIST_NAME }}.zip ${{ env.DIST_NAME }}
 
-      - uses: softprops/action-gh-release@v2.5.0
+      - uses: softprops/action-gh-release@v2.6.1
         if: github.ref_type == 'tag'
         with:
           files: ${{ env.DIST_NAME }}.zip
