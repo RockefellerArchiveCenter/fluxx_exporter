@@ -34,8 +34,13 @@ jobs:
       - name: Install requirements
         run: pip install -r requirements.txt
 
-      - name: Build distribution
+      - name: Build distribution (windows/linux)
+        if: matrix.os != 'macos'
         run: pyinstaller fluxx_exporter.spec --distpath ${{ env.DIST_NAME }}
+
+      - name: Build macOS app bundle
+        if: matrix.os == 'macos'
+        run: pyinstaller fluxx_exporter-macos.spec
 
       - name: Sign Windows exe
         if: matrix.os == 'windows'
@@ -87,22 +92,22 @@ jobs:
           security default-keychain -d user -s build.keychain
           security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "$KEYCHAIN_PASSWORD" build.keychain
 
-      - name: Sign macOS binary runtime
+      - name: Sign macOS app bundle
         if: matrix.os == 'macos'
         env:
           MACOS_SIGNING_IDENTITY: ${{ secrets.MACOS_SIGNING_IDENTITY }}
         run: |
-          codesign --force --options runtime --timestamp \
+          codesign --force --deep --options runtime --timestamp \
             --sign "$MACOS_SIGNING_IDENTITY" \
-            "${{ env.DIST_NAME }}/fluxx_exporter"
+            "dist/fluxx_exporter.app"
 
-          codesign --verify --deep --strict --verbose=2 "${{ env.DIST_NAME }}/fluxx_exporter"
+          codesign --verify --deep --strict --verbose=4 "dist/fluxx_exporter.app"
 
       - name: Create macOS DMG
         if: matrix.os == 'macos'
         run: |
           mkdir -p dmg-root
-          cp -R "${{ env.DIST_NAME }}" dmg-root/
+          cp -R "dist/fluxx_exporter.app" dmg-root/
           ln -s /Applications dmg-root/Applications
 
           hdiutil create \
