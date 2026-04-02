@@ -9,12 +9,29 @@ jobs:
   build:
     strategy:
       matrix:
-        os: [ubuntu, macos, windows]
-    runs-on: ${{ matrix.os }}-latest
+        include:
+          - os: ubuntu
+            runner: ubuntu-latest
+            spec: fluxx_exporter.spec
+            artifact_suffix: ubuntu
+          - os: windows
+            runner: windows-latest
+            spec: fluxx_exporter.spec
+            artifact_suffix: windows
+          - os: macos
+            runner: macos-latest
+            spec: fluxx_exporter-macos.spec
+            artifact_suffix: macos-arm64
+          - os: macos
+            runner: macos-15-intel
+            spec: fluxx_exporter-macos.spec
+            artifact_suffix: macos-x64
+
+    runs-on: ${{ matrix.runner }}
     permissions:
       contents: write
     env:
-      DIST_NAME: fluxx_exporter-${{ github.ref_name }}-${{ matrix.os }}
+      DIST_NAME: fluxx_exporter-${{ github.ref_name }}-${{ matrix.artifact_suffix }}
 
     steps:
       - uses: actions/checkout@v6.0.2
@@ -25,7 +42,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v6.2.0
         with:
-          python-version: '3.12'
+          python-version: "3.12"
           cache: pip
 
       - name: Install PyInstaller
@@ -36,11 +53,16 @@ jobs:
 
       - name: Build distribution (windows/linux)
         if: matrix.os != 'macos'
-        run: pyinstaller fluxx_exporter.spec --distpath ${{ env.DIST_NAME }}
+        run: pyinstaller ${{ matrix.spec }} --distpath ${{ env.DIST_NAME }}
 
       - name: Build macOS app bundle
         if: matrix.os == 'macos'
-        run: pyinstaller fluxx_exporter-macos.spec
+        run: pyinstaller ${{ matrix.spec }}
+
+      - name: Show macOS app architecture
+        if: matrix.os == 'macos'
+        run: |
+          file "dist/fluxx_exporter.app/Contents/MacOS/fluxx_exporter"
 
       - name: Sign Windows exe
         if: matrix.os == 'windows'
