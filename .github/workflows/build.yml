@@ -61,6 +61,7 @@ jobs:
           Push-Location "${{ env.DIST_NAME }}"
           Compress-Archive -Path "fluxx_exporter.exe" -DestinationPath "..\${{ env.DIST_NAME }}.zip" -Force
           Pop-Location
+          echo "RELEASE_FILE=${{ env.DIST_NAME }}.zip" >> $env:GITHUB_ENV
 
       - name: Import Apple signing certificate
         if: matrix.os == 'macos'
@@ -79,7 +80,8 @@ jobs:
             -k build.keychain \
             -P "$P12_PASSWORD" \
             -T /usr/bin/codesign \
-            -T /usr/bin/security
+            -T /usr/bin/security \
+            -T /usr/bin/productbuild
 
           security list-keychains -d user -s build.keychain login.keychain-db
           security default-keychain -d user -s build.keychain
@@ -96,31 +98,55 @@ jobs:
 
           codesign --verify --deep --strict --verbose=2 "${{ env.DIST_NAME }}/fluxx_exporter"
 
-      - name: Package macOS artifact for notarization
+      - name: Create macOS DMG
         if: matrix.os == 'macos'
         run: |
-          /usr/bin/ditto -c -k --keepParent \
-            "${{ env.DIST_NAME }}" \
-            "${{ env.DIST_NAME }}.zip"
+          mkdir -p dmg-root
+          cp -R "${{ env.DIST_NAME }}" dmg-root/
+          ln -s /Applications dmg-root/Applications
 
-      - name: Notarize macOS zip
+          hdiutil create \
+            -volname "fluxx_exporter" \
+            -srcfolder dmg-root \
+            -ov \
+            -format UDZO \
+            "${{ env.DIST_NAME }}.dmg"
+
+      - name: Sign macOS DMG
+        if: matrix.os == 'macos'
+        env:
+          MACOS_SIGNING_IDENTITY: ${{ secrets.MACOS_SIGNING_IDENTITY }}
+        run: |
+          codesign --force --timestamp \
+            --sign "$MACOS_SIGNING_IDENTITY" \
+            "${{ env.DIST_NAME }}.dmg"
+
+          codesign --verify --verbose=2 "${{ env.DIST_NAME }}.dmg"
+
+      - name: Notarize macOS DMG
         if: matrix.os == 'macos'
         env:
           APPLE_ID: ${{ secrets.APPLE_ID }}
           APPLE_APP_PASSWORD: ${{ secrets.APPLE_APP_PASSWORD }}
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
         run: |
-          xcrun notarytool submit "${{ env.DIST_NAME }}.zip" \
+          xcrun notarytool submit "${{ env.DIST_NAME }}.dmg" \
             --apple-id "$APPLE_ID" \
             --password "$APPLE_APP_PASSWORD" \
             --team-id "$APPLE_TEAM_ID" \
             --wait
 
-      - name: Validate signed macOS binary
+      - name: Staple macOS DMG
         if: matrix.os == 'macos'
         run: |
-          unzip -q "${{ env.DIST_NAME }}.zip" -d notarization-check
-          codesign --verify --deep --strict --verbose=2 "notarization-check/${{ env.DIST_NAME }}/fluxx_exporter"
+          xcrun stapler staple "${{ env.DIST_NAME }}.dmg"
+
+      - name: Validate stapled macOS DMG
+        if: matrix.os == 'macos'
+        run: |
+          xcrun stapler validate "${{ env.DIST_NAME }}.dmg"
+          spctl -a -t open --context context:primary-signature -vv "${{ env.DIST_NAME }}.dmg"
+          echo "RELEASE_FILE=${{ env.DIST_NAME }}.dmg" >> "$GITHUB_ENV"
 
       - name: Check notarization history
         if: matrix.os == 'macos'
@@ -138,14 +164,16 @@ jobs:
         if: matrix.os == 'macos'
         run: |
           rm -f certificate.p12
+          rm -rf dmg-root
           security delete-keychain build.keychain || true
 
       - name: Create zip file (linux)
         if: matrix.os == 'ubuntu'
         run: |
           zip -r "${{ env.DIST_NAME }}.zip" "${{ env.DIST_NAME }}"
+          echo "RELEASE_FILE=${{ env.DIST_NAME }}.zip" >> "$GITHUB_ENV"
 
       - uses: softprops/action-gh-release@v2.5.0
         if: github.ref_type == 'tag'
         with:
-          files: ${{ env.DIST_NAME }}.zip
+          files: ${{ env.RELEASE_FILE }}
