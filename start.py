@@ -22,8 +22,10 @@ def run_server():
 
 
 if __name__ == "__main__":
-    signal.signal(signal.SIGTERM, handle_shutdown)
-    signal.signal(signal.SIGINT, handle_shutdown)
+    if hasattr(signal, "SIGTERM"):
+        signal.signal(signal.SIGTERM, handle_shutdown)
+    if hasattr(signal, "SIGINT"):
+        signal.signal(signal.SIGINT, handle_shutdown)
     print("Starting Fluxx Exporter")
     migrate_db()
     webbrowser.open("http://localhost:8000")
