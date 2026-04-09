@@ -33,3 +33,4 @@ if __name__ == "__main__":
     migrate_db()
     webbrowser.open("http://localhost:8000")
     run_server()
+    
