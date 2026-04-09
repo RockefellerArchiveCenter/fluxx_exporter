@@ -1,3 +1,6 @@
+# This script starts the compiled Fluxx Exporter application.
+# In development, entrypoint.sh is targeted instead.
+
 import os
 import signal
 import sys
