@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
 import sys
+from os import getenv
 from pathlib import Path
 
 from fluxx_exporter import config
@@ -166,4 +167,4 @@ LOGGING = {
     }
 }
 
-APP_VERSION_NUMBER = "0.0.0"
+APP_VERSION_NUMBER = getenv("APP_VERSION", "0.0.0")
