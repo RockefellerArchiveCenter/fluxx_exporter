@@ -31,6 +31,7 @@ jobs:
     permissions:
       contents: write
     env:
+      APP_VERSION: ${{ github.event.release.tag_name || github.ref_name }}
       DIST_NAME: fluxx_exporter-${{ github.ref_name }}-${{ matrix.artifact_suffix }}
 
     steps:
@@ -50,6 +51,29 @@ jobs:
 
       - name: Install requirements
         run: pip install -r requirements.txt
+
+      - name: Inject version into settings.py
+        shell: bash
+        run: |
+          python - <<'EOF'
+          from pathlib import Path
+          import os
+          import re
+
+          path = Path("fluxx_exporter/settings.py")
+          text = path.read_text()
+
+          version = os.environ["APP_VERSION"]
+
+          text = re.sub(
+              r'^\s*APP_VERSION_NUMBER\s*=\s*.*$',
+              f'APP_VERSION_NUMBER = "{version}"',
+              text,
+              flags=re.MULTILINE,
+          )
+
+          path.write_text(text)
+          EOF
 
       - name: Build distribution (windows/linux)
         if: matrix.os != 'macos'
