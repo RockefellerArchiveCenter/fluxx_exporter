@@ -33,7 +33,7 @@ processor included with your hardware:
 
 ### Windows
 1. Extract the downloaded ZIP file.
-2. Double-click the `fluxx_exporter` file in the folder you just extracted. A terminal window will open that shows the application starting.
+2. Double-click the `Fluxx Exporter` file in the folder you just extracted. A terminal window will open that shows the application starting.
 4. Fluxx Exporter will open automatically in your browser at [http://localhost:8000](http://localhost:8000).
 5. To close, exit the terminal window.
 
