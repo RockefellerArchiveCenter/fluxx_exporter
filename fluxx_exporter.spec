@@ -38,7 +38,7 @@ exe = EXE(
     a.binaries,
     a.datas,
     [],
-    name='fluxx_exporter',
+    name='Fluxx Exporter',
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
