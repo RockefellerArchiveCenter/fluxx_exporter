@@ -24,19 +24,27 @@ Foundations use grants management systems (GMS) such as Fluxx to manage their gr
 
 ## Installation
 
-**Warning messages will appear when the current version of Fluxx Exporter (2.0) is run on Windows or MacOS. Speak to your local system administrator for information about how to resolve these warnings.**
+First, [Download the latest release](https://github.com/RockefellerArchiveCenter/fluxx_exporter/releases) for your operating system. 
 
-1. [Download the latest release](https://github.com/RockefellerArchiveCenter/fluxx_exporter/releases) for your operating system (Windows, MacOS or Linux).
-2. Extract the downloaded ZIP file.
-3. Run the application: double-click the `fluxx_exporter` file in the folder you just extracted, and a terminal window will open that shows the application starting.
-4. Enter a superuser username and password in the terminal when prompted. You will **only** be prompted to create login credentials the **first time** you start Fluxx Exporter. Save the username and password for future logins.
-5. The app will open automatically in your browser at [http://localhost:8000](http://localhost:8000).
-6. To close, exit the terminal window.
+If you are a MacOS user, you will need to select the release for the CPU architecture you are running. click on the  Apple Menu and select "About this Mac". The dialog box that appears will display information about the chip or
+processor included with your hardware:
+- If you have an Apple chip, download the `macos-arm64` release.
+- If you have an Intel processor, download the `macos-x64` release.
 
-Note: Two files are created as siblings of the `fluxx_exporter` file. The file called `fluxx_exporter_db.sqlite3` stores 
-the Fluxx configurations, users, fields, tables, and export jobs that you configure for the application, so do not delete it unless you want to remove that information. The file called `fluxx_exporter.debug.log` contains a detailed log of system
-activity and is useful for in-depth troubleshooting. If you move the `fluxx_exporter` file to a new location, you should 
-move these files to that same location.
+### Windows
+1. Extract the downloaded ZIP file.
+2. Double-click the `Fluxx Exporter` file in the folder you just extracted. A terminal window will open that shows the application starting.
+4. Fluxx Exporter will open automatically in your browser at [http://localhost:8000](http://localhost:8000).
+5. To close, exit the terminal window.
+
+### MacOS
+1. Double-click the downloaded DMG file.
+2. In the dialog box that appears, drag the `Fluxx Exporter` application to the Applications directory using the shortcut supplied.
+3. In Finder, eject the attached `Fluxx Exporter` DMG file.
+3. From your Applications folder, open the `Fluxx Exporter` application. The first time you do this, a dialog box will appear that asks you to confirm that you want to run the application.
+4. Fluxx Exporter will open automatically in your browser at [http://localhost:8000](http://localhost:8000).
+5. To close, open a new terminal window and enter the command `pkill -f Fluxx Exporter`
+
 
 ## Configuration
 
