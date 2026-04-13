@@ -39,11 +39,11 @@ processor included with your hardware:
 
 ### MacOS
 1. Double-click the downloaded DMG file.
-2. In the dialog box that appears, drag the `fluxx_exporter` application to the Applications directory using the shortcut supplied.
-3. In Finder, eject the attached `fluxx_exporter` DMG file.
-3. From your Applications folder, open the `fluxx_exporter` application. The first time you do this, a dialog box will appear that asks you to confirm that you want to run the application.
+2. In the dialog box that appears, drag the `Fluxx Exporter` application to the Applications directory using the shortcut supplied.
+3. In Finder, eject the attached `Fluxx Exporter` DMG file.
+3. From your Applications folder, open the `Fluxx Exporter` application. The first time you do this, a dialog box will appear that asks you to confirm that you want to run the application.
 4. Fluxx Exporter will open automatically in your browser at [http://localhost:8000](http://localhost:8000).
-5. To close, open a new terminal window and enter the command `pkill -f fluxx_exporter`
+5. To close, open a new terminal window and enter the command `pkill -f Fluxx Exporter`
 
 
 ## Configuration
