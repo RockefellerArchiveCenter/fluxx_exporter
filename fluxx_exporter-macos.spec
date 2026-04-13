@@ -40,7 +40,7 @@ exe = EXE(
     a.scripts,
     [],
     exclude_binaries=True,
-    name='fluxx_exporter',
+    name='Fluxx Exporter',
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
@@ -62,12 +62,12 @@ coll = COLLECT(
     strip=False,
     upx=True,
     upx_exclude=[],
-    name='fluxx_exporter',
+    name='Fluxx Exporter',
 )
 
 app = BUNDLE(
     coll,
-    name='fluxx_exporter.app',
+    name='Fluxx Exporter.app',
     icon=None,
     bundle_identifier='org.rockarch.fluxx_exporter',
 )
