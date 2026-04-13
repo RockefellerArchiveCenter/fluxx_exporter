@@ -86,7 +86,7 @@ jobs:
       - name: Show macOS app architecture
         if: matrix.os == 'macos'
         run: |
-          file "dist/fluxx_exporter.app/Contents/MacOS/fluxx_exporter"
+          file "dist/Fluxx Exporter.app/Contents/MacOS/Fluxx Exporter"
 
       - name: Sign Windows exe
         if: matrix.os == 'windows'
@@ -97,7 +97,7 @@ jobs:
           password: ${{ secrets.ES_PASSWORD }}
           credential_id: ${{ secrets.ES_CREDENTIAL_ID }}
           totp_secret: ${{ secrets.ES_TOTP_SECRET }}
-          file_path: ${{ env.DIST_NAME }}/fluxx_exporter.exe
+          file_path: ${{ env.DIST_NAME }}/Fluxx Exporter.exe
           output_path: signed
           override: false
           malware_block: true
@@ -107,10 +107,10 @@ jobs:
         if: matrix.os == 'windows'
         shell: pwsh
         run: |
-          Move-Item -Path "signed\fluxx_exporter.exe" -Destination "${{ env.DIST_NAME }}\fluxx_exporter.exe" -Force
+          Move-Item -Path "signed\Fluxx Exporter.exe" -Destination "${{ env.DIST_NAME }}\Fluxx Exporter.exe" -Force
           Remove-Item -Path "signed" -Recurse -Force
           Push-Location "${{ env.DIST_NAME }}"
-          Compress-Archive -Path "fluxx_exporter.exe" -DestinationPath "..\${{ env.DIST_NAME }}.zip" -Force
+          Compress-Archive -Path "Fluxx Exporter.exe" -DestinationPath "..\${{ env.DIST_NAME }}.zip" -Force
           Pop-Location
           echo "RELEASE_FILE=${{ env.DIST_NAME }}.zip" >> $env:GITHUB_ENV
 
@@ -145,19 +145,19 @@ jobs:
         run: |
           codesign --force --deep --options runtime --timestamp \
             --sign "$MACOS_SIGNING_IDENTITY" \
-            "dist/fluxx_exporter.app"
+            "dist/Fluxx Exporter.app"
 
-          codesign --verify --deep --strict --verbose=4 "dist/fluxx_exporter.app"
+          codesign --verify --deep --strict --verbose=4 "dist/Fluxx Exporter.app"
 
       - name: Create macOS DMG
         if: matrix.os == 'macos'
         run: |
           mkdir -p dmg-root
-          cp -R "dist/fluxx_exporter.app" dmg-root/
+          cp -R "dist/Fluxx Exporter.app" dmg-root/
           ln -s /Applications dmg-root/Applications
 
           hdiutil create \
-            -volname "fluxx_exporter" \
+            -volname "Fluxx Exporter" \
             -srcfolder dmg-root \
             -ov \
             -format UDZO \
