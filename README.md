@@ -1,5 +1,9 @@
 # Fluxx Exporter Documentation
 
+<p align="center">
+  <img src="FluxxCapacitor.png" alt="Fluxx Exporter Icon" width="200"/>
+</p>
+
 ## Table of Contents
 
 - [Overview](#overview)
