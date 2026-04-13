@@ -10,10 +10,6 @@ jobs:
     strategy:
       matrix:
         include:
-          - os: ubuntu
-            runner: ubuntu-latest
-            spec: fluxx_exporter.spec
-            artifact_suffix: ubuntu
           - os: windows
             runner: windows-latest
             spec: fluxx_exporter.spec
@@ -217,12 +213,6 @@ jobs:
           rm -f certificate.p12
           rm -rf dmg-root
           security delete-keychain build.keychain || true
-
-      - name: Create zip file (linux)
-        if: matrix.os == 'ubuntu'
-        run: |
-          zip -r "${{ env.DIST_NAME }}.zip" "${{ env.DIST_NAME }}"
-          echo "RELEASE_FILE=${{ env.DIST_NAME }}.zip" >> "$GITHUB_ENV"
 
       - uses: softprops/action-gh-release@v2.6.1
         if: github.ref_type == 'tag'

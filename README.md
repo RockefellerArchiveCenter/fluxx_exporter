@@ -24,7 +24,7 @@ Foundations use grants management systems (GMS) such as Fluxx to manage their gr
 
 ## Installation
 
-First, [Download the latest release](https://github.com/RockefellerArchiveCenter/fluxx_exporter/releases) for your operating system (Windows, MacOS or Linux). 
+First, [Download the latest release](https://github.com/RockefellerArchiveCenter/fluxx_exporter/releases) for your operating system. 
 
 If you are a MacOS user, you will need to select the release for the CPU architecture you are running. click on the  Apple Menu and select "About this Mac". The dialog box that appears will display information about the chip or
 processor included with your hardware:
