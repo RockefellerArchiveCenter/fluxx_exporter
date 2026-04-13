@@ -37,7 +37,7 @@ processor included with your hardware:
 4. Fluxx Exporter will open automatically in your browser at [http://localhost:8000](http://localhost:8000).
 5. To close, exit the terminal window.
 
-### Mac
+### MacOS
 1. Double-click the downloaded DMG file.
 2. In the dialog box that appears, drag the `fluxx_exporter` application to the Applications directory using the shortcut supplied.
 3. In Finder, eject the attached `fluxx_exporter` DMG file.
