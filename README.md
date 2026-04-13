@@ -29,7 +29,7 @@ First, [Download the latest release](https://github.com/RockefellerArchiveCenter
 If you are a MacOS user, you will need to select the release for the CPU architecture you are running. click on the  Apple Menu and select "About this Mac". The dialog box that appears will display information about the chip or
 processor included with your hardware:
 - If you have an Apple chip, download the `macos-arm64` release.
-- If you havean Intel processor, download the `macos-x64` release.
+- If you have an Intel processor, download the `macos-x64` release.
 
 ### Windows
 1. Extract the downloaded ZIP file.
