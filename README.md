@@ -37,6 +37,7 @@ processor included with your hardware:
 - If you have an Intel processor, download the `macos-x64` release.
 
 ### Windows
+**Depending on your environment, you may recieve warnings when trying to run Fluxx Exporter, or the application may be blocked. Speak to your local system administrator for information about how to resolve these issues.**
 1. Extract the downloaded ZIP file.
 2. Double-click the `Fluxx Exporter` file in the folder you just extracted. A terminal window will open that shows the application starting.
 4. Fluxx Exporter will open automatically in your browser at [http://localhost:8000](http://localhost:8000).
