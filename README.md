@@ -1,9 +1,5 @@
-# Fluxx Exporter
+# <img src="FluxxExporterLogo.png" alt="Fluxx Exporter Icon" width="30"/> Fluxx Exporter
 Select and export grant information from the Fluxx grants management system.
-
-<p align="center">
-  <img src="FluxxCapacitor.png" alt="Fluxx Exporter Icon" width="200"/>
-</p>
 
 ## Table of Contents
 
@@ -28,28 +24,23 @@ The Fluxx Exporter is an open-source tool that integrates with the grants manage
 Foundations use grants management systems (GMS) such as Fluxx to manage their grant making from the time a grantee begins an application, through the award process, and on to the grantee's final reporting on activities. For most foundations, the GMS is the permanent system of record for all grant-related records. This tool allows grants administrators, information managers, and archivists to select and export grant information for internal or external uses including for long-term preservation, researcher access, and organizational learning and evaluation.
 
 ## Installation
-
-First, [Download the latest release](https://github.com/RockefellerArchiveCenter/fluxx_exporter/releases) for your operating system. 
-
-If you are a MacOS user, you will need to select the release for the CPU architecture you are running. click on the  Apple Menu and select "About this Mac". The dialog box that appears will display information about the chip or
-processor included with your hardware:
-- If you have an Apple chip, download the `macos-arm64` release.
-- If you have an Intel processor, download the `macos-x64` release.
+Fluxx Exporter is bundled as a single executable file. Based on security settings in your environment, you may receive warnings when trying to run Fluxx Exporter or the application may blocked altogether. If this happens, speak to your local system administrator about how to resolve these issues.
 
 ### Windows
-**Depending on your environment, you may recieve warnings when trying to run Fluxx Exporter, or the application may be blocked. Speak to your local system administrator for information about how to resolve these issues.**
-1. Extract the downloaded ZIP file.
-2. Double-click the `Fluxx Exporter` file in the folder you just extracted. A terminal window will open that shows the application starting.
+1. [Download the latest release](https://github.com/RockefellerArchiveCenter/fluxx_exporter/releases) for Windows.
+2. Extract the downloaded ZIP file.
+3. Double-click the `Fluxx Exporter` file in the folder you just extracted. A terminal window will open that shows the application starting.
 4. Fluxx Exporter will open automatically in your browser at [http://localhost:8000](http://localhost:8000).
 5. To close, exit the terminal window.
 
 ### MacOS
-1. Double-click the downloaded DMG file.
-2. In the dialog box that appears, drag the `Fluxx Exporter` application to the Applications directory using the shortcut supplied.
-3. In Finder, eject the attached `Fluxx Exporter` DMG file.
-3. From your Applications folder, open the `Fluxx Exporter` application. The first time you do this, a dialog box will appear that asks you to confirm that you want to run the application.
-4. Fluxx Exporter will open automatically in your browser at [http://localhost:8000](http://localhost:8000).
-5. To close, open a new terminal window and enter the command `pkill -f Fluxx Exporter`
+1. [Download the latest release](https://github.com/RockefellerArchiveCenter/fluxx_exporter/releases) for MacOS. You will need to select the release for the CPU architecture you are running. Click on the  Apple Menu and select "About this Mac". The dialog box that appears will display information about the chip or processor included with your hardware. If you have an Apple chip, download the `macos-arm64` release, and if you have an Intel processor, download the `macos-x64` release.
+2. Double-click the downloaded DMG file.
+3. In the dialog box that appears, drag the `Fluxx Exporter` application to the Applications directory using the shortcut supplied.
+4. In Finder, eject the attached `Fluxx Exporter` DMG file.
+5. From your Applications folder, open the `Fluxx Exporter` application. The first time you do this, a dialog box will appear that asks you to confirm that you want to run the application.
+6. Fluxx Exporter will open automatically in your browser at [http://localhost:8000](http://localhost:8000).
+7. To close, open a new terminal window and enter the command `pkill -f Fluxx Exporter`
 
 
 ## Configuration
