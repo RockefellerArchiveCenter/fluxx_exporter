@@ -35,11 +35,6 @@ Fluxx Exporter is bundled as a single executable file. Based on security setting
 
 ### MacOS
 1. [Download the latest release](https://github.com/RockefellerArchiveCenter/fluxx_exporter/releases) for MacOS. You will need to select the release for the CPU architecture you are running. Click on the  Apple Menu and select "About this Mac". The dialog box that appears will display information about the chip or processor included with your hardware. If you have an Apple chip, download the `macos-arm64` release, and if you have an Intel processor, download the `macos-x64` release.
-1. Double-click the downloaded DMG file.
-2. In the dialog box that appears, drag the `Fluxx Exporter` application to the Applications directory using the shortcut supplied.
-3. In Finder, eject the attached `Fluxx Exporter` DMG file.
-3. From your Applications folder, open the `Fluxx Exporter` application. The first time you do this, a dialog box will appear that asks you to confirm that you want to run the application.
-4. Fluxx Exporter will open automatically in your browser at [http://localhost:8000](http://localhost:8000).
 2. Double-click the downloaded DMG file.
 3. In the dialog box that appears, drag the `Fluxx Exporter` application to the Applications directory using the shortcut supplied.
 4. In Finder, eject the attached `Fluxx Exporter` DMG file.
