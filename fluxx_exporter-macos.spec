@@ -68,6 +68,6 @@ coll = COLLECT(
 app = BUNDLE(
     coll,
     name='Fluxx Exporter.app',
-    icon="FluxxCapacitor.icns",
+    icon="FluxxExporterLogo.icns",
     bundle_identifier='org.rockarch.fluxx_exporter',
 )

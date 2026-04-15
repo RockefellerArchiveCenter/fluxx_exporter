@@ -1,9 +1,5 @@
-# Fluxx Exporter
+# <img src="FluxxExporterLogo.png" alt="Fluxx Exporter Icon" width="30"/> Fluxx Exporter
 Select and export grant information from the Fluxx grants management system.
-
-<p align="center">
-  <img src="FluxxCapacitor.png" alt="Fluxx Exporter Icon" width="200"/>
-</p>
 
 ## Table of Contents
 
