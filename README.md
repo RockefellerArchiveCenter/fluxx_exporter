@@ -40,7 +40,12 @@ Fluxx Exporter is bundled as a single executable file. Based on security setting
 3. In Finder, eject the attached `Fluxx Exporter` DMG file.
 3. From your Applications folder, open the `Fluxx Exporter` application. The first time you do this, a dialog box will appear that asks you to confirm that you want to run the application.
 4. Fluxx Exporter will open automatically in your browser at [http://localhost:8000](http://localhost:8000).
-5. To close, open a new terminal window and enter the command `pkill -f Fluxx Exporter`
+2. Double-click the downloaded DMG file.
+3. In the dialog box that appears, drag the `Fluxx Exporter` application to the Applications directory using the shortcut supplied.
+4. In Finder, eject the attached `Fluxx Exporter` DMG file.
+5. From your Applications folder, open the `Fluxx Exporter` application. The first time you do this, a dialog box will appear that asks you to confirm that you want to run the application.
+6. Fluxx Exporter will open automatically in your browser at [http://localhost:8000](http://localhost:8000).
+7. To close, open a new terminal window and enter the command `pkill -f Fluxx Exporter`
 
 
 ## Configuration
