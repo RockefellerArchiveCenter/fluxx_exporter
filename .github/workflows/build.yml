@@ -214,7 +214,7 @@ jobs:
           rm -rf dmg-root
           security delete-keychain build.keychain || true
 
-      - uses: softprops/action-gh-release@v2.6.1
+      - uses: softprops/action-gh-release@v3.0.0
         if: github.ref_type == 'tag'
         with:
           files: ${{ env.RELEASE_FILE }}

@@ -4,11 +4,11 @@ bcrypt==5.0.0
     # via paramiko
 beautifulsoup4==4.14.3
     # via -r requirements.in
-boto3==1.42.80
+boto3==1.42.89
     # via
     #   -r requirements.in
     #   moto
-botocore==1.42.80
+botocore==1.42.89
     # via
     #   -r requirements.in
     #   boto3
@@ -20,13 +20,13 @@ cffi==2.0.0
     # via
     #   cryptography
     #   pynacl
-charset-normalizer==3.4.6
+charset-normalizer==3.4.7
     # via requests
-cryptography==46.0.6
+cryptography==46.0.7
     # via
     #   moto
     #   paramiko
-django==5.2.12
+django==5.2.13
     # via -r requirements.in
 idna==3.11
     # via requests
@@ -68,7 +68,7 @@ requests==2.33.1
     #   moto
     #   requests-ratelimiter
     #   responses
-requests-ratelimiter==0.9.2
+requests-ratelimiter==0.9.3
     # via -r requirements.in
 responses==0.26.0
     # via
@@ -89,7 +89,7 @@ urllib3==2.6.3
     #   botocore
     #   requests
     #   responses
-werkzeug==3.1.7
+werkzeug==3.1.8
     # via moto
 xmltodict==1.0.4
     # via moto
