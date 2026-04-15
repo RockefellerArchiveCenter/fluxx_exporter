@@ -24,7 +24,7 @@ The Fluxx Exporter is an open-source tool that integrates with the grants manage
 Foundations use grants management systems (GMS) such as Fluxx to manage their grant making from the time a grantee begins an application, through the award process, and on to the grantee's final reporting on activities. For most foundations, the GMS is the permanent system of record for all grant-related records. This tool allows grants administrators, information managers, and archivists to select and export grant information for internal or external uses including for long-term preservation, researcher access, and organizational learning and evaluation.
 
 ## Installation
-Fluxx Exporter is bundled as a single executable file. You receive warnings when trying to run Fluxx Exporter, or the application may blocked altogether. If this happens, speak to your local system administrator about how to resolve these issues.
+Fluxx Exporter is bundled as a single executable file. Based on security settings in your environment, you may receive warnings when trying to run Fluxx Exporter or the application may blocked altogether. If this happens, speak to your local system administrator about how to resolve these issues.
 
 ### Windows
 1. [Download the latest release](https://github.com/RockefellerArchiveCenter/fluxx_exporter/releases) for Windows.
