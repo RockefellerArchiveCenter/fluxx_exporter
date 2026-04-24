@@ -29,7 +29,7 @@ Fluxx Exporter is bundled as a single executable file. Based on security setting
 ### Windows
 1. [Download the latest release](https://github.com/RockefellerArchiveCenter/fluxx_exporter/releases) for Windows.
 2. Extract the downloaded ZIP file.
-3. Double-click the `Fluxx Exporter` file in the folder you just extracted. A terminal window will open that shows the application starting.
+3. Double-click the `Fluxx Exporter` file in the folder you just extracted. A terminal window will open that shows the application starting. There is no need to do anything with this window, but it must remain open to keep the app running.
 4. Fluxx Exporter will open automatically in your browser at [http://localhost:8000](http://localhost:8000).
 5. To close, exit the terminal window.
 
