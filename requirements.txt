@@ -4,17 +4,17 @@ bcrypt==5.0.0
     # via paramiko
 beautifulsoup4==4.14.3
     # via -r requirements.in
-boto3==1.42.89
+boto3==1.43.1
     # via
     #   -r requirements.in
     #   moto
-botocore==1.42.89
+botocore==1.43.1
     # via
     #   -r requirements.in
     #   boto3
     #   moto
     #   s3transfer
-certifi==2026.2.25
+certifi==2026.4.22
     # via requests
 cffi==2.0.0
     # via
@@ -22,13 +22,13 @@ cffi==2.0.0
     #   pynacl
 charset-normalizer==3.4.7
     # via requests
-cryptography==46.0.7
+cryptography==47.0.0
     # via
     #   moto
     #   paramiko
 django==5.2.13
     # via -r requirements.in
-idna==3.11
+idna==3.13
     # via requests
 jinja2==3.1.6
     # via moto
@@ -68,13 +68,13 @@ requests==2.33.1
     #   moto
     #   requests-ratelimiter
     #   responses
-requests-ratelimiter==0.9.3
+requests-ratelimiter==0.10.0
     # via -r requirements.in
 responses==0.26.0
     # via
     #   -r requirements.in
     #   moto
-s3transfer==0.16.0
+s3transfer==0.17.0
     # via boto3
 six==1.17.0
     # via python-dateutil
