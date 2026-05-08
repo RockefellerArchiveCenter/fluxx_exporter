@@ -56,7 +56,7 @@ In order for the Fluxx Exporter tool to be able to access your Fluxx instance, y
 1. Log into Fluxx and navigate to `{fluxx-instance-base-url}/oauth/applications/`
 2. Click "New Application" in the Fluxx interface.
 3. Enter an application name (e.g. Fluxx Exporter).
-4. Copy your Fluxx base URL into the redirect URI.
+4. Copy your Fluxx base URL (including `https://`) into the redirect URI.
 5. Leave Scopes field blank.
 6. Press "Submit."
 7. You should receive an application ID and secret on the following page. Save these in a safe place.
