@@ -247,7 +247,7 @@ class Exporter(object):
             child = ET.SubElement(root, key)
             child.text = str(value)
         tree = ET.ElementTree(root)
-        tree.write(xml_file_path)
+        tree.write(str(xml_file_path))
 
     def write_csv(self, record, export_location):
         """Writes data as CSV.
