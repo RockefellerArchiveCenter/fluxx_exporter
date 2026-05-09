@@ -4,11 +4,11 @@ bcrypt==5.0.0
     # via paramiko
 beautifulsoup4==4.14.3
     # via -r requirements.in
-boto3==1.43.1
+boto3==1.43.6
     # via
     #   -r requirements.in
     #   moto
-botocore==1.43.1
+botocore==1.43.6
     # via
     #   -r requirements.in
     #   boto3
@@ -22,25 +22,29 @@ cffi==2.0.0
     #   pynacl
 charset-normalizer==3.4.7
     # via requests
-cryptography==47.0.0
+cryptography==48.0.0
     # via
+    #   django-cryptography-5
     #   moto
     #   paramiko
-django==5.2.13
+django==5.2.14
+    # via
+    #   -r requirements.in
+    #   django-appconf
+    #   django-cryptography-5
+django-appconf==1.2.0
+    # via django-cryptography-5
+django-cryptography-5==2.0.3
     # via -r requirements.in
 idna==3.13
     # via requests
-jinja2==3.1.6
-    # via moto
 jmespath==1.1.0
     # via
     #   boto3
     #   botocore
 markupsafe==3.0.3
-    # via
-    #   jinja2
-    #   werkzeug
-moto==5.1.22
+    # via werkzeug
+moto==5.2.0
     # via -r requirements.in
 paramiko==3.5.1
     # via
@@ -57,9 +61,7 @@ pyrate-limiter==4.1.0
 pysftp==0.2.9
     # via -r requirements.in
 python-dateutil==2.9.0.post0
-    # via
-    #   botocore
-    #   moto
+    # via botocore
 pyyaml==6.0.3
     # via responses
 requests==2.33.1
@@ -83,8 +85,10 @@ soupsieve==2.8.3
 sqlparse==0.5.5
     # via django
 typing-extensions==4.15.0
-    # via beautifulsoup4
-urllib3==2.6.3
+    # via
+    #   beautifulsoup4
+    #   django-cryptography-5
+urllib3==2.7.0
     # via
     #   botocore
     #   requests
