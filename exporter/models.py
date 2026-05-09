@@ -2,6 +2,7 @@ from django.contrib.auth.models import AbstractUser
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 from django.urls import reverse
+from django_cryptography.fields import encrypt
 
 from .clients import FluxxClient
 
@@ -13,8 +14,8 @@ class User(AbstractUser):
 class FluxxConfig(models.Model):
     name = models.CharField(max_length=100)
     base_url = models.CharField(max_length=255)
-    client_id = models.CharField(max_length=100)
-    client_secret = models.CharField(max_length=100)
+    client_id = encrypt(models.CharField(max_length=100))
+    client_secret = encrypt(models.CharField(max_length=100))
 
     def __str__(self):
         return self.name
