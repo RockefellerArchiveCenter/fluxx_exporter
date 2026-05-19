@@ -1,10 +1,12 @@
 let multiSelectCheckboxes = document.querySelectorAll('.multi-select')
-var lastChecked = null;
+let lastChecked = null;
+let lastCheckedCheckbox = null; 
 
 multiSelectCheckboxes.forEach(element => {
     element.addEventListener('click', function(e) {
         if (!lastChecked) {
             lastChecked = this;
+            lastCheckedCheckbox = [...this.parentElement.children].find(c => c.classList.contains('checkbox'))
             return;
         }
 
@@ -21,11 +23,12 @@ multiSelectCheckboxes.forEach(element => {
 
             toControl.forEach(el => {
                 let checkbox = [...el.children].find(c => c.classList.contains('checkbox'))
-                checkbox.checked = lastChecked.checked
+                checkbox.checked = lastCheckedCheckbox.checked
             })
         }
 
         lastChecked = this;
+        lastCheckedCheckbox = [...this.parentElement.children].find(c => c.classList.contains('checkbox'))
 
     })
 })

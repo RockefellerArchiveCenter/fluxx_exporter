@@ -43,12 +43,12 @@
                     {{field_form.id}}
                     <input
                         type="checkbox"
-                        class="checkbox checkbox--blue{% if include_by_default != 'true' %} table-field{% endif %} multi-select"
+                        class="checkbox checkbox--blue{% if include_by_default != 'true' %} table-field{% endif %}"
                         id="{{ field_form.include_in_export.auto_id }}"
                         name="{{ field_form.include_in_export.html_name }}"
                         {% if field_form.include_in_export.value %}checked="checked"{% endif %}
                     />
-                    <label for="{{ field_form.include_in_export.id_for_label }}" class="checkbox--blue">
+                    <label for="{{ field_form.include_in_export.id_for_label }}" class="checkbox--blue multi-select">
                         {{ field_form.instance.name }}{% if field_form.instance.related_table.id %} <span class="text--italic">(connected data type: {{field_form.instance.related_table.name}})</span>{% endif %}
                     </label>
                 </div>
