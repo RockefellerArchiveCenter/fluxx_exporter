@@ -7,7 +7,17 @@
 <div class="card card--container card--brown mb-10">
     <fieldset>
         <legend id="legend" class="mb-20">Available document types</legend>
-            <div aria-describedby="legend" class="checkbox-list">
+        <div class="input-group mb-20">
+            <input
+                type="checkbox"
+                    class="checkbox checkbox--blue select-toggle"
+                    id="{{ form.prefix }}_select-toggle"
+            />
+            <label for="{{ form.prefix }}_select-toggle" class="checkbox--blue">
+                Select all document types
+            </label>
+        </div>
+        <div aria-describedby="legend" class="checkbox-list">
             {% for field in form %}
             <div class="input-group">
                 {{field.id}}
