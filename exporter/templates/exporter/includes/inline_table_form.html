@@ -29,8 +29,8 @@
             <div class="input-group mb-20">
                 <input
                     type="checkbox"
-                        class="checkbox checkbox--blue select-toggle"
-                        id="{{ table_form.prefix }}_select-toggle"
+                    class="checkbox checkbox--blue select-toggle"
+                    id="{{ table_form.prefix }}_select-toggle"
                 />
                 <label for="{{ table_form.prefix }}_select-toggle" class="checkbox--blue">
                     Select all fields
@@ -43,7 +43,7 @@
                     {{field_form.id}}
                     <input
                         type="checkbox"
-                        class="checkbox checkbox--blue{% if include_by_default != 'true' %} table-field{% endif %}"
+                        class="checkbox checkbox--blue{% if include_by_default != 'true' %} table-field{% endif %} multi-select"
                         id="{{ field_form.include_in_export.auto_id }}"
                         name="{{ field_form.include_in_export.html_name }}"
                         {% if field_form.include_in_export.value %}checked="checked"{% endif %}
