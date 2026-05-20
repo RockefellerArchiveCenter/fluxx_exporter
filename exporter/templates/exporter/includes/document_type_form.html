@@ -6,7 +6,7 @@
 {% endfor %}
 <div class="card card--container card--brown mb-10">
     <fieldset>
-        <legend id="legend" class="mb-20">Available document types</legend>
+        <legend class="mb-20">Available document types</legend>
         <div class="input-group mb-20">
             <input
                 type="checkbox"
@@ -17,7 +17,7 @@
                 Select all document types
             </label>
         </div>
-        <div aria-describedby="legend" class="checkbox-list">
+        <div class="checkbox-list">
             {% for field in form %}
             <div class="input-group">
                 {{field.id}}

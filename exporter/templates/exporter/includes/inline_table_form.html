@@ -18,7 +18,7 @@
         {{table_form.nested.non_form_errors}}
 
         <fieldset>
-            <legend id="legend" class="mb-20">Fields for {{ table_form.instance.name }}</legend>
+            <legend class="mb-20">Fields for {{ table_form.instance.name }}</legend>
             <div class="input exportjob__fields-filter mb-20">
                 <label for="filter-{{ table_form.prefix }}">Search for fields:</label>
                 <input type="text"
@@ -36,7 +36,7 @@
                     Select all fields
                 </label>
             </div>
-            <div tabindex="0" aria-describedby="legend" class="checkbox-list">
+            <div class="checkbox-list">
                 <a href="#" class="toc__skip-link toc__skip-link--orange">Skip to next section</a>
                 {% for field_form in table_form.nested.forms %}
                 <div class="input-group">
