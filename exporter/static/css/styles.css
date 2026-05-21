@@ -6,10 +6,10 @@
     }
 }
 
-/* limits the group of checkboxes to a maximum height of 512px
-and adds a scrollbar if the content exceeds that height. */
+/* Limits the group of checkboxes to a maximum height that cuts off a checkbox to indicate 
+that there are more options to scroll to, and adds a scrollbar if the content exceeds that height. */
 .checkbox-list {
-    max-height: 512px;
+    max-height: 500px;
     overflow: auto;
     position: relative;
 }
