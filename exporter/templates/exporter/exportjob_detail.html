@@ -84,7 +84,9 @@
         <a class="btn btn--md btn--light-blue" href="{% url 'exportjob_update' pk=object.pk %}">Edit</a>
         <a class="btn btn--md btn--orange" href="{% url 'exportjob_delete' pk=object.pk %}">Delete</a>
     </div>
-    <a data-micromodal-trigger="export-progress-modal" class="btn btn--md btn--blue" href="{% url 'exportjob_run' pk=object.pk %}">Run Export</a>
+    <div>
+        <a data-micromodal-trigger="export-progress-modal" class="btn btn--md btn--blue" href="{% url 'exportjob_run' pk=object.pk %}">Run Export</a>
+    </div>
 </div>
 
 {% endblock %}

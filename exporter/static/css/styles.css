@@ -1,5 +1,9 @@
 .content {
-    grid-column: 3 / span 8;
+    grid-column: 2 / span 10;
+
+    @media screen and (min-width: 36.25em) {
+        grid-column: 3 / span 8;
+    }
 }
 
 /* limits the group of checkboxes to a maximum height of 512px
@@ -157,4 +161,9 @@ focus is programmatically set to the alert. */
 
   .modal__body p {
     font-size: 20px;
+  }
+
+/* Allow button text to wrap to support text resizing for accessibility. */ 
+  .btn--block {
+    white-space: wrap;
   }
