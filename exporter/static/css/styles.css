@@ -168,10 +168,16 @@ focus is programmatically set to the alert. */
     white-space: wrap;
   }
 
-  .input label {
-    display: inline-block;
-  }
-
   .input label:has(+ input[required])::after {
     content: " *";
   }
+
+/* Disable text selection for checkbox labels during multi-select
+*  while still allowing intentional selection of label text */
+.checkbox + label {
+    &:active {
+        user-select: none;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+    }
+}
