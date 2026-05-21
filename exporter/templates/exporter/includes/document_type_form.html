@@ -23,12 +23,12 @@
                 {{field.id}}
                 <input
                     type="checkbox"
-                    class="checkbox checkbox--blue"
+                    class="checkbox checkbox--blue multi-select"
                     id="{{ field.include_in_export.auto_id }}"
                     name="{{ field.include_in_export.html_name }}"
                     {% if field.include_in_export.value %}checked="checked"{% endif %}
                 />
-                <label for="{{ field.include_in_export.id_for_label }}" class="checkbox--blue multi-select">
+                <label for="{{ field.include_in_export.id_for_label }}" class="checkbox--blue">
                     {{field.instance.name}}
                 </label>
             </div>
