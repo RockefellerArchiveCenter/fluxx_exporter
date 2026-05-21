@@ -1,10 +1,10 @@
 {% extends 'exporter/main.html' %}
 
-{% block title %}{% if form.instance.id %}Edit {{form.instance.name}}{% else %}Create New Fluxx Config{% endif %} - Fluxx Exporter{% endblock %}
+{% block title %}{% if form.instance.id %}Edit {{form.instance.name}}{% else %}Create New Amazon S3 Config{% endif %} - Fluxx Exporter{% endblock %}
 
 {% block content %}
 
-<h1>{% if form.instance.id %}Edit {{object.name}}{% else %}Create New Fluxx Config{% endif %}</h1>
+<h1>{% if form.instance.id %}Edit {{object.name}}{% else %}Create New Amazon S3 Config{% endif %}</h1>
 
 <form method="post" enctype="multipart/form-data">
     {% for hidden_field in form.hidden_fields %}
