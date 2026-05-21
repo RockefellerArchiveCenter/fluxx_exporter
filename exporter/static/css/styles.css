@@ -167,3 +167,11 @@ focus is programmatically set to the alert. */
   .btn--block {
     white-space: wrap;
   }
+
+  .input label {
+    display: inline-block;
+  }
+
+  .input label:has(+ input[required])::after {
+    content: " *";
+  }
