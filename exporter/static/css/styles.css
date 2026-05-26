@@ -158,3 +158,13 @@ focus is programmatically set to the alert. */
   .modal__body p {
         font-size: 20px;
   }
+
+/* Disable text selection for checkbox labels during multi-select
+*  while still allowing intentional selection of label text */
+.checkbox + label {
+    &:active {
+        user-select: none;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+    }
+}

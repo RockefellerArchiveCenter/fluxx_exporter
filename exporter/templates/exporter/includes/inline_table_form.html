@@ -18,7 +18,7 @@
         {{table_form.nested.non_form_errors}}
 
         <fieldset>
-            <legend id="legend" class="mb-20">Fields for {{ table_form.instance.name }}</legend>
+            <legend class="mb-20">Fields for {{ table_form.instance.name }}</legend>
             <div class="input exportjob__fields-filter mb-20">
                 <label for="filter-{{ table_form.prefix }}">Search for fields:</label>
                 <input type="text"
@@ -26,14 +26,24 @@
                     class="checkbox-filter"
                     oninput="filterCheckboxes(this)">
             </div>
-            <div tabindex="0" aria-describedby="legend" class="checkbox-list">
+            <div class="input-group mb-20">
+                <input
+                    type="checkbox"
+                    class="checkbox checkbox--blue select-toggle"
+                    id="{{ table_form.prefix }}_select-toggle"
+                />
+                <label for="{{ table_form.prefix }}_select-toggle" class="checkbox--blue">
+                    Select all fields
+                </label>
+            </div>
+            <div class="checkbox-list">
                 <a href="#" class="toc__skip-link toc__skip-link--orange">Skip to next section</a>
                 {% for field_form in table_form.nested.forms %}
                 <div class="input-group">
                     {{field_form.id}}
                     <input
                         type="checkbox"
-                        class="checkbox checkbox--blue{% if include_by_default != 'true' %} table-field{% endif %}"
+                        class="checkbox checkbox--blue multi-select{% if include_by_default != 'true' %} table-field{% endif %}"
                         id="{{ field_form.include_in_export.auto_id }}"
                         name="{{ field_form.include_in_export.html_name }}"
                         {% if field_form.include_in_export.value %}checked="checked"{% endif %}

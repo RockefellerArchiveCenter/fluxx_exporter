@@ -6,17 +6,27 @@
 {% endfor %}
 <div class="card card--container card--brown mb-10">
     <fieldset>
-        <legend id="legend" class="mb-20">Available document types</legend>
-            <div aria-describedby="legend" class="checkbox-list">
+        <legend class="mb-20">Available document types</legend>
+        <div class="input-group mb-20">
+            <input
+                type="checkbox"
+                class="checkbox checkbox--blue select-toggle"
+                id="{{ form.prefix }}_select-toggle"
+            />
+            <label for="{{ form.prefix }}_select-toggle" class="checkbox--blue">
+                Select all document types
+            </label>
+        </div>
+        <div class="checkbox-list">
             {% for field in form %}
             <div class="input-group">
                 {{field.id}}
                 <input
                     type="checkbox"
-                        class="checkbox checkbox--blue"
-                        id="{{ field.include_in_export.auto_id }}"
-                        name="{{ field.include_in_export.html_name }}"
-                        {% if field.include_in_export.value %}checked="checked"{% endif %}
+                    class="checkbox checkbox--blue multi-select"
+                    id="{{ field.include_in_export.auto_id }}"
+                    name="{{ field.include_in_export.html_name }}"
+                    {% if field.include_in_export.value %}checked="checked"{% endif %}
                 />
                 <label for="{{ field.include_in_export.id_for_label }}" class="checkbox--blue">
                     {{field.instance.name}}
