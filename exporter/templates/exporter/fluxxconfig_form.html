@@ -17,9 +17,11 @@
 	{{ form.management_form }}
 	{{ form.non_form_errors }}
 
+	<p> All fields required</p>
+
 	{% for field in form %}
 		<div class="input mb-10">
-			{{ field.label_tag }}{% if field.field.required %} *{%endif%}
+			{{ field.label_tag }}
 				{{ field }}
 				{% if field.errors %}
 						<div id="{{field.auto_id}}-error" class="input__error">
