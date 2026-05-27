@@ -4,19 +4,29 @@
 {% for error in form.non_field_errors %}
     <div class="input__error">{{error}}</div>
 {% endfor %}
-<div class="card card--container card--brown mb-10">
+<div class="card card--container py-20 pr-20 pl-15 mb-20">
     <fieldset>
-        <legend id="legend" class="mb-20">Available document types</legend>
-            <div aria-describedby="legend" class="checkbox-list">
+        <legend class="mb-20 pl-5">Available document types</legend>
+        <div class="input-group mb-20 pl-5">
+            <input
+                type="checkbox"
+                class="checkbox checkbox--blue select-toggle"
+                id="{{ form.prefix }}_select-toggle"
+            />
+            <label for="{{ form.prefix }}_select-toggle" class="checkbox--blue">
+                Select all document types
+            </label>
+        </div>
+        <div class="checkbox-list pt-5 pl-5">
             {% for field in form %}
             <div class="input-group">
                 {{field.id}}
                 <input
                     type="checkbox"
-                        class="checkbox checkbox--blue"
-                        id="{{ field.include_in_export.auto_id }}"
-                        name="{{ field.include_in_export.html_name }}"
-                        {% if field.include_in_export.value %}checked="checked"{% endif %}
+                    class="checkbox checkbox--blue multi-select"
+                    id="{{ field.include_in_export.auto_id }}"
+                    name="{{ field.include_in_export.html_name }}"
+                    {% if field.include_in_export.value %}checked="checked"{% endif %}
                 />
                 <label for="{{ field.include_in_export.id_for_label }}" class="checkbox--blue">
                     {{field.instance.name}}

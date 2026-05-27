@@ -18,6 +18,8 @@
 	{{ form.management_form }}
 	{{ form.non_form_errors }}
 
+	<p> *Required field</p>
+
 	{% for field in form %}
 		{% if field.name == 'download_all_file_versions' %}
 		<div class="input-group mb-10">

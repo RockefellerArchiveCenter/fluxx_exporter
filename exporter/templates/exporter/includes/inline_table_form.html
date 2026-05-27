@@ -1,9 +1,9 @@
 {% for error in table_form.non_field_errors %}
     <div class="input__error">{{error}}</div>
 {% endfor %}
-<div class="card card--container flex--column p-20 mb-20">
-    <h3 class="mb-20">{{ table_form.instance.name }} table</h3>
-    <div class="input-group">
+<div class="card card--container flex--column py-20 pr-20 pl-15 mb-20">
+    <h3 class="mb-20 pl-5">{{ table_form.instance.name }} table</h3>
+    <div class="input-group pl-5">
         {{ table_form.id }}
         <input
             type="hidden"
@@ -18,22 +18,32 @@
         {{table_form.nested.non_form_errors}}
 
         <fieldset>
-            <legend id="legend" class="mb-20">Fields for {{ table_form.instance.name }}</legend>
-            <div class="input exportjob__fields-filter mb-20">
+            <legend class="mb-20 pl-5">Fields for {{ table_form.instance.name }}</legend>
+            <div class="input exportjob__fields-filter mb-20 pl-5">
                 <label for="filter-{{ table_form.prefix }}">Search for fields:</label>
                 <input type="text"
                     id="filter-{{ table_form.prefix }}"
                     class="checkbox-filter"
                     oninput="filterCheckboxes(this)">
             </div>
-            <div tabindex="0" aria-describedby="legend" class="checkbox-list">
+            <div class="input-group mb-20 pl-5">
+                <input
+                    type="checkbox"
+                    class="checkbox checkbox--blue select-toggle"
+                    id="{{ table_form.prefix }}_select-toggle"
+                />
+                <label for="{{ table_form.prefix }}_select-toggle" class="checkbox--blue">
+                    Select all fields
+                </label>
+            </div>
+            <div class="checkbox-list pt-5 pl-5">
                 <a href="#" class="toc__skip-link toc__skip-link--orange">Skip to next section</a>
                 {% for field_form in table_form.nested.forms %}
                 <div class="input-group">
                     {{field_form.id}}
                     <input
                         type="checkbox"
-                        class="checkbox checkbox--blue{% if include_by_default != 'true' %} table-field{% endif %}"
+                        class="checkbox checkbox--blue multi-select{% if include_by_default != 'true' %} table-field{% endif %}"
                         id="{{ field_form.include_in_export.auto_id }}"
                         name="{{ field_form.include_in_export.html_name }}"
                         {% if field_form.include_in_export.value %}checked="checked"{% endif %}
