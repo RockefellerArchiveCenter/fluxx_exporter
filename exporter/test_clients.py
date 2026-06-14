@@ -80,8 +80,8 @@ class FluxxClientTests(SimpleTestCase):
     def test_list(self, mock_request, mock_post):
         mock_post.return_value.json.return_value = {"access_token": self.access_token}
         client = FluxxClient(self.base_url, self.client_id, self.client_secret)
-        url = "https://foo/bar/baz"
-        params = {"biz": "baz", "page": 1}
+        url = "https://foo/bar/baz/list"
+        data = {"biz": "baz", "page": 1}
         expected_return = [{"foo": "bar"}]
         mock_request.return_value = {
             "total_pages": 1,
@@ -90,14 +90,13 @@ class FluxxClientTests(SimpleTestCase):
             }
         }
 
-        output = list(client.list(url, params))
-        mock_request.assert_called_once_with('get', url, params=params)
+        output = list(client.list(url, data))
+        mock_request.assert_called_once_with('post', url, data=data)
         self.assertEqual(output, expected_return)
 
     @patch('requests.Session.post')
     @patch('exporter.clients.FluxxClient.list')
-    @patch('exporter.clients.FluxxClient.get')
-    def test_list_rows(self, mock_get, mock_list, mock_post):
+    def test_list_rows(self, mock_list, mock_post):
         """Asserts calls to Fluxx API and correct return value."""
 
         mock_post.return_value.json.return_value = {"access_token": self.access_token}
@@ -110,31 +109,38 @@ class FluxxClientTests(SimpleTestCase):
             {'id': 22618119, 'grant_id': 'R-2024-00006'},
             {'id': 22674311, 'grant_id': 'G-2024-00008', 'grantee_owner_name': 'Dan, Desperate'}
         ]
-        mock_get.return_value = mock_list.return_value = [
-            {'id': 22617997, 'model_documents': [11218402, 11434734, 11434735], 'grant_id': 'R-2024-00003', 'grantee_owner_name': 'Dan, Desperate'},
-            {'id': 22618119, 'grant_id': 'R-2024-00006'},
-            {'id': 22674311, 'grant_id': 'G-2024-00008', 'grantee_owner_name': 'Dan, Desperate'}
-        ]
 
         result = client.list_rows(table_name, field_names, filter_value=['foo', 'eq', 'bar'])
         self.assertEqual(len(list(result)), 3)  # calling list here executes the iterator
         mock_list.assert_called_once_with(
-            f'{self.base_url}/api/rest/v2/grant_request',
-            params={
+            f'{self.base_url}/api/rest/v2/grant_request/list',
+            data={
                 'filter': '["foo", "eq", "bar"]',
                 'cols': json.dumps(field_names),
                 'page': 1,
                 'per_page': 100})
-        mock_get.assert_not_called()
         mock_list.reset_mock()
 
-        mock_get.return_value = {
-            'grant_request': {'id': 22618119, 'grant_id': 'R-2024-00006'}
-        }
         result = client.list_rows(table_name, field_names, grant_ids=[1, 2, 3])
         self.assertEqual(len(list(result)), 3)  # calling list here executes the iterator
-        self.assertEqual(mock_get.call_count, 3)
-        mock_list.assert_not_called()
+        mock_list.assert_called_once_with(
+            f'{self.base_url}/api/rest/v2/grant_request/list',
+            data={
+                'filter': '{"group_type": "or", "conditions": [["id", "eq", 1], ["id", "eq", 2], ["id", "eq", 3]]}',
+                'cols': json.dumps(field_names),
+                'page': 1,
+                'per_page': 100})
+        mock_list.reset_mock()
+
+        result = client.list_rows(table_name, field_names, filter_value=['foo', 'eq', 'bar'], grant_ids=[1, 2, 3])
+        self.assertEqual(len(list(result)), 3)  # calling list here executes the iterator
+        mock_list.assert_called_once_with(
+            f'{self.base_url}/api/rest/v2/grant_request/list',
+            data={
+                'filter': '{"group_type": "and", "conditions": [["foo", "eq", "bar"], {"group_type": "or", "conditions": [["id", "eq", 1], ["id", "eq", 2], ["id", "eq", 3]]}]}',
+                'cols': json.dumps(field_names),
+                'page': 1,
+                'per_page': 100})
 
     @patch('requests.Session.post')
     @patch('requests.Session.get')
