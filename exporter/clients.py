@@ -54,11 +54,11 @@ class FluxxClient(object):
         })
         logging.debug("Fluxx client authentication successful")
 
-    def request(self, method, url, params=None):
+    def request(self, method, url, params=None, data=None):
         """Handle HTTP request."""
-        logging.debug(f'Making {method} request for {url} with params {params}')
+        logging.debug(f'Making {method} request for {url} with params {params} and data {data}')
         try:
-            resp = getattr(self.session, method)(url, params=params)
+            resp = getattr(self.session, method)(url, params=params, data=data)
             resp.raise_for_status()
             return resp.json()
         except Exception:
@@ -69,18 +69,18 @@ class FluxxClient(object):
         """Handle a request for a single page."""
         return self.request('get', url, params=params)
 
-    def list(self, url, params=None):
+    def list(self, url, data=None):
         """Handle a paged request."""
-        table_name = url.rstrip('/').split('/')[-1]
-        current_page = params['page']
-        resp = self.request('get', url, params=params)
+        table_name = url.rstrip('/').split('/')[-2]
+        current_page = data['page']
+        resp = self.request('post', url, data=data)
         total_pages = resp['total_pages']
         for record in resp['records'][table_name]:
             yield record
         while total_pages > current_page:
             current_page += 1
-            params.update({'page': current_page})
-            resp = self.request('get', f"{self.api_url}{table_name}", params=params)
+            data.update({'page': current_page})
+            resp = self.request('post', f"{self.api_url}{table_name}/list", data=data)
             for record in resp['records'][table_name]:
                 yield record
 
@@ -91,8 +91,9 @@ class FluxxClient(object):
             table_name (str): name of the table to fetch
             field_names (list of str): field names from the table
             filter_value (list): list representing a filter
+            grant_ids (list): IDs for grants to retrieve
             relations (str): relation params
-            page (int): page number to start from
+            current_page (int): page number to start from
             per_page (int): number of items per page
 
         Returns:
@@ -102,24 +103,33 @@ class FluxxClient(object):
 
         params = {'cols': json.dumps(field_names)}
 
-        if filter_value:
-            params.update({'filter': json.dumps(filter_value)})
-
         if relations:
             params.update({'relation': json.dumps(relations)})
 
         if grant_ids:
-            logging.debug(f'Params: {params}')
-            for g_id in grant_ids:
-                yield self.get(f"{self.api_url}{table_name}/{g_id}", params=params)['grant_request']
+            grant_filter = {
+                "group_type": "or",
+                "conditions": [["id", "eq", g_id] for g_id in grant_ids]
+            }
 
-        else:
-            params.update({
-                'page': current_page,
-                'per_page': per_page
-            })
-            logging.debug(f'Params: {params}')
-            yield from self.list(f"{self.api_url}{table_name}", params=params)
+            filter_value = (
+                grant_filter
+                if not filter_value
+                else {
+                    "group_type": "and",
+                    "conditions": [filter_value, grant_filter],
+                }
+            )
+
+        if filter_value:
+            params.update({'filter': json.dumps(filter_value)})
+
+        params.update({
+            'page': current_page,
+            'per_page': per_page
+        })
+        logging.debug(f'Params: {params}')
+        yield from self.list(f"{self.api_url}{table_name}/list", data=params)
 
     def get_document_info(self, document_id):
         """Gets information for a document by ID.

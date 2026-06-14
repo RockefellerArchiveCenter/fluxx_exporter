@@ -149,7 +149,7 @@ class ExportTests(TestCase):
         exporter = Exporter(export_job.pk)
         Filter.objects.create(export_job=export_job, field_name='foo', relator='eq', value='bar')
         result = exporter.parse_filter(Filter.objects.all())
-        self.assertEqual(result, ['foo', 'eq', 'bar'])
+        self.assertEqual(result, {'group_type': 'and', 'conditions': [['foo', 'eq', 'bar']]})
 
         """Assert multiple filters parsed as expected."""
         Filter.objects.create(export_job=export_job, field_name='baz', relator='gt', value='biz')
