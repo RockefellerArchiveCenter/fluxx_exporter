@@ -123,7 +123,7 @@ class Exporter(object):
             filter (list): Filter objects.
 
         Returns:
-            filter_parts (list or dict): parsed filter.
+            filter_parts (dict): parsed filter.
         """
         logging.debug(f'Parsing filters {filters}')
         filter_value = None
@@ -131,11 +131,7 @@ class Exporter(object):
             filter_list = []
             for f in filters:
                 filter_list.append([f.field_name, f.relator, f.value])
-            if len(filter_list) > 1:
-                filter_value = {"group_type": "and", "conditions": filter_list}
-            else:
-                filter_value = filter_list[0]
-
+            filter_value = {"group_type": "and", "conditions": filter_list}
         logging.debug(f'Filter {filters} parsed into parts {filter_value}')
         return filter_value
 
