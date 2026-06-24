@@ -147,6 +147,7 @@ class FluxxClientTests(SimpleTestCase):
     def test_download_document(self, mock_get, mock_post):
         """Asserts calls to Fluxx API and correct return from function."""
 
+        mock_get.return_value.status_code = 200
         mock_post.return_value.json.return_value = {"access_token": self.access_token}
         client = FluxxClient(self.base_url, self.client_id, self.client_secret)
 
@@ -155,6 +156,11 @@ class FluxxClientTests(SimpleTestCase):
         mock_get.assert_called_once_with(
             f'{self.base_url}/api/rest/v2/model_document_download/{document_id}',
             stream=True)
+
+        mock_get.return_value.status_code = 404
+        with self.assertRaises(Exception) as err:
+            client.download_document(document_id)
+        self.assertTrue(str(err.exception).startswith(f"Error downloading document with ID {document_id}"))
 
     @patch('requests.Session.post')
     @patch('exporter.clients.FluxxClient.get')
