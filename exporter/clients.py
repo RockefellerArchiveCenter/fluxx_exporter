@@ -158,7 +158,10 @@ class FluxxClient(object):
         document_download_url = f"{self.api_url}model_document_download/{document_id}"
         logging.debug(document_download_url)
 
-        return self.session.get(document_download_url, stream=True)
+        resp = self.session.get(document_download_url, stream=True)
+        if resp.status_code != 200:
+            raise Exception(f"Error downloading document with ID {document_id}: {resp.text}")
+        return resp
 
 
 class SFTPClient(object):
