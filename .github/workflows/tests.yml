@@ -38,6 +38,9 @@ jobs:
       - name: Start Docker containers
         run: docker compose up -d
 
+      - name: Run tests
+        run: docker compose exec -T $CONTAINER python manage.py test
+
       - name: Install pre-commit
         run: |
           pip install pre-commit
@@ -45,6 +48,3 @@ jobs:
 
       - name: Run pre-commit checks
         run: pre-commit run --all-files --show-diff-on-failure
-
-      - name: Run tests
-        run: docker compose exec -T $CONTAINER python manage.py test
