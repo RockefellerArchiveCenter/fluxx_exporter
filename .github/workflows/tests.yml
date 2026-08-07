@@ -24,10 +24,10 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v7.0.0
+        uses: actions/checkout@v7.0.1
 
       - name: Set up Python and cache pip
-        uses: actions/setup-python@v6.3.0
+        uses: actions/setup-python@v7.0.0
         with:
           python-version: '3.12'
           cache: 'pip'
@@ -38,6 +38,9 @@ jobs:
       - name: Start Docker containers
         run: docker compose up -d
 
+      - name: Run tests
+        run: docker compose exec -T $CONTAINER python manage.py test
+
       - name: Install pre-commit
         run: |
           pip install pre-commit
@@ -45,6 +48,3 @@ jobs:
 
       - name: Run pre-commit checks
         run: pre-commit run --all-files --show-diff-on-failure
-
-      - name: Run tests
-        run: docker compose exec -T $CONTAINER python manage.py test
