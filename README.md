@@ -143,6 +143,15 @@ For more information about filters:
 - Consult your Fluxx instance's built-in API pages at `{fluxx-instance-base-url}/api/rest/v2/doc` to see which filters will work for a given table. 
 - Consult the official Fluxx API documentation. This is not publicly available, but if your institution has access, it contains more information about filters in the "API Filter Examples" section.
 
+### Known Issues
+Export jobs which include any of the following fields in the grant request table will fail when run:
+- raw_request_org_ids
+- related_grant_organization_ids 
+- related_request_organization_ids
+
+Unselecting these fields from the grant request table in the export job will resolve the issue. We continue to diagnose
+this error.  
+
 ## Logging
 
 This application logs to the console (stdout) as well as a file. By default, messages in the console are logged at the
