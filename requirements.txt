@@ -4,11 +4,11 @@ bcrypt==5.0.0
     # via paramiko
 beautifulsoup4==4.15.0
     # via -r requirements.in
-boto3==1.43.85
+boto3==1.43.106
     # via
     #   -r requirements.in
     #   moto
-botocore==1.43.85
+botocore==1.43.106
     # via
     #   -r requirements.in
     #   boto3
@@ -20,9 +20,9 @@ cffi==2.1.1
     # via
     #   cryptography
     #   pynacl
-charset-normalizer==3.5.1
+charset-normalizer==3.5.2
     # via requests
-cryptography==50.0.1
+cryptography==50.0.2
     # via
     #   django-cryptography-5
     #   moto
@@ -36,7 +36,7 @@ django-appconf==1.2.0
     # via django-cryptography-5
 django-cryptography-5==2.0.3
     # via -r requirements.in
-idna==3.19
+idna==3.20
     # via requests
 jmespath==1.1.0
     # via
@@ -80,7 +80,7 @@ s3transfer==0.19.2
     # via boto3
 six==1.17.0
     # via python-dateutil
-soupsieve==2.9.2
+soupsieve==2.10
     # via beautifulsoup4
 sqlparse==0.6.0
     # via django
@@ -88,12 +88,12 @@ typing-extensions==4.16.0
     # via
     #   beautifulsoup4
     #   django-cryptography-5
-urllib3==2.7.0
+urllib3==2.8.0
     # via
     #   botocore
     #   requests
     #   responses
-werkzeug==3.1.8
+werkzeug==3.1.9
     # via moto
 xmltodict==1.0.4
     # via moto
