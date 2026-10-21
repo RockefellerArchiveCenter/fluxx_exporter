@@ -6,6 +6,7 @@ WORKDIR /code
 
 # Install Python requirements
 COPY requirements.txt /code/
-RUN pip install --upgrade pip && pip install -r requirements.txt
+RUN python -m pip install --upgrade "pip>=26.2.2" && \
+    python -m pip install -r requirements.txt
 
 COPY exporter fluxx_exporter entrypoint.sh manage.py ./
